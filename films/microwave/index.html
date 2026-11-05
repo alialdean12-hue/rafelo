@@ -1,477 +1,170 @@
 <!doctype html>
 <!--
-  SHEET — microwave
+  SHEET — microwave (archival-photo cut)
   Logline: رجل ترك المدرسة في الثانية عشرة لاحظ أن الشوكولاتة ذابت في جيبه، فاخترع الميكروويف.
-  Style:   قصة تاريخية قصيرة بأسلوب الريلز — بطاقة بولارويد على ورق مربعات، كلمات تظهر واحدة واحدة، عناوين ملونة عريضة.
+  Style:   قصة تاريخية قصيرة بأسلوب الريلز — صور أرشيفية حقيقية، بولارويد على ورق مربعات،
+           كلمات تظهر واحدة واحدة، عناوين ملونة متراكمة، قطع بزوم وتمويه، حبيبات فيلم.
   Frame:   9:16, 1080x1920
   Runtime: 30s
-  Sakuga:  S5 — حبوب الذرة تنفجر فشاراً (the verb: انفجرت)
+  Sakuga:  S5 — الذرة تنفجر فشاراً (قطعات سريعة على الإيقاع)
 
   Shots (sum = 30.0s)
-    S1  0.0 – 3.6   3.6  hook      المختبر ليلاً، العنوان المتوهج
+    S1  0.0 – 3.6   3.6  hook      ميكروويف حديث — «جهاز في كل مطبخ… اختُرع بالصدفة»
     S2  3.6 – 8.0   4.4  who       بولارويد بيرسي سبنسر على ورق مربعات كهرماني
-    S3  8.0 – 12.0  4.0  place     1945، المغنيترون وأجهزة الرادار
-    S4  12.0 – 16.4 4.4  approach  الشوكولاتة تذوب (3 رسومات)
-    S5  16.4 – 20.4 4.0  SAKUGA    الفشار ينفجر (8 رسومات)
-    S6  20.4 – 24.4 4.0  scale     أول ميكروويف: 1.8 متر، 340 كغ
+    S3  8.0 – 12.0  4.0  place     ١٩٤٥ — غرفة رادار، ثم سبنسر بجانب المغنيترون
+    S4  12.0 – 16.4 4.4  approach  لوح شوكولاتة على سترة — حرارة تموّج الصورة — «ذابت!»
+    S5  16.4 – 20.4 4.0  SAKUGA    حبوب ذرة ← فشار، قطعات سريعة
+    S6  20.4 – 24.4 4.0  scale     أول Radarange — ١٫٨ م، ٣٤٠ كغ
     S7  24.4 – 27.6 3.2  payoff    العنوان الملون المتراكم
-    S8  27.6 – 30.0 2.4  button    ومكافأته؟ دولاران فقط
+    S8  27.6 – 30.0 2.4  button    براءة الاختراع — «ومكافأته؟ دولاران فقط»
 
   Color script (closed)
-    ink      #0e0d0c   amber    #c9822b   amberDeep #6b3a12
-    paper    #efe9dc   line     #f6f1e7   glow      #ffd25a
-    red      #e0373f   wood     #3a2a1f   steel     #59646b
-    sepia    #b4946c   choco    #4a2a1a   blue      #4fb3ff
-    green    #2fe36a
+    ink #0e0d0c  amber #c9822b  paper #efe9dc  line #f6f1e7  glow #ffd25a
+    red #e0373f  blue #4fb3ff  green #2fe36a
+
+  Images: see img/SOURCES.txt
 -->
 <html lang="ar" dir="rtl">
   <head>
     <meta charset="utf-8" />
     <title>الميكروويف — html-anime</title>
     <style>
-      @font-face {
-        font-family: "Amiri";
-        src: url("fonts/amiri-400.woff2") format("woff2");
-        font-weight: 400;
-        font-style: normal;
-        font-display: block;
-      }
-      @font-face {
-        font-family: "Amiri";
-        src: url("fonts/amiri-700.woff2") format("woff2");
-        font-weight: 700;
-        font-style: normal;
-        font-display: block;
-      }
-      @font-face {
-        font-family: "Lalezar";
-        src: url("fonts/lalezar-400.woff2") format("woff2");
-        font-weight: 400;
-        font-style: normal;
-        font-display: block;
-      }
-      html,
-      body {
-        margin: 0;
-        background: #0e0d0c;
-      }
-      #root {
-        position: relative;
-        width: 1080px;
-        height: 1920px;
-        overflow: hidden;
-        background: #0e0d0c;
-      }
-      .clip {
-        position: absolute;
-        inset: 0;
-        overflow: hidden;
-      }
-      .stage {
-        position: absolute;
-        inset: 0;
-        transform-origin: 50% 45%;
-      }
-      .stage > svg {
-        position: absolute;
-        inset: 0;
-        width: 1080px;
-        height: 1920px;
-      }
-      #s1 { z-index: 18; }
-      #s2 { z-index: 17; }
-      #s3 { z-index: 16; }
-      #s4 { z-index: 15; }
-      #s5 { z-index: 14; }
-      #s6 { z-index: 13; }
-      #s7 { z-index: 12; }
-      #s8 { z-index: 11; }
-      #dip {
-        background: #0e0d0c;
-        z-index: 40;
-        opacity: 0;
-      }
+      @font-face { font-family: "Amiri"; src: url("fonts/amiri-700.woff2") format("woff2"); font-weight: 700; font-display: block; }
+      @font-face { font-family: "Lalezar"; src: url("fonts/lalezar-400.woff2") format("woff2"); font-weight: 400; font-display: block; }
+      html, body { margin: 0; background: #0e0d0c; }
+      #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: #0e0d0c; }
+      .clip { position: absolute; inset: 0; overflow: hidden; }
+      .stage { position: absolute; inset: 0; transform-origin: 50% 45%; }
+      .photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+      .bw { filter: grayscale(1) contrast(1.15) sepia(0.22); }
+      .shade { position: absolute; inset: 0; pointer-events: none; }
+      #s1 { z-index: 18; } #s2 { z-index: 17; } #s3 { z-index: 16; } #s4 { z-index: 15; }
+      #s5 { z-index: 14; } #s6 { z-index: 13; } #s7 { z-index: 12; } #s8 { z-index: 11; }
+      #dip { background: #0e0d0c; z-index: 40; opacity: 0; }
+      #fx { z-index: 41; pointer-events: none; }
+      #grain { position: absolute; left: -100px; top: -100px; width: 1280px; height: 2120px; opacity: 0.16; mix-blend-mode: overlay; }
+      #vignette { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 45%, transparent 55%, rgba(14, 13, 12, 0.6) 100%); }
 
-      /* grid paper */
       .grid-amber {
         background-color: #c9822b;
-        background-image:
-          linear-gradient(rgba(14, 13, 12, 0.13) 2px, transparent 2px),
-          linear-gradient(90deg, rgba(14, 13, 12, 0.13) 2px, transparent 2px);
+        background-image: linear-gradient(rgba(14, 13, 12, 0.13) 2px, transparent 2px), linear-gradient(90deg, rgba(14, 13, 12, 0.13) 2px, transparent 2px);
         background-size: 48px 48px;
       }
       .grid-paper {
         background-color: #efe9dc;
-        background-image:
-          linear-gradient(rgba(89, 100, 107, 0.22) 2px, transparent 2px),
-          linear-gradient(90deg, rgba(89, 100, 107, 0.22) 2px, transparent 2px);
+        background-image: linear-gradient(rgba(14, 13, 12, 0.12) 2px, transparent 2px), linear-gradient(90deg, rgba(14, 13, 12, 0.12) 2px, transparent 2px);
         background-size: 54px 54px;
       }
 
-      /* words */
-      .w {
-        position: absolute;
-        opacity: 0;
-        transform: translateY(24px);
-        white-space: nowrap;
-        direction: rtl;
-      }
-      .serif {
-        font-family: "Amiri", serif;
-        font-weight: 700;
-        color: #f6f1e7;
-        font-size: 66px;
-        text-shadow: 0 0 18px rgba(14, 13, 12, 0.85), 0 4px 10px rgba(14, 13, 12, 0.7);
-      }
-      .bold {
-        font-family: "Lalezar", sans-serif;
-        font-weight: 400;
-        line-height: 1;
-      }
-      .center {
-        left: 0;
-        right: 0;
-        text-align: center;
-      }
+      .w { position: absolute; opacity: 0; transform: translateY(24px); white-space: nowrap; direction: rtl; }
+      .serif { font-family: "Amiri", serif; font-weight: 700; color: #f6f1e7; font-size: 72px; text-shadow: 0 0 18px rgba(14, 13, 12, 0.9), 0 4px 10px rgba(14, 13, 12, 0.8); }
+      .bold { font-family: "Lalezar", sans-serif; line-height: 1; }
+      .center { left: 0; right: 0; text-align: center; }
 
-      /* polaroid */
-      .polaroid {
-        position: absolute;
-        background: #efe9dc;
-        padding: 26px 26px 0 26px;
-        box-shadow: 0 30px 60px rgba(14, 13, 12, 0.45), 0 6px 14px rgba(14, 13, 12, 0.35);
-      }
-      .polaroid .cap {
-        font-family: "Lalezar", sans-serif;
-        color: #0e0d0c;
-        text-align: center;
-        font-size: 64px;
-        line-height: 1;
-        padding: 26px 0 30px 0;
-      }
+      .polaroid { position: absolute; background: #efe9dc; padding: 24px 24px 0 24px; box-shadow: 0 30px 60px rgba(14, 13, 12, 0.5), 0 6px 14px rgba(14, 13, 12, 0.35); }
+      .polaroid img { display: block; }
+      .polaroid .cap { font-family: "Lalezar", sans-serif; color: #0e0d0c; text-align: center; font-size: 62px; line-height: 1; padding: 24px 0 28px 0; }
 
-      /* drawing swaps */
-      .dr {
-        opacity: 0;
-      }
-      .dr.hero {
-        opacity: 1;
-      }
-
-      /* stitched card */
-      .card {
-        position: absolute;
-        left: 110px;
-        top: 360px;
-        width: 860px;
-        height: 1200px;
-        border-radius: 90px;
-        background: #0e0d0c;
-        box-shadow: 0 0 0 10px #0e0d0c, 0 40px 80px rgba(14, 13, 12, 0.9);
-      }
-      .card::after {
-        content: "";
-        position: absolute;
-        inset: 22px;
-        border-radius: 72px;
-        border: 4px dashed rgba(246, 241, 231, 0.55);
-      }
+      .card { position: absolute; left: 110px; top: 360px; width: 860px; height: 1200px; border-radius: 90px; background: rgba(14, 13, 12, 0.88); box-shadow: 0 40px 80px rgba(14, 13, 12, 0.9); }
+      .card::after { content: ""; position: absolute; inset: 22px; border-radius: 72px; border: 4px dashed rgba(246, 241, 231, 0.55); }
+      .cutin { opacity: 0; }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
   </head>
   <body>
     <div id="root" data-composition-id="microwave" data-start="0" data-duration="30" data-width="1080" data-height="1920">
-      <!-- S1 hook: the lab at night -->
+      <!-- S1 hook -->
       <div id="s1" class="clip" data-start="0" data-duration="3.63" data-track-index="1">
         <div class="stage" id="s1-stage">
-          <svg viewBox="0 0 1080 1920">
-            <defs>
-              <radialGradient id="s1-room" cx="0.5" cy="0.18" r="0.95">
-                <stop offset="0" stop-color="#c9822b" />
-                <stop offset="0.38" stop-color="#6b3a12" />
-                <stop offset="1" stop-color="#0e0d0c" />
-              </radialGradient>
-              <linearGradient id="s1-cone" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0" stop-color="#ffd25a" stop-opacity="0.55" />
-                <stop offset="1" stop-color="#ffd25a" stop-opacity="0" />
-              </linearGradient>
-            </defs>
-            <rect width="1080" height="1920" fill="url(#s1-room)" />
-            <!-- shelves -->
-            <g fill="#0e0d0c" opacity="0.55">
-              <rect x="40" y="520" width="300" height="14" />
-              <rect x="40" y="700" width="300" height="14" />
-              <rect x="760" y="560" width="290" height="14" />
-              <rect x="760" y="740" width="290" height="14" />
-              <rect x="70" y="440" width="34" height="80" rx="6" />
-              <rect x="120" y="470" width="26" height="50" rx="4" />
-              <rect x="170" y="430" width="44" height="90" rx="8" />
-              <rect x="250" y="460" width="30" height="60" rx="6" />
-              <rect x="80" y="630" width="50" height="70" rx="10" />
-              <rect x="150" y="650" width="26" height="50" rx="4" />
-              <rect x="220" y="610" width="60" height="90" rx="6" />
-              <rect x="790" y="480" width="40" height="80" rx="6" />
-              <rect x="850" y="500" width="30" height="60" rx="4" />
-              <rect x="910" y="470" width="56" height="90" rx="10" />
-              <rect x="800" y="670" width="70" height="70" rx="6" />
-              <rect x="900" y="680" width="36" height="60" rx="6" />
-            </g>
-            <!-- lamp -->
-            <rect x="537" y="0" width="6" height="250" fill="#0e0d0c" />
-            <path d="M470,250 L610,250 L570,206 L510,206 Z" fill="#0e0d0c" />
-            <polygon points="480,252 600,252 960,1500 120,1500" fill="url(#s1-cone)" />
-            <ellipse id="s1-bulb" cx="540" cy="256" rx="40" ry="12" fill="#ffd25a" />
-            <!-- bench + figure, wide and small -->
-            <path fill="#0e0d0c" d="M120,1380 L960,1380 L960,1420 L120,1420 Z M160,1420 L190,1420 L190,1720 L160,1720 Z M890,1420 L920,1420 L920,1720 L890,1720 Z" />
-            <g fill="#0e0d0c">
-              <rect x="330" y="1310" width="80" height="70" rx="6" />
-              <rect x="430" y="1250" width="40" height="130" rx="8" />
-              <circle cx="450" cy="1236" r="22" />
-              <rect x="700" y="1330" width="120" height="50" rx="4" />
-            </g>
-            <g id="s1-fig" fill="#0e0d0c">
-              <circle cx="640" cy="1110" r="40" />
-              <path d="M590,1160 L690,1160 L716,1380 L570,1380 Z" />
-              <path d="M600,1180 L520,1300 L540,1316 L620,1210 Z" />
-            </g>
-            <rect width="1080" height="1920" fill="#0e0d0c" opacity="0.18" />
-          </svg>
-          <div class="w bold center" data-at="0.3" style="top: 330px; font-size: 120px; color: #f6f1e7; text-shadow: 0 0 30px #ffd25a">أعظمُ الاختراعات</div>
-          <div class="w bold center" data-at="1.1" style="top: 480px; font-size: 120px; color: #f6f1e7; text-shadow: 0 0 30px #ffd25a">جاءت</div>
-          <div class="w bold center" data-at="1.7" style="top: 620px; font-size: 190px; color: #ffd25a; text-shadow: 0 0 40px #ffd25a, 0 0 90px #e0373f">بالصدفة</div>
+          <img class="photo" src="img/modern.jpg" alt="" style="object-position: 40% 50%" />
+          <div class="shade" style="background: linear-gradient(180deg, rgba(14, 13, 12, 0.85) 0%, rgba(14, 13, 12, 0.2) 45%, rgba(14, 13, 12, 0.75) 100%)"></div>
+          <div class="w serif center" data-at="0.15" style="top: 250px; font-size: 84px">جهازٌ في كلّ مطبخ تقريباً…</div>
+          <div class="w serif center" data-at="1.2" style="top: 1360px; font-size: 76px">لكنّه</div>
+          <div class="w bold center" data-at="1.6" style="top: 1460px; font-size: 170px; color: #ffd25a; text-shadow: 0 0 40px #ffd25a, 0 0 90px #e0373f">اختُرع بالصدفة</div>
         </div>
       </div>
 
-      <!-- S2 who: polaroid on amber grid -->
+      <!-- S2 who -->
       <div id="s2" class="clip grid-amber" data-start="3.35" data-duration="4.68" data-track-index="2">
         <div class="stage" id="s2-stage">
-          <svg viewBox="0 0 1080 1920">
-            <!-- window bar light -->
-            <g fill="#ffd25a" opacity="0.22">
-              <polygon points="0,1300 1080,560 1080,760 0,1500" />
-              <polygon points="0,1620 1080,880 1080,980 0,1720" />
-            </g>
-            <g fill="#0e0d0c" opacity="0.16">
-              <polygon points="0,1500 1080,760 1080,880 0,1620" />
-            </g>
-            <rect width="1080" height="1920" fill="#0e0d0c" opacity="0.08" />
+          <svg viewBox="0 0 1080 1920" style="position: absolute; inset: 0; width: 1080px; height: 1920px">
+            <g fill="#ffd25a" opacity="0.22"><polygon points="0,1300 1080,560 1080,760 0,1500" /><polygon points="0,1620 1080,880 1080,980 0,1720" /></g>
+            <g fill="#0e0d0c" opacity="0.16"><polygon points="0,1500 1080,760 1080,880 0,1620" /></g>
           </svg>
-          <div id="pol" class="polaroid" style="left: 270px; top: 470px; width: 488px; transform: rotate(-4deg)">
-            <svg viewBox="0 0 488 560" width="488" height="560" style="display: block">
-              <rect width="488" height="560" fill="#b4946c" />
-              <rect width="488" height="560" fill="#0e0d0c" opacity="0.12" />
-              <!-- shoulders / suit -->
-              <path d="M40,560 C60,450 140,410 244,400 C348,410 428,450 448,560 Z" fill="#3a2a1f" />
-              <path d="M210,402 L244,470 L278,402 Z" fill="#efe9dc" />
-              <path d="M236,420 L252,420 L262,520 L244,540 L226,520 Z" fill="#0e0d0c" />
-              <!-- neck + head -->
-              <rect x="212" y="330" width="64" height="80" fill="#c9a37a" />
-              <ellipse cx="244" cy="240" rx="104" ry="128" fill="#c9a37a" />
-              <path d="M140,240 C150,320 200,370 244,372 C200,330 186,280 190,220 Z" fill="#0e0d0c" opacity="0.2" />
-              <!-- hair, receding -->
-              <path d="M140,220 C136,140 190,104 250,106 C318,108 356,150 350,226 C336,176 300,150 250,150 C200,150 160,176 140,220 Z" fill="#3a2a1f" />
-              <!-- round glasses -->
-              <g fill="none" stroke="#0e0d0c" stroke-width="7">
-                <circle cx="200" cy="246" r="34" />
-                <circle cx="290" cy="246" r="34" />
-                <path d="M234,244 L256,244 M166,240 L140,232 M324,240 L348,232" />
-              </g>
-              <circle cx="204" cy="250" r="7" fill="#0e0d0c" />
-              <circle cx="294" cy="250" r="7" fill="#0e0d0c" />
-              <path d="M244,262 L234,306 L252,308" fill="none" stroke="#0e0d0c" stroke-width="5" stroke-linecap="round" />
-              <path d="M210,334 Q244,348 278,334" fill="none" stroke="#0e0d0c" stroke-width="6" stroke-linecap="round" />
-              <!-- photo grain -->
-              <rect width="488" height="560" fill="none" stroke="#0e0d0c" stroke-width="10" opacity="0.25" />
-            </svg>
+          <div id="pol" class="polaroid" style="left: 255px; top: 400px; width: 520px; transform: rotate(-4deg)">
+            <img class="bw" src="img/spencer-desk.jpg" alt="" style="width: 520px; height: 615px; object-fit: cover" />
             <div class="cap">بيرسي سبنسر</div>
           </div>
-          <div class="w serif center" data-at="4.5" style="top: 1350px; font-size: 80px">تركَ المدرسة</div>
-          <div class="w serif" data-at="5.4" style="top: 1445px; left: 0; right: 0; text-align: center; font-size: 64px">في</div>
-          <div class="w bold center" data-at="5.8" style="top: 1580px; font-size: 130px; color: #f6f1e7; text-shadow: 0 6px 0 #0e0d0c, 0 0 30px #0e0d0c">الثانية عشرة</div>
+          <div class="w serif center" data-at="4.5" style="top: 1390px; font-size: 84px">تركَ المدرسة</div>
+          <div class="w serif center" data-at="5.3" style="top: 1490px; font-size: 64px">في</div>
+          <div class="w bold center" data-at="5.6" style="top: 1590px; font-size: 140px; color: #f6f1e7; text-shadow: 0 6px 0 #0e0d0c, 0 0 30px #0e0d0c">الثانية عشرة</div>
         </div>
       </div>
 
-      <!-- S3 place: 1945, radar lab -->
+      <!-- S3 place -->
       <div id="s3" class="clip" data-start="7.75" data-duration="4.28" data-track-index="1">
         <div class="stage" id="s3-stage">
-          <svg viewBox="0 0 1080 1920">
-            <defs>
-              <radialGradient id="s3-bg" cx="0.5" cy="0.55" r="0.8">
-                <stop offset="0" stop-color="#59646b" />
-                <stop offset="1" stop-color="#0e0d0c" />
-              </radialGradient>
-              <radialGradient id="s3-core" cx="0.5" cy="0.5" r="0.5">
-                <stop offset="0" stop-color="#ffd25a" stop-opacity="0.9" />
-                <stop offset="1" stop-color="#ffd25a" stop-opacity="0" />
-              </radialGradient>
-            </defs>
-            <rect width="1080" height="1920" fill="url(#s3-bg)" />
-            <!-- radar dish silhouette, far -->
-            <g fill="#0e0d0c" opacity="0.6" transform="translate(830 560)">
-              <path d="M-170,-60 C-110,80 110,80 170,-60 C80,0 -80,0 -170,-60 Z" />
-              <rect x="-8" y="10" width="16" height="200" />
-              <path d="M-60,210 L60,210 L40,180 L-40,180 Z" />
-              <rect x="-4" y="-150" width="8" height="140" transform="rotate(10)" />
-            </g>
-            <!-- waves -->
-            <g id="s3-waves" fill="none" stroke="#ffd25a" stroke-width="6" stroke-linecap="round">
-              <path d="M410,880 Q540,820 670,880" opacity="0.8" />
-              <path d="M370,820 Q540,740 710,820" opacity="0.55" />
-              <path d="M330,760 Q540,660 750,760" opacity="0.3" />
-            </g>
-            <!-- magnetron -->
-            <g transform="translate(540 1130)">
-              <circle id="s3-glow" r="230" fill="url(#s3-core)" />
-              <g fill="#59646b" stroke="#0e0d0c" stroke-width="6">
-                <rect x="-190" y="-150" width="40" height="300" rx="8" />
-                <rect x="-130" y="-150" width="40" height="300" rx="8" />
-                <rect x="90" y="-150" width="40" height="300" rx="8" />
-                <rect x="150" y="-150" width="40" height="300" rx="8" />
-              </g>
-              <rect x="-100" y="-180" width="200" height="360" rx="30" fill="#59646b" stroke="#0e0d0c" stroke-width="8" />
-              <circle r="62" fill="#0e0d0c" />
-              <circle id="s3-coreDot" r="34" fill="#ffd25a" />
-              <rect x="-26" y="-290" width="52" height="110" fill="#59646b" stroke="#0e0d0c" stroke-width="6" />
-              <rect x="-40" y="-310" width="80" height="26" fill="#0e0d0c" />
-              <path d="M-100,120 L100,120" stroke="#0e0d0c" stroke-width="6" />
-            </g>
-          </svg>
-          <div class="w bold center" data-at="8.25" style="top: 250px; font-size: 260px; color: transparent; -webkit-text-stroke: 6px #ffd25a">١٩٤٥</div>
-          <div class="w serif center" data-at="9.0" style="top: 1440px; font-size: 72px">كان يعمل على</div>
-          <div class="w bold center" data-at="9.6" style="top: 1550px; font-size: 140px; color: #ffd25a; text-shadow: 0 0 30px #0e0d0c">أجهزة الرادار</div>
+          <img id="s3-room" class="photo bw" src="img/radar-room.jpg" alt="" style="object-position: 30% 50%" />
+          <div id="s3-lab" class="cutin" style="position: absolute; inset: 0">
+            <img class="photo bw" src="img/spencer-lab.jpg" alt="" style="filter: grayscale(1) sepia(0.22) blur(28px) brightness(0.55); transform: scale(1.2)" />
+            <img class="bw" src="img/spencer-lab.jpg" alt="" style="position: absolute; left: -60px; top: 640px; width: 1200px; height: 547px; object-fit: cover; box-shadow: 0 30px 80px rgba(14, 13, 12, 0.8)" />
+          </div>
+          <div class="shade" style="background: linear-gradient(180deg, rgba(14, 13, 12, 0.7) 0%, transparent 30%, transparent 62%, rgba(14, 13, 12, 0.85) 100%)"></div>
+          <div class="w bold center" data-at="8.2" style="top: 200px; font-size: 250px; color: transparent; -webkit-text-stroke: 6px #ffd25a">١٩٤٥</div>
+          <div class="w serif center" data-at="9.6" style="top: 1420px; font-size: 76px">كان يعمل على</div>
+          <div class="w bold center" data-at="10.1" style="top: 1530px; font-size: 150px; color: #ffd25a; text-shadow: 0 0 30px #0e0d0c">أجهزة الرادار</div>
         </div>
       </div>
 
-      <!-- S4 approach: the chocolate melts -->
+      <!-- S4 approach -->
       <div id="s4" class="clip" data-start="11.75" data-duration="4.68" data-track-index="2">
         <div class="stage" id="s4-stage">
-          <svg viewBox="0 0 1080 1920">
-            <rect width="1080" height="1920" fill="#3a2a1f" />
-            <g stroke="#0e0d0c" stroke-width="5" opacity="0.6">
-              <path d="M0,300 L1080,300 M0,620 L1080,620 M0,940 L1080,940 M0,1260 L1080,1260 M0,1580 L1080,1580" />
-            </g>
-            <g fill="none" stroke="#0e0d0c" stroke-width="3" opacity="0.3">
-              <path d="M0,420 Q300,400 560,440 T1080,410 M0,760 Q260,790 520,750 T1080,780 M0,1080 Q320,1060 600,1100 T1080,1070 M0,1400 Q280,1430 560,1390 T1080,1420" />
-              <ellipse cx="300" cy="1120" rx="40" ry="16" />
-              <ellipse cx="820" cy="470" rx="30" ry="12" />
-            </g>
-            <ellipse cx="540" cy="1000" rx="560" ry="760" fill="#c9822b" opacity="0.12" />
-
-            <!-- drawing A: the bar -->
-            <g id="ch-a" class="dr hero" transform="translate(540 960) rotate(-8)">
-              <rect x="-250" y="-120" width="500" height="240" rx="16" fill="#4a2a1a" />
-              <g stroke="#0e0d0c" stroke-width="6" opacity="0.5">
-                <path d="M-125,-120 L-125,120 M0,-120 L0,120 M125,-120 L125,120 M-250,0 L250,0" />
-              </g>
-              <rect x="-250" y="-120" width="500" height="240" rx="16" fill="none" stroke="#0e0d0c" stroke-width="8" />
-              <path d="M40,-130 L270,-130 L270,130 L40,130 L60,80 L40,30 L60,-20 L40,-70 Z" fill="#e0373f" />
-              <rect x="120" y="-30" width="110" height="60" fill="#ffd25a" />
-              <path d="M40,-130 L270,-130 L270,130 L40,130 L60,80 L40,30 L60,-20 L40,-70 Z" fill="none" stroke="#0e0d0c" stroke-width="8" />
-            </g>
-            <!-- drawing B: melting -->
-            <g id="ch-b" class="dr" transform="translate(540 960) rotate(-8)">
-              <path d="M-250,-104 Q-250,-120 -234,-120 L40,-120 L40,120 L-60,124 Q-70,190 -96,190 Q-122,190 -128,124 L-190,126 Q-196,160 -214,160 Q-232,160 -236,124 Q-252,120 -250,100 Z" fill="#4a2a1a" stroke="#0e0d0c" stroke-width="8" />
-              <path d="M-200,-60 Q-120,-80 -40,-50" fill="none" stroke="#0e0d0c" stroke-width="5" opacity="0.4" />
-              <path d="M40,-130 L270,-130 L270,130 L40,130 L60,80 L40,30 L60,-20 L40,-70 Z" fill="#e0373f" stroke="#0e0d0c" stroke-width="8" />
-              <rect x="120" y="-30" width="110" height="60" fill="#ffd25a" />
-            </g>
-            <!-- drawing C: puddle -->
-            <g id="ch-c" class="dr" transform="translate(540 960) rotate(-8)">
-              <path d="M40,-60 C-40,-110 -180,-90 -260,-30 C-330,20 -300,110 -200,150 C-120,190 -150,250 -60,240 C0,234 -20,170 40,150 Z" fill="#4a2a1a" stroke="#0e0d0c" stroke-width="8" />
-              <ellipse cx="-160" cy="10" rx="50" ry="14" fill="#b4946c" opacity="0.5" />
-              <path d="M40,-130 L270,-118 L262,120 L40,130 L56,70 L30,20 L58,-30 L34,-80 Z" fill="#e0373f" stroke="#0e0d0c" stroke-width="8" />
-              <rect x="120" y="-30" width="110" height="60" fill="#ffd25a" />
-            </g>
+          <svg width="0" height="0" style="position: absolute">
+            <filter id="heat" x="-10%" y="-10%" width="120%" height="120%">
+              <feTurbulence id="heat-noise" type="fractalNoise" baseFrequency="0.012 0.03" numOctaves="2" seed="7" />
+              <feDisplacementMap id="heat-map" in="SourceGraphic" scale="0" xChannelSelector="R" yChannelSelector="G" />
+            </filter>
           </svg>
-          <div class="w serif center" data-at="12.4" style="top: 300px; font-size: 76px">فلاحظ</div>
-          <div class="w serif center" data-at="12.9" style="top: 410px; font-size: 76px">أن الشوكولاتة في جيبه</div>
-          <div class="w bold center" data-at="14.3" style="top: 1330px; font-size: 220px; color: #ffd25a; text-shadow: 0 8px 0 #0e0d0c">ذابت!</div>
+          <img id="choc" class="photo" src="img/chocolate.jpg" alt="" style="object-position: 55% 50%; filter: url(#heat)" />
+          <div id="heatglow" class="shade" style="background: radial-gradient(circle at 55% 62%, rgba(224, 55, 63, 0.55), transparent 55%); opacity: 0; mix-blend-mode: screen"></div>
+          <div class="shade" style="background: linear-gradient(180deg, rgba(14, 13, 12, 0.85) 0%, rgba(14, 13, 12, 0.1) 35%, rgba(14, 13, 12, 0.1) 65%, rgba(14, 13, 12, 0.85) 100%)"></div>
+          <div class="w serif center" data-at="12.3" style="top: 230px; font-size: 80px">فلاحظ</div>
+          <div class="w serif center" data-at="12.8" style="top: 340px; font-size: 80px">أن الشوكولاتة في جيبه</div>
+          <div class="w bold center" data-at="14.4" style="top: 1450px; font-size: 230px; color: #ffd25a; text-shadow: 0 8px 0 #0e0d0c, 0 0 50px #e0373f">ذابت!</div>
         </div>
       </div>
 
-      <!-- S5 SAKUGA: the popcorn bursts -->
+      <!-- S5 SAKUGA -->
       <div id="s5" class="clip" data-start="16.15" data-duration="4.28" data-track-index="1">
         <div class="stage" id="s5-stage">
-          <svg viewBox="0 0 1080 1920">
-            <defs>
-              <linearGradient id="s5-beam" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0" stop-color="#ffd25a" stop-opacity="0.5" />
-                <stop offset="1" stop-color="#ffd25a" stop-opacity="0.05" />
-              </linearGradient>
-            </defs>
-            <rect width="1080" height="1920" fill="#0e0d0c" />
-            <rect y="1500" width="1080" height="420" fill="#3a2a1f" />
-            <!-- emitter above -->
-            <rect x="420" y="0" width="240" height="260" fill="#59646b" stroke="#0e0d0c" stroke-width="8" />
-            <rect x="470" y="260" width="140" height="40" fill="#0e0d0c" />
-            <polygon points="480,300 600,300 860,1420 220,1420" fill="url(#s5-beam)" />
-            <!-- bowl back -->
-            <ellipse cx="540" cy="1400" rx="300" ry="60" fill="#0e0d0c" />
-            <!-- drawings -->
-            <g id="pc-rest" class="dr hero"></g>
-            <g id="pc-antic" class="dr"></g>
-            <g id="pc-pop1" class="dr"></g>
-            <g id="pc-smear1" class="dr"></g>
-            <g id="pc-pop2" class="dr"></g>
-            <g id="pc-smear2" class="dr"></g>
-            <g id="pc-burst" class="dr"></g>
-            <g id="pc-settle" class="dr"></g>
-            <!-- bowl front -->
-            <path d="M240,1400 Q260,1620 540,1640 Q820,1620 840,1400 Q540,1470 240,1400 Z" fill="#e0373f" stroke="#0e0d0c" stroke-width="8" />
-            <path d="M300,1470 Q540,1530 780,1470" fill="none" stroke="#efe9dc" stroke-width="10" opacity="0.8" />
-          </svg>
-          <div class="w serif center" data-at="16.6" style="top: 360px; font-size: 76px">فجرّب حبوب الذرة…</div>
-          <div class="w bold center" data-at="18.0" style="top: 470px; font-size: 210px; color: #ffd25a; text-shadow: 0 0 40px #e0373f">فانفجرت!</div>
+          <img id="pc-a" class="photo" src="img/kernels.jpg" alt="" />
+          <img id="pc-b" class="photo cutin" src="img/popcorn-pan.jpg" alt="" />
+          <img id="pc-c" class="photo cutin" src="img/popcorn.jpg" alt="" />
+          <div id="pc-flash" class="shade" style="background: #f6f1e7; opacity: 0"></div>
+          <div class="shade" style="background: linear-gradient(180deg, rgba(14, 13, 12, 0.8) 0%, transparent 32%, transparent 70%, rgba(14, 13, 12, 0.6) 100%)"></div>
+          <div class="w serif center" data-at="16.5" style="top: 250px; font-size: 80px">فجرّب حبوب الذرة…</div>
+          <div class="w bold center" data-at="18.0" style="top: 370px; font-size: 220px; color: #ffd25a; text-shadow: 0 8px 0 #0e0d0c, 0 0 40px #e0373f">فانفجرت!</div>
         </div>
       </div>
 
-      <!-- S6 scale: the first microwave -->
+      <!-- S6 scale -->
       <div id="s6" class="clip grid-paper" data-start="20.15" data-duration="4.28" data-track-index="2">
         <div class="stage" id="s6-stage">
-          <svg viewBox="0 0 1080 1920">
-            <!-- floor shadow -->
-            <ellipse cx="540" cy="1660" rx="460" ry="40" fill="#0e0d0c" opacity="0.18" />
-            <!-- radarange cabinet -->
-            <g transform="translate(330 0)">
-              <rect x="0" y="620" width="380" height="1040" fill="#59646b" stroke="#0e0d0c" stroke-width="8" />
-              <rect x="0" y="620" width="380" height="1040" fill="#0e0d0c" opacity="0.0" />
-              <path d="M300,620 L380,620 L380,1660 L300,1660 Z" fill="#0e0d0c" opacity="0.2" />
-              <rect x="40" y="680" width="300" height="200" fill="#0e0d0c" />
-              <g fill="#ffd25a">
-                <circle cx="100" cy="780" r="22" />
-                <circle cx="190" cy="780" r="22" />
-                <rect x="250" y="760" width="60" height="40" />
-              </g>
-              <rect x="40" y="920" width="300" height="300" fill="#efe9dc" stroke="#0e0d0c" stroke-width="8" />
-              <rect x="70" y="950" width="240" height="240" fill="#0e0d0c" opacity="0.85" />
-              <rect x="320" y="1040" width="16" height="70" fill="#0e0d0c" />
-              <g stroke="#0e0d0c" stroke-width="6">
-                <path d="M40,1280 L340,1280 M40,1330 L340,1330 M40,1380 L340,1380 M40,1430 L340,1430 M40,1480 L340,1480 M40,1530 L340,1530" />
-              </g>
-            </g>
-            <!-- person for scale -->
-            <g fill="#0e0d0c" transform="translate(190 0)">
-              <circle cx="0" cy="760" r="56" />
-              <path d="M-70,830 L70,830 L84,1200 L50,1200 L44,1660 L8,1660 L0,1260 L-8,1660 L-44,1660 L-50,1200 L-84,1200 Z" />
-            </g>
-            <!-- measuring line -->
-            <g stroke="#e0373f" stroke-width="6" fill="#e0373f">
-              <path d="M790,620 L790,1660" />
-              <path d="M770,620 L810,620 M770,1660 L810,1660" />
-              <path d="M778,640 L790,620 L802,640 Z M778,1640 L790,1660 L802,1640 Z" />
-            </g>
-          </svg>
-          <!-- red banner -->
-          <div id="banner" style="position: absolute; left: -40px; right: -40px; top: 300px; height: 150px; background: #e0373f; transform: rotate(-3deg); box-shadow: 0 14px 30px rgba(14, 13, 12, 0.3)"></div>
-          <div class="w serif center" data-at="20.7" style="top: 300px; font-size: 80px; text-shadow: none; color: #f6f1e7; transform: translateY(24px) rotate(-3deg)">أول ميكروويف في التاريخ</div>
-          <div class="w bold" data-at="21.9" style="top: 1030px; left: 820px; font-size: 96px; color: #e0373f">١٫٨ م</div>
-          <div class="w bold center" data-at="22.8" style="top: 1700px; font-size: 130px; color: #0e0d0c">٣٤٠ كغ</div>
+          <div id="banner" style="position: absolute; left: -40px; right: -40px; top: 230px; height: 150px; background: #e0373f; transform: rotate(-3deg); box-shadow: 0 14px 30px rgba(14, 13, 12, 0.3)"></div>
+          <div class="w serif center" data-at="20.6" style="top: 232px; font-size: 80px; text-shadow: none; transform: translateY(24px) rotate(-3deg)">أول ميكروويف في التاريخ</div>
+          <div id="pol2" class="polaroid" style="left: 200px; top: 520px; width: 560px; transform: rotate(3deg)">
+            <img src="img/radarange.jpg" alt="" style="width: 560px; height: 686px; object-fit: cover; filter: contrast(1.05) sepia(0.15)" />
+            <div class="cap">Radarange · ١٩٤٧</div>
+          </div>
+          <div class="w bold" data-at="21.8" style="top: 1560px; right: 120px; font-size: 120px; color: #e0373f">١٫٨ متر</div>
+          <div class="w bold" data-at="22.5" style="top: 1560px; left: 120px; font-size: 120px; color: #0e0d0c">٣٤٠ كغ</div>
         </div>
       </div>
 
-      <!-- S7 payoff: stacked color title -->
+      <!-- S7 payoff -->
       <div id="s7" class="clip" data-start="24.15" data-duration="3.48" data-track-index="1">
-        <div class="stage" id="s7-stage" style="background: radial-gradient(circle at 50% 40%, #3a2a1f 0%, #0e0d0c 70%)">
+        <div class="stage" id="s7-stage">
+          <img class="photo" src="img/modern.jpg" alt="" style="filter: blur(18px) brightness(0.45); transform: scale(1.15)" />
           <div class="card"></div>
           <div class="w bold center" data-at="24.55" style="top: 610px; font-size: 92px; color: #f6f1e7">فكرته الصغيرة</div>
           <div class="w bold center" data-at="24.95" style="top: 720px; font-size: 150px; color: #4fb3ff; text-shadow: 0 0 30px #4fb3ff">أصبحت</div>
@@ -482,110 +175,89 @@
         </div>
       </div>
 
-      <!-- S8 button: two dollars -->
+      <!-- S8 button -->
       <div id="s8" class="clip" data-start="27.35" data-duration="2.65" data-track-index="2">
-        <div class="stage" id="s8-stage" style="background: radial-gradient(circle at 50% 50%, #1c1712 0%, #0e0d0c 75%)">
-          <div class="w serif" data-at="27.75" style="top: 520px; left: 560px; font-size: 84px">ومكافأته</div>
-          <div class="w serif" data-at="28.0" style="top: 640px; left: 300px; font-size: 84px">من</div>
-          <div class="w serif" data-at="28.2" style="top: 760px; left: 420px; font-size: 84px">الشركة؟</div>
-          <div class="w bold center" data-at="28.75" style="top: 1000px; font-size: 200px; color: #ffd25a; text-shadow: 0 0 50px #ffd25a">دولاران</div>
-          <div class="w bold center" data-at="29.05" style="top: 1210px; font-size: 130px; color: #f6f1e7">فقط.</div>
+        <div class="stage" id="s8-stage" style="background: radial-gradient(circle at 50% 40%, #2a221a 0%, #0e0d0c 75%)">
+          <img src="img/patent.jpg" alt="" style="position: absolute; left: 230px; top: 140px; width: 620px; height: 910px; object-fit: cover; transform: rotate(-3deg); box-shadow: 0 30px 70px rgba(14, 13, 12, 0.9); filter: sepia(0.35) brightness(0.9)" />
+          <div class="w serif center" data-at="27.7" style="top: 1130px; font-size: 84px">ومكافأته من الشركة؟</div>
+          <div class="w bold center" data-at="28.5" style="top: 1270px; font-size: 220px; color: #ffd25a; text-shadow: 0 0 50px #ffd25a">دولاران</div>
+          <div class="w bold center" data-at="28.9" style="top: 1500px; font-size: 130px; color: #f6f1e7">فقط.</div>
         </div>
       </div>
 
       <div id="dip" class="clip" data-start="0" data-duration="30" data-track-index="3"></div>
+      <div id="fx" class="clip" data-start="0" data-duration="30" data-track-index="4">
+        <svg id="grain" viewBox="0 0 1280 2120">
+          <filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="3" stitchTiles="stitch" /><feColorMatrix type="saturate" values="0" /></filter>
+          <rect width="1280" height="2120" filter="url(#noise)" />
+        </svg>
+        <div id="vignette"></div>
+      </div>
     </div>
     <script>
-      // Popcorn drawings: positions written out, no randomness.
-      const NS = "http://www.w3.org/2000/svg";
-      function kernel(x, y, r, sq) {
-        const sy = sq ? 0.7 : 1;
-        return `<ellipse cx="${x}" cy="${y}" rx="${r * (sq ? 1.2 : 1)}" ry="${r * 0.8 * sy}" fill="#ffd25a" stroke="#0e0d0c" stroke-width="4"/>`;
-      }
-      function puff(x, y, s) {
-        return `<g transform="translate(${x} ${y}) scale(${s})">
-          <circle cx="-14" cy="4" r="20" fill="#f6f1e7" stroke="#0e0d0c" stroke-width="5"/>
-          <circle cx="14" cy="6" r="18" fill="#f6f1e7" stroke="#0e0d0c" stroke-width="5"/>
-          <circle cx="0" cy="-14" r="20" fill="#f6f1e7" stroke="#0e0d0c" stroke-width="5"/>
-          <circle cx="2" cy="10" r="9" fill="#ffd25a"/>
-        </g>`;
-      }
-      function smear(x1, y1, x2, y2, w) {
-        const dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy);
-        const nx = (-dy / len) * w, ny = (dx / len) * w;
-        return `<path d="M${x1 + nx},${y1 + ny} L${x2},${y2} L${x1 - nx},${y1 - ny} Z" fill="#f6f1e7" stroke="#0e0d0c" stroke-width="4"/>`;
-      }
-      const bed = [[400,1400],[450,1392],[500,1404],[550,1396],[600,1404],[650,1394],[690,1402],[430,1420],[520,1424],[620,1420],[470,1380],[580,1380]];
-      const P1 = [[470,1290,1],[600,1260,1.1],[540,1330,0.9]];
-      const P2 = [[360,1080,1.3],[720,1020,1.4],[540,960,1.2],[460,1220,1.1],[640,1180,1.2],[260,1250,1]];
-      const BURST = [[180,820,1.6],[900,760,1.7],[540,700,1.5],[340,960,1.5],[760,920,1.6],[120,1150,1.4],[960,1100,1.5],[460,1120,1.4],[640,1060,1.5],[300,1300,1.2],[800,1280,1.3]];
-      const PILE = [[360,1370,1.4],[440,1340,1.5],[540,1320,1.6],[640,1340,1.5],[720,1370,1.4],[480,1290,1.3],[600,1290,1.3],[540,1250,1.2],[180,1560,1.3],[920,1580,1.3],[820,1500,1.1]];
-      const fill = (id, html) => { document.getElementById(id).innerHTML = html; };
-      fill("pc-rest", bed.map(([x, y]) => kernel(x, y, 18, false)).join(""));
-      fill("pc-antic", bed.map(([x, y]) => kernel(x, y + 6, 18, true)).join(""));
-      fill("pc-pop1", bed.slice(3).map(([x, y]) => kernel(x, y, 18, false)).join("") + P1.map(([x, y, s]) => puff(x, y, s)).join(""));
-      fill("pc-smear1", P2.map(([x, y, s]) => smear(540, 1380, x, y, 22 * s)).join("") + P2.map(([x, y, s]) => puff(x, y, s * 0.8)).join(""));
-      fill("pc-pop2", P2.map(([x, y, s]) => puff(x, y, s)).join("") + bed.slice(7).map(([x, y]) => kernel(x, y, 18, false)).join(""));
-      fill("pc-smear2", BURST.map(([x, y, s]) => smear(540, 1360, x, y, 26 * s)).join("") + BURST.map(([x, y, s]) => puff(x, y, s * 0.8)).join(""));
-      fill("pc-burst", BURST.map(([x, y, s]) => puff(x, y, s)).join("") + P1.map(([x, y, s]) => puff(x, y + 40, s * 1.3)).join(""));
-      fill("pc-settle", PILE.map(([x, y, s]) => puff(x, y, s)).join(""));
-
       const tl = gsap.timeline({ paused: true });
       const F = 1 / 24;
-
-      // cuts: color dip to ink, straddling each cut
       const cuts = [3.6, 8.0, 12.0, 16.4, 20.4, 24.4, 27.6];
+      const stages = ["#s2-stage", "#s3-stage", "#s4-stage", "#s5-stage", "#s6-stage", "#s7-stage", "#s8-stage"];
+
+      // cut: quick dip to ink, incoming stage punches in from 112% with blur
       tl.set("#dip", { opacity: 0 }, 0);
-      cuts.forEach((c) => {
-        tl.to("#dip", { opacity: 1, duration: 0.22, ease: "power2.in" }, c - 0.22);
-        tl.to("#dip", { opacity: 0, duration: 0.3, ease: "power2.out" }, c + 0.05);
+      cuts.forEach((c, i) => {
+        tl.to("#dip", { opacity: 1, duration: 0.15, ease: "power2.in" }, c - 0.15);
+        tl.to("#dip", { opacity: 0, duration: 0.2, ease: "power2.out" }, c + 0.03);
+        tl.fromTo(stages[i], { scale: 1.12, filter: "blur(14px)" }, { scale: 1, filter: "blur(0px)", duration: 0.4, ease: "power3.out", immediateRender: false }, c);
       });
 
-      // words: rise 24px and fade in
-      document.querySelectorAll("[data-at]").forEach((el) => {
-        const at = parseFloat(el.dataset.at);
-        tl.to(el, { opacity: 1, y: 0, duration: 0.3, ease: "power3.out" }, at);
-      });
-
-      // S1 hook: slow push, lamp flicker on ones
-      tl.fromTo("#s1-stage", { scale: 1 }, { scale: 1.06, duration: 3.6, ease: "power1.inOut", immediateRender: false }, 0);
-      tl.set("#s1-bulb", { opacity: 0.6 }, 2.4);
-      tl.set("#s1-bulb", { opacity: 1 }, 2.4 + F);
-
-      // S2 who: card drops onto the paper, then push in
-      tl.fromTo("#pol", { y: -900, rotation: 8 }, { y: 0, rotation: -4, duration: 0.5, ease: "power3.out", immediateRender: false }, 3.6);
-      tl.fromTo("#s2-stage", { scale: 1 }, { scale: 1.06, duration: 3.8, ease: "power1.inOut", immediateRender: false }, 4.1);
-
-      // S3 place: core pulses, waves travel up (finite repeat)
-      tl.to("#s3-glow", { scale: 1.15, transformOrigin: "50% 50%", duration: 0.5, ease: "sine.inOut", yoyo: true, repeat: 7 }, 8.0);
-      tl.fromTo("#s3-waves", { y: 60, opacity: 0.2 }, { y: -120, opacity: 1, duration: 0.8, ease: "none", repeat: 4, immediateRender: false }, 8.0);
-      tl.fromTo("#s3-stage", { scale: 1 }, { scale: 1.06, duration: 4.0, ease: "power1.inOut", immediateRender: false }, 8.0);
-
-      // S4 approach: three drawings, stepped
-      tl.set("#ch-a", { opacity: 0 }, 13.5);
-      tl.set("#ch-b", { opacity: 1 }, 13.5);
-      tl.set("#ch-b", { opacity: 0 }, 14.25);
-      tl.set("#ch-c", { opacity: 1 }, 14.25);
-
-      // S5 SAKUGA: locked camera, drawings on ones/twos
-      const pc = ["#pc-rest", "#pc-antic", "#pc-pop1", "#pc-smear1", "#pc-pop2", "#pc-smear2", "#pc-burst", "#pc-settle"];
-      // frames each drawing holds: antic 4, pop1 2, smear 1, pop2 2, smear 1, burst 2, then settle holds
-      const holds = [4, 2, 1, 2, 1, 2];
-      let t = 17.75;
-      for (let i = 1; i < pc.length; i++) {
-        tl.set(pc[i - 1], { opacity: 0 }, t);
-        tl.set(pc[i], { opacity: 1 }, t);
-        if (i <= holds.length) t += holds[i - 1] * F;
+      // grain: stepped jitter on twos, finite
+      for (let k = 0, t = 0; t < 30; k++, t += 2 * F) {
+        tl.set("#grain", { x: ((k * 37) % 100) - 50, y: ((k * 61) % 100) - 50 }, t);
       }
 
-      // S6 scale: banner slides in from the side, push in on the hold
+      // words
+      document.querySelectorAll("[data-at]").forEach((el) => {
+        tl.to(el, { opacity: 1, y: 0, duration: 0.3, ease: "power3.out" }, parseFloat(el.dataset.at));
+      });
+
+      // S1: slow push
+      tl.fromTo("#s1-stage", { scale: 1 }, { scale: 1.08, duration: 3.6, ease: "power1.inOut", immediateRender: false }, 0);
+
+      // S2: polaroid drops, push in
+      tl.fromTo("#pol", { y: -1000, rotation: 10 }, { y: 0, rotation: -4, duration: 0.55, ease: "power3.out", immediateRender: false }, 3.65);
+      tl.fromTo("#pol", { scale: 1 }, { scale: 1.06, duration: 3.6, ease: "power1.inOut", immediateRender: false }, 4.3);
+
+      // S3: radar room pans, hard cut-in to Spencer at the magnetron
+      tl.fromTo("#s3-room", { x: 0 }, { x: -60, duration: 1.6, ease: "none", immediateRender: false }, 8.0);
+      tl.set("#s3-lab", { opacity: 1 }, 9.5);
+      tl.fromTo("#s3-lab", { scale: 1.1 }, { scale: 1, duration: 0.35, ease: "power3.out", immediateRender: false }, 9.5);
+      tl.fromTo("#s3-lab", { x: 0 }, { x: 40, duration: 2.4, ease: "power1.inOut", immediateRender: false }, 9.6);
+
+      // S4: heat — the photo starts to swim
+      tl.fromTo("#choc", { scale: 1 }, { scale: 1.12, duration: 4.4, ease: "power1.in", immediateRender: false }, 12.0);
+      tl.fromTo("#heat-map", { attr: { scale: 0 } }, { attr: { scale: 60 }, duration: 2.2, ease: "power2.in", immediateRender: false }, 12.6);
+      tl.fromTo("#heat-noise", { attr: { baseFrequency: "0.012 0.03" } }, { attr: { baseFrequency: "0.02 0.06" }, duration: 3.6, ease: "none", immediateRender: false }, 12.6);
+      tl.fromTo("#heatglow", { opacity: 0 }, { opacity: 1, duration: 1.6, ease: "power1.in", immediateRender: false }, 13.0);
+
+      // S5 SAKUGA: anticipation push, then cut-ins on the beat with white flash frames
+      tl.fromTo("#pc-a", { scale: 1 }, { scale: 1.06, duration: 1.3, ease: "power1.in", immediateRender: false }, 16.4);
+      tl.to("#pc-a", { scale: 1.02, duration: 4 * F, ease: "none" }, 17.75); // pull back = anticipation
+      tl.set("#pc-flash", { opacity: 0.85 }, 17.917);
+      tl.set("#pc-flash", { opacity: 0 }, 17.917 + F);
+      tl.set("#pc-b", { opacity: 1 }, 17.917);
+      tl.fromTo("#pc-b", { scale: 1.25 }, { scale: 1.05, duration: 0.25, ease: "power3.out", immediateRender: false }, 17.917);
+      tl.set("#pc-flash", { opacity: 0.85 }, 18.25);
+      tl.set("#pc-flash", { opacity: 0 }, 18.25 + F);
+      tl.set("#pc-c", { opacity: 1 }, 18.25);
+      tl.fromTo("#pc-c", { scale: 1.3 }, { scale: 1, duration: 0.3, ease: "power3.out", immediateRender: false }, 18.25);
+      tl.fromTo("#pc-c", { x: 0 }, { x: -6, duration: F, ease: "none", yoyo: true, repeat: 7, immediateRender: false }, 18.3);
+      tl.fromTo("#pc-c", { scale: 1 }, { scale: 1.06, duration: 1.8, ease: "power1.inOut", immediateRender: false }, 18.6);
+
+      // S6: banner and polaroid
       tl.fromTo("#banner", { x: -1200 }, { x: 0, duration: 0.35, ease: "power3.out", immediateRender: false }, 20.45);
-      tl.fromTo("#s6-stage", { scale: 1 }, { scale: 1.06, duration: 4.0, ease: "power1.inOut", immediateRender: false }, 20.4);
+      tl.fromTo("#pol2", { y: 1400, rotation: -6 }, { y: 0, rotation: 3, duration: 0.55, ease: "power3.out", immediateRender: false }, 20.9);
 
-      // S7 payoff: slow push on the card
-      tl.fromTo("#s7-stage", { scale: 1 }, { scale: 1.05, duration: 3.2, ease: "power1.inOut", immediateRender: false }, 24.4);
-
-      // S8 button: last 8 frames to ink
+      // S7 / S8: slow push, last 8 frames to ink
+      tl.fromTo("#s7-stage", { scale: 1 }, { scale: 1.05, duration: 2.8, ease: "power1.inOut", immediateRender: false }, 24.8);
+      tl.fromTo("#s8-stage", { scale: 1 }, { scale: 1.05, duration: 2.0, ease: "power1.inOut", immediateRender: false }, 28.0);
       tl.to("#s8", { opacity: 0, duration: 8 * F, ease: "power1.in" }, 30 - 8 * F);
 
       window.__timelines = window.__timelines || {};
