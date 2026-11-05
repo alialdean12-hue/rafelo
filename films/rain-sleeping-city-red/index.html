@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Red Moon — html-anime</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        background: #14080c;
+      }
+      #root {
+        position: relative;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #14080c;
+      }
+      .clip {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+      }
+      .world {
+        display: block;
+        width: 1080px;
+        height: 1920px;
+        transform-origin: 50% 60%;
+      }
+      #dip1 {
+        background: #ff3b3b;
+        z-index: 5;
+      }
+      #dip2 {
+        background: #14080c;
+        z-index: 5;
+      }
+      #s1 { z-index: 1; }
+      #s2 { z-index: 2; }
+      #s3 { z-index: 3; }
+      .off,
+      #dip1,
+      #dip2 {
+        opacity: 0;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  </head>
+  <body>
+    <div id="root" data-composition-id="film" data-start="0" data-duration="8" data-width="1080" data-height="1920">
+      <!-- 1 · Establish · 0.00–2.40 — the sleeping city, the moon still behind the clouds -->
+      <div id="s1" class="clip" data-start="0" data-duration="2.65" data-track-index="1">
+        <svg id="w1" class="world" viewBox="0 0 1080 1920">
+          <defs>
+            <linearGradient id="sky1" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#14080c" />
+              <stop offset="0.55" stop-color="#2a1016" />
+              <stop offset="1" stop-color="#2a1016" />
+            </linearGradient>
+          </defs>
+          <rect width="1080" height="1920" fill="url(#sky1)" />
+          <!-- three drawings of the glow behind the cloud -->
+          <circle id="c1a" cx="600" cy="620" r="240" fill="#ff3b3b" opacity="0.14" />
+          <circle id="c1b" class="off" cx="600" cy="620" r="270" fill="#ff3b3b" style="opacity: 0" />
+          <circle id="c1c" class="off" cx="600" cy="620" r="300" fill="#ff3b3b" style="opacity: 0" />
+          <path fill="#14080c" d="M-20,420 C120,360 220,400 300,380 C380,330 500,350 560,390 C640,340 760,330 840,380 C920,350 1040,370 1100,420 L1100,860 C1000,900 900,850 800,880 C700,920 600,870 520,900 C420,930 300,880 200,910 C100,930 40,890 -20,900 Z" />
+          <path fill="none" stroke="#2a1016" stroke-width="10" d="M-20,900 C40,890 100,930 200,910 C300,880 420,930 520,900 C600,870 700,920 800,880 C900,850 1000,900 1100,860" />
+          <path id="seam1b" class="off" fill="#ff3b3b" d="M480,622 Q620,606 760,618 Q620,630 480,622 Z" />
+          <path id="seam1c" class="off" fill="#ff3b3b" d="M440,626 Q620,584 800,614 Q620,652 440,626 Z" />
+          <!-- far city: lighter, lower contrast, few windows -->
+          <path fill="#14080c" opacity="0.55" d="M0,1920 L0,1420 L90,1420 L90,1360 L170,1360 L190,1300 L250,1300 L270,1400 L360,1400 L380,1330 L470,1330 L470,1450 L560,1450 L580,1380 L660,1380 L680,1310 L760,1290 L840,1310 L840,1420 L930,1420 L950,1350 L1020,1350 L1040,1440 L1080,1440 L1080,1920 Z" />
+          <g fill="#f3f6ff">
+            <rect x="214" y="1330" width="8" height="12" />
+            <rect x="606" y="1410" width="8" height="12" />
+            <rect x="782" y="1330" width="7" height="14" />
+            <rect x="968" y="1380" width="8" height="12" />
+          </g>
+          <!-- near roof and the small figure -->
+          <path fill="#14080c" d="M-20,1240 L440,1240 L440,1920 L-20,1920 Z" />
+          <path fill="#14080c" d="M60,1240 L60,1150 L150,1150 L150,1240 Z M70,1150 L105,1110 L140,1150 Z" />
+          <path fill="#14080c" d="M560,1920 L560,1600 L760,1600 L760,1540 L900,1540 L900,1640 L1100,1640 L1100,1920 Z" />
+          <g fill="#14080c" stroke="#ff3b3b" stroke-width="2.5" stroke-linejoin="round">
+            <path d="M306,1240 L309,1206 L314,1206 L317,1240 Z M321,1240 L318,1206 L323,1206 L330,1240 Z M300,1210 L305,1170 L325,1170 L332,1210 Z M302,1176 C298,1160 304,1146 314,1146 C326,1146 330,1160 328,1176 C334,1188 336,1198 332,1206 L310,1190 Z" />
+          </g>
+          <g id="rain1" stroke="#f6e4e4" stroke-width="2" opacity="0.4">
+            <path d="M649,-168 l-13,80 M587,-3 l-13,80 M733,-113 l-13,80 M954,-20 l-13,80 M64,-1 l-13,80 M215,-194 l-13,80 M1092,-226 l-13,80 M410,-233 l-13,80 M61,-78 l-13,80 M1015,-46 l-13,80 M810,-225 l-13,80 M672,-121 l-13,80 M208,-26 l-13,80 M57,-47 l-13,80 M144,-233 l-13,80 M782,-63 l-13,80 M947,-44 l-13,80 M916,-62 l-13,80 M21,-159 l-13,80 M148,-82 l-13,80 M409,-168 l-13,80 M865,-165 l-13,80 M649,72 l-13,80 M587,237 l-13,80 M733,127 l-13,80 M954,220 l-13,80 M64,239 l-13,80 M215,46 l-13,80 M1092,14 l-13,80 M410,7 l-13,80 M61,162 l-13,80 M1015,194 l-13,80 M810,15 l-13,80 M672,119 l-13,80 M208,214 l-13,80 M57,193 l-13,80 M144,7 l-13,80 M782,177 l-13,80 M947,196 l-13,80 M916,178 l-13,80 M21,81 l-13,80 M148,158 l-13,80 M409,72 l-13,80 M865,75 l-13,80 M649,312 l-13,80 M587,477 l-13,80 M733,367 l-13,80 M954,460 l-13,80 M64,479 l-13,80 M215,286 l-13,80 M1092,254 l-13,80 M410,247 l-13,80 M61,402 l-13,80 M1015,434 l-13,80 M810,255 l-13,80 M672,359 l-13,80 M208,454 l-13,80 M57,433 l-13,80 M144,247 l-13,80 M782,417 l-13,80 M947,436 l-13,80 M916,418 l-13,80 M21,321 l-13,80 M148,398 l-13,80 M409,312 l-13,80 M865,315 l-13,80 M649,552 l-13,80 M587,717 l-13,80 M733,607 l-13,80 M954,700 l-13,80 M64,719 l-13,80 M215,526 l-13,80 M1092,494 l-13,80 M410,487 l-13,80 M61,642 l-13,80 M1015,674 l-13,80 M810,495 l-13,80 M672,599 l-13,80 M208,694 l-13,80 M57,673 l-13,80 M144,487 l-13,80 M782,657 l-13,80 M947,676 l-13,80 M916,658 l-13,80 M21,561 l-13,80 M148,638 l-13,80 M409,552 l-13,80 M865,555 l-13,80 M649,792 l-13,80 M587,957 l-13,80 M733,847 l-13,80 M954,940 l-13,80 M64,959 l-13,80 M215,766 l-13,80 M1092,734 l-13,80 M410,727 l-13,80 M61,882 l-13,80 M1015,914 l-13,80 M810,735 l-13,80 M672,839 l-13,80 M208,934 l-13,80 M57,913 l-13,80 M144,727 l-13,80 M782,897 l-13,80 M947,916 l-13,80 M916,898 l-13,80 M21,801 l-13,80 M148,878 l-13,80 M409,792 l-13,80 M865,795 l-13,80 M649,1032 l-13,80 M587,1197 l-13,80 M733,1087 l-13,80 M954,1180 l-13,80 M64,1199 l-13,80 M215,1006 l-13,80 M1092,974 l-13,80 M410,967 l-13,80 M61,1122 l-13,80 M1015,1154 l-13,80 M810,975 l-13,80 M672,1079 l-13,80 M208,1174 l-13,80 M57,1153 l-13,80 M144,967 l-13,80 M782,1137 l-13,80 M947,1156 l-13,80 M916,1138 l-13,80 M21,1041 l-13,80 M148,1118 l-13,80 M409,1032 l-13,80 M865,1035 l-13,80 M649,1272 l-13,80 M587,1437 l-13,80 M733,1327 l-13,80 M954,1420 l-13,80 M64,1439 l-13,80 M215,1246 l-13,80 M1092,1214 l-13,80 M410,1207 l-13,80 M61,1362 l-13,80 M1015,1394 l-13,80 M810,1215 l-13,80 M672,1319 l-13,80 M208,1414 l-13,80 M57,1393 l-13,80 M144,1207 l-13,80 M782,1377 l-13,80 M947,1396 l-13,80 M916,1378 l-13,80 M21,1281 l-13,80 M148,1358 l-13,80 M409,1272 l-13,80 M865,1275 l-13,80 M649,1512 l-13,80 M587,1677 l-13,80 M733,1567 l-13,80 M954,1660 l-13,80 M64,1679 l-13,80 M215,1486 l-13,80 M1092,1454 l-13,80 M410,1447 l-13,80 M61,1602 l-13,80 M1015,1634 l-13,80 M810,1455 l-13,80 M672,1559 l-13,80 M208,1654 l-13,80 M57,1633 l-13,80 M144,1447 l-13,80 M782,1617 l-13,80 M947,1636 l-13,80 M916,1618 l-13,80 M21,1521 l-13,80 M148,1598 l-13,80 M409,1512 l-13,80 M865,1515 l-13,80 M649,1752 l-13,80 M587,1917 l-13,80 M733,1807 l-13,80 M954,1900 l-13,80 M64,1919 l-13,80 M215,1726 l-13,80 M1092,1694 l-13,80 M410,1687 l-13,80 M61,1842 l-13,80 M1015,1874 l-13,80 M810,1695 l-13,80 M672,1799 l-13,80 M208,1894 l-13,80 M57,1873 l-13,80 M144,1687 l-13,80 M782,1857 l-13,80 M947,1876 l-13,80 M916,1858 l-13,80 M21,1761 l-13,80 M148,1838 l-13,80 M409,1752 l-13,80 M865,1755 l-13,80 M649,1992 l-13,80 M587,2157 l-13,80 M733,2047 l-13,80 M954,2140 l-13,80 M64,2159 l-13,80 M215,1966 l-13,80 M1092,1934 l-13,80 M410,1927 l-13,80 M61,2082 l-13,80 M1015,2114 l-13,80 M810,1935 l-13,80 M672,2039 l-13,80 M208,2134 l-13,80 M57,2113 l-13,80 M144,1927 l-13,80 M782,2097 l-13,80 M947,2116 l-13,80 M916,2098 l-13,80 M21,2001 l-13,80 M148,2078 l-13,80 M409,1992 l-13,80 M865,1995 l-13,80" />
+          </g>
+        </svg>
+      </div>
+
+      <!-- 2 · Sakuga · 2.40–6.00 — the red moon tears open the clouds -->
+      <div id="s2" class="clip" data-start="2.15" data-duration="4.1" data-track-index="2">
+        <svg class="world" viewBox="0 0 1080 1920">
+          <defs>
+            <linearGradient id="sky2" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#14080c" />
+              <stop offset="0.5" stop-color="#2a1016" />
+              <stop offset="1" stop-color="#2a1016" />
+            </linearGradient>
+          </defs>
+          <rect width="1080" height="1920" fill="url(#sky2)" />
+          <circle id="halo" class="off" cx="540" cy="620" r="330" fill="#ff3b3b" style="opacity: 0" />
+          <g id="moon2">
+            <circle cx="540" cy="620" r="230" fill="#ff3b3b" />
+            <circle cx="470" cy="560" r="44" fill="#14080c" opacity="0.2" />
+            <circle cx="620" cy="700" r="30" fill="#14080c" opacity="0.2" />
+            <circle cx="590" cy="520" r="18" fill="#14080c" opacity="0.2" />
+            <path fill="none" stroke="#f3f6ff" stroke-width="6" stroke-linecap="round" d="M338,560 A214,214 0 0 1 480,410" />
+          </g>
+          <!-- clouds: A held, B anticipation, C split, D smear, E settled -->
+          <g id="cA">
+            <path fill="#14080c" d="M-20,260 C200,200 400,240 540,220 C700,190 900,230 1100,260 L1100,1000 C900,1040 700,990 540,1020 C380,1050 200,990 -20,1030 Z" />
+            <path fill="none" stroke="#ff3b3b" stroke-width="5" stroke-linecap="round" d="M330,628 Q540,602 760,622" />
+          </g>
+          <g id="cB" class="off">
+            <path fill="#14080c" d="M-20,230 C200,170 400,220 540,200 C700,170 900,200 1100,230 L1100,1040 C900,1080 700,1020 540,1050 C380,1080 200,1020 -20,1060 Z" />
+            <path fill="none" stroke="#2a1016" stroke-width="5" stroke-linecap="round" d="M400,624 Q540,612 690,620" />
+          </g>
+          <g id="cC" class="off" fill="#14080c">
+            <path d="M-20,260 C200,200 380,240 470,250 C430,420 420,800 470,1000 C300,1040 150,990 -20,1030 Z" />
+            <path d="M1100,260 C900,230 700,200 610,240 C660,420 660,800 610,1010 C700,990 900,1040 1100,1000 Z" />
+          </g>
+          <g id="cD" class="off" fill="#14080c">
+            <path d="M-20,250 C120,230 240,250 300,300 L-20,420 Z" />
+            <path d="M-20,460 L330,520 L-20,600 Z" />
+            <path d="M-20,660 L300,700 L-20,780 Z" />
+            <path d="M-20,830 C120,860 240,930 300,990 L-20,1040 Z" />
+            <path d="M1100,250 C960,230 840,250 780,300 L1100,420 Z" />
+            <path d="M1100,480 L750,540 L1100,620 Z" />
+            <path d="M1100,680 L780,720 L1100,800 Z" />
+            <path d="M1100,850 C960,880 840,940 780,990 L1100,1040 Z" />
+          </g>
+          <g id="speed" class="off" stroke="#f6e4e4" stroke-width="3" stroke-linecap="round">
+            <path d="M540,340 L540,180 M300,470 L170,390 M780,470 L910,390 M300,780 L170,860 M780,780 L910,860" />
+          </g>
+          <g id="cE" class="off" fill="#14080c">
+            <path d="M-20,-20 L520,-20 C420,60 300,140 160,180 C80,200 20,240 -20,260 Z" />
+            <path d="M1100,-20 L600,-20 C700,70 820,150 940,190 C1010,210 1060,250 1100,280 Z" />
+            <path d="M-20,960 C200,900 380,960 540,940 C700,920 900,970 1100,930 L1100,1100 L-20,1100 Z" />
+          </g>
+          <!-- far city below the cloud line -->
+          <path fill="#14080c" opacity="0.55" d="M-20,1640 L-20,1300 L110,1300 L130,1240 L230,1240 L230,1360 L330,1360 L350,1280 L460,1280 L480,1380 L600,1380 L620,1260 L720,1260 L740,1340 L860,1340 L880,1230 L980,1230 L1000,1320 L1100,1320 L1100,1640 Z" />
+          <g fill="#f3f6ff">
+            <rect x="166" y="1280" width="10" height="14" />
+            <rect x="660" y="1300" width="9" height="14" />
+            <rect x="930" y="1270" width="10" height="16" />
+          </g>
+          <g id="rain2" stroke="#f6e4e4" stroke-width="3" opacity="0.4">
+            <path d="M835,-109 l-18,110 M949,-69 l-18,110 M920,-232 l-18,110 M1064,-141 l-18,110 M208,-105 l-18,110 M280,-202 l-18,110 M725,-95 l-18,110 M767,-87 l-18,110 M728,-57 l-18,110 M100,-75 l-18,110 M458,-191 l-18,110 M104,-89 l-18,110 M617,-206 l-18,110 M511,-171 l-18,110 M911,-116 l-18,110 M870,-185 l-18,110 M835,131 l-18,110 M949,171 l-18,110 M920,8 l-18,110 M1064,99 l-18,110 M208,135 l-18,110 M280,38 l-18,110 M725,145 l-18,110 M767,153 l-18,110 M728,183 l-18,110 M100,165 l-18,110 M458,49 l-18,110 M104,151 l-18,110 M617,34 l-18,110 M511,69 l-18,110 M911,124 l-18,110 M870,55 l-18,110 M835,371 l-18,110 M949,411 l-18,110 M920,248 l-18,110 M1064,339 l-18,110 M208,375 l-18,110 M280,278 l-18,110 M725,385 l-18,110 M767,393 l-18,110 M728,423 l-18,110 M100,405 l-18,110 M458,289 l-18,110 M104,391 l-18,110 M617,274 l-18,110 M511,309 l-18,110 M911,364 l-18,110 M870,295 l-18,110 M835,611 l-18,110 M949,651 l-18,110 M920,488 l-18,110 M1064,579 l-18,110 M208,615 l-18,110 M280,518 l-18,110 M725,625 l-18,110 M767,633 l-18,110 M728,663 l-18,110 M100,645 l-18,110 M458,529 l-18,110 M104,631 l-18,110 M617,514 l-18,110 M511,549 l-18,110 M911,604 l-18,110 M870,535 l-18,110 M835,851 l-18,110 M949,891 l-18,110 M920,728 l-18,110 M1064,819 l-18,110 M208,855 l-18,110 M280,758 l-18,110 M725,865 l-18,110 M767,873 l-18,110 M728,903 l-18,110 M100,885 l-18,110 M458,769 l-18,110 M104,871 l-18,110 M617,754 l-18,110 M511,789 l-18,110 M911,844 l-18,110 M870,775 l-18,110 M835,1091 l-18,110 M949,1131 l-18,110 M920,968 l-18,110 M1064,1059 l-18,110 M208,1095 l-18,110 M280,998 l-18,110 M725,1105 l-18,110 M767,1113 l-18,110 M728,1143 l-18,110 M100,1125 l-18,110 M458,1009 l-18,110 M104,1111 l-18,110 M617,994 l-18,110 M511,1029 l-18,110 M911,1084 l-18,110 M870,1015 l-18,110 M835,1331 l-18,110 M949,1371 l-18,110 M920,1208 l-18,110 M1064,1299 l-18,110 M208,1335 l-18,110 M280,1238 l-18,110 M725,1345 l-18,110 M767,1353 l-18,110 M728,1383 l-18,110 M100,1365 l-18,110 M458,1249 l-18,110 M104,1351 l-18,110 M617,1234 l-18,110 M511,1269 l-18,110 M911,1324 l-18,110 M870,1255 l-18,110 M835,1571 l-18,110 M949,1611 l-18,110 M920,1448 l-18,110 M1064,1539 l-18,110 M208,1575 l-18,110 M280,1478 l-18,110 M725,1585 l-18,110 M767,1593 l-18,110 M728,1623 l-18,110 M100,1605 l-18,110 M458,1489 l-18,110 M104,1591 l-18,110 M617,1474 l-18,110 M511,1509 l-18,110 M911,1564 l-18,110 M870,1495 l-18,110 M835,1811 l-18,110 M949,1851 l-18,110 M920,1688 l-18,110 M1064,1779 l-18,110 M208,1815 l-18,110 M280,1718 l-18,110 M725,1825 l-18,110 M767,1833 l-18,110 M728,1863 l-18,110 M100,1845 l-18,110 M458,1729 l-18,110 M104,1831 l-18,110 M617,1714 l-18,110 M511,1749 l-18,110 M911,1804 l-18,110 M870,1735 l-18,110 M835,2051 l-18,110 M949,2091 l-18,110 M920,1928 l-18,110 M1064,2019 l-18,110 M208,2055 l-18,110 M280,1958 l-18,110 M725,2065 l-18,110 M767,2073 l-18,110 M728,2103 l-18,110 M100,2085 l-18,110 M458,1969 l-18,110 M104,2071 l-18,110 M617,1954 l-18,110 M511,1989 l-18,110 M911,2044 l-18,110 M870,1975 l-18,110" />
+          </g>
+          <!-- roof ledge -->
+          <path fill="#14080c" d="M-20,1640 L1100,1640 L1100,1940 L-20,1940 Z" />
+          <path id="rimE" class="off" fill="none" stroke="#ff3b3b" stroke-width="5" d="M-20,1642 L1100,1642" />
+          <!-- the girl, from behind: G1 head down, G2 the hair whip, G3 looking up -->
+          <g transform="translate(540 1640)" fill="#1a1014" stroke="#ff3b3b" stroke-width="10" stroke-linejoin="round">
+            <g id="girl">
+            <path d="M-40,0 L-30,-150 L-8,-150 L-14,0 Z M14,0 L8,-150 L30,-150 L40,0 Z" />
+            <path d="M-48,-320 L-80,-170 L-62,-164 L-34,-300 Z M48,-320 L80,-170 L62,-164 L34,-300 Z" />
+            <path d="M-72,-130 L-50,-336 L50,-336 L76,-130 Q0,-112 -72,-130 Z" />
+            <g id="g1">
+              <circle cx="0" cy="-374" r="44" />
+              <path d="M-46,-392 C-62,-330 -52,-250 -32,-216 L32,-216 C52,-250 62,-330 46,-392 C30,-418 -30,-418 -46,-392 Z" />
+            </g>
+            <g id="g2" class="off">
+              <circle cx="0" cy="-392" r="44" />
+              <path d="M-44,-410 C-20,-436 30,-434 50,-404 C90,-360 160,-346 250,-372 L262,-338 C160,-292 60,-250 -30,-250 C-56,-300 -60,-360 -44,-410 Z" />
+              <path d="M76,-130 L150,-170 L160,-140 L74,-112 Z" />
+            </g>
+            <g id="g3" class="off">
+              <circle cx="0" cy="-402" r="44" />
+              <path d="M-46,-420 C-30,-448 30,-448 46,-420 C54,-360 64,-290 110,-246 L40,-232 C10,-240 -30,-226 -34,-226 C-58,-280 -62,-360 -46,-420 Z" />
+              <path fill="#f6e4e4" stroke="none" style="stroke: none" d="M-30,-436 C-10,-446 16,-446 32,-436 L30,-428 C14,-436 -10,-436 -28,-428 Z" />
+            </g>
+            </g>
+          </g>
+          <g transform="translate(540 1640)" fill="#1a1014" stroke="none"><use href="#girl" /></g>
+        </svg>
+      </div>
+
+      <!-- 3 · Button · 6.00–8.00 — the moon in her eyes -->
+      <div id="s3" class="clip" data-start="5.75" data-duration="2.25" data-track-index="1">
+        <svg class="world" viewBox="0 0 1080 1920">
+          <defs>
+            <linearGradient id="sky3" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#2a1016" />
+              <stop offset="1" stop-color="#14080c" />
+            </linearGradient>
+            <clipPath id="eyeL"><ellipse cx="-66" cy="0" rx="40" ry="30" /></clipPath>
+            <clipPath id="eyeR"><ellipse cx="68" cy="0" rx="42" ry="31" /></clipPath>
+          </defs>
+          <rect width="1080" height="1920" fill="url(#sky3)" />
+          <circle cx="110" cy="250" r="430" fill="#ff3b3b" opacity="0.22" />
+          <circle cx="110" cy="250" r="330" fill="#ff3b3b" />
+          <path fill="none" stroke="#f3f6ff" stroke-width="8" stroke-linecap="round" d="M420,330 A320,320 0 0 1 300,520" />
+          <g transform="translate(610 900) scale(2.1)" stroke-linejoin="round">
+            <path fill="#1a1014" d="M-10,-240 C130,-260 230,-150 220,-10 C214,120 200,240 170,330 L-190,330 C-220,240 -226,120 -220,-10 C-214,-150 -140,-232 -10,-240 Z" />
+            <path fill="#1a1014" stroke="#ff3b3b" stroke-width="3" d="M-240,560 L-200,300 C-120,270 -60,280 -40,290 L50,290 C80,280 150,270 230,300 L270,460 Z" />
+            <path fill="#e8b8a8" d="M-44,150 L-40,300 L50,300 L46,150 Z" />
+            <path fill="#14080c" opacity="0.2" d="M-44,150 L46,150 L44,214 C10,230 -20,226 -42,204 Z" />
+            <path fill="#e8b8a8" stroke="#1a1014" stroke-width="3" d="M0,-196 C104,-198 160,-92 152,8 C144,104 86,172 12,206 C-64,176 -138,108 -150,8 C-160,-94 -100,-194 0,-196 Z" />
+            <path fill="#14080c" opacity="0.2" d="M152,8 C144,104 86,172 12,206 C46,150 70,80 80,10 C110,4 132,4 152,8 Z" />
+            <path fill="none" stroke="#ff3b3b" stroke-width="3" d="M-148,30 C-156,-60 -110,-170 -20,-194" />
+            <!-- eyes open -->
+            <g id="eyesOpen">
+              <ellipse cx="-66" cy="0" rx="40" ry="30" fill="#f6f3ee" />
+              <g clip-path="url(#eyeL)">
+                <circle cx="-78" cy="-10" r="22" fill="#ff5a4a" />
+                <circle cx="-80" cy="-12" r="11" fill="#1a1014" />
+              </g>
+              <rect x="-92" y="-26" width="10" height="8" fill="#f6e4e4" />
+              <circle cx="-68" cy="0" r="4" fill="#f6e4e4" />
+              <ellipse cx="68" cy="0" rx="42" ry="31" fill="#f6f3ee" />
+              <g clip-path="url(#eyeR)">
+                <circle cx="56" cy="-10" r="23" fill="#ff5a4a" />
+                <circle cx="54" cy="-12" r="11" fill="#1a1014" />
+              </g>
+              <rect x="42" y="-26" width="10" height="8" fill="#f6e4e4" />
+              <circle cx="66" cy="0" r="4" fill="#f6e4e4" />
+              <g fill="none" stroke="#1a1014" stroke-linecap="round">
+                <path stroke-width="4.5" d="M-108,-12 Q-66,-46 -24,-10" />
+                <path stroke-width="4.5" d="M24,-10 Q68,-48 112,-12" />
+                <path stroke-width="1.5" d="M-96,24 Q-66,34 -36,22" />
+                <path stroke-width="1.5" d="M36,22 Q66,34 98,24" />
+              </g>
+            </g>
+            <g id="eyesShut" class="off" fill="none" stroke="#1a1014" stroke-width="4" stroke-linecap="round">
+              <path d="M-106,6 Q-66,24 -26,6" />
+              <path d="M26,6 Q68,24 110,6" />
+            </g>
+            <g fill="none" stroke="#1a1014" stroke-linecap="round">
+              <path stroke-width="2.5" d="M-104,-70 Q-70,-90 -36,-76" />
+              <path stroke-width="2.5" d="M36,-76 Q72,-92 108,-70" />
+              <path stroke-width="1.5" d="M8,58 L0,86 L12,88" />
+            </g>
+            <path fill="#14080c" d="M-12,128 Q4,136 22,126 Q8,150 -12,128 Z" />
+            <!-- hair: cap and bangs, side locks, sheen -->
+            <path fill="#1a1014" d="M-168,-20 C-170,-170 -80,-244 4,-244 C100,-244 176,-170 170,-20 L150,-40 L122,-120 L104,-30 L60,-150 L30,-46 L-10,-160 L-40,-40 L-80,-150 L-100,-36 L-130,-120 L-150,-30 Z" />
+            <path fill="#1a1014" stroke="#ff3b3b" stroke-width="3" d="M-150,-60 C-176,40 -170,160 -140,250 L-110,230 C-128,140 -134,40 -120,-40 Z" />
+            <path id="lockA" fill="#1a1014" d="M150,-60 C196,30 214,140 214,236 L176,222 C160,130 140,40 124,-40 Z" />
+            <path id="lockB" class="off" fill="#1a1014" d="M150,-60 C176,40 172,160 150,250 L120,226 C134,140 138,40 124,-40 Z" />
+            <path fill="#f6e4e4" d="M-110,-196 C-60,-224 40,-228 100,-202 L92,-188 C40,-210 -56,-208 -102,-182 Z" />
+          </g>
+          <g id="rain3" stroke="#f6e4e4" stroke-width="4" opacity="0.35">
+            <path d="M57,0 l-27,170 M202,-19 l-27,170 M237,-153 l-27,170 M700,-163 l-27,170 M367,-103 l-27,170 M993,-24 l-27,170 M319,-193 l-27,170 M1095,-61 l-27,170 M33,-227 l-27,170 M57,240 l-27,170 M202,221 l-27,170 M237,87 l-27,170 M700,77 l-27,170 M367,137 l-27,170 M993,216 l-27,170 M319,47 l-27,170 M1095,179 l-27,170 M33,13 l-27,170 M57,480 l-27,170 M202,461 l-27,170 M237,327 l-27,170 M700,317 l-27,170 M367,377 l-27,170 M993,456 l-27,170 M319,287 l-27,170 M1095,419 l-27,170 M33,253 l-27,170 M57,720 l-27,170 M202,701 l-27,170 M237,567 l-27,170 M700,557 l-27,170 M367,617 l-27,170 M993,696 l-27,170 M319,527 l-27,170 M1095,659 l-27,170 M33,493 l-27,170 M57,960 l-27,170 M202,941 l-27,170 M237,807 l-27,170 M700,797 l-27,170 M367,857 l-27,170 M993,936 l-27,170 M319,767 l-27,170 M1095,899 l-27,170 M33,733 l-27,170 M57,1200 l-27,170 M202,1181 l-27,170 M237,1047 l-27,170 M700,1037 l-27,170 M367,1097 l-27,170 M993,1176 l-27,170 M319,1007 l-27,170 M1095,1139 l-27,170 M33,973 l-27,170 M57,1440 l-27,170 M202,1421 l-27,170 M237,1287 l-27,170 M700,1277 l-27,170 M367,1337 l-27,170 M993,1416 l-27,170 M319,1247 l-27,170 M1095,1379 l-27,170 M33,1213 l-27,170 M57,1680 l-27,170 M202,1661 l-27,170 M237,1527 l-27,170 M700,1517 l-27,170 M367,1577 l-27,170 M993,1656 l-27,170 M319,1487 l-27,170 M1095,1619 l-27,170 M33,1453 l-27,170 M57,1920 l-27,170 M202,1901 l-27,170 M237,1767 l-27,170 M700,1757 l-27,170 M367,1817 l-27,170 M993,1896 l-27,170 M319,1727 l-27,170 M1095,1859 l-27,170 M33,1693 l-27,170 M57,2160 l-27,170 M202,2141 l-27,170 M237,2007 l-27,170 M700,1997 l-27,170 M367,2057 l-27,170 M993,2136 l-27,170 M319,1967 l-27,170 M1095,2099 l-27,170 M33,1933 l-27,170" />
+          </g>
+        </svg>
+      </div>
+
+      <div id="dip1" class="clip" data-start="2.15" data-duration="0.65" data-track-index="3"></div>
+      <div id="dip2" class="clip" data-start="5.75" data-duration="0.65" data-track-index="4"></div>
+    </div>
+    <script>
+      const f = (n) => n / 24;
+      const tl = gsap.timeline({ paused: true });
+
+      // 1 · Establish — one camera move, three drawings of the glow
+      tl.fromTo("#w1", { scale: 1 }, { scale: 1.06, duration: 2.4, ease: "power1.inOut" }, 0);
+      tl.fromTo("#rain1", { y: 0 }, { y: 240, duration: 0.25, ease: "none", repeat: 10 }, 0);
+      tl.set("#c1a", { opacity: 0 }, f(18));
+      tl.set("#c1b", { opacity: 0.2 }, f(18));
+      tl.set("#seam1b", { opacity: 1 }, f(18));
+      tl.set("#c1b", { opacity: 0 }, f(36));
+      tl.set("#seam1b", { opacity: 0 }, f(36));
+      tl.set("#c1c", { opacity: 0.28 }, f(36));
+      tl.set("#seam1c", { opacity: 1 }, f(36));
+
+      // cut 1 — dip to accent
+      tl.to("#dip1", { opacity: 1, duration: 0.25, ease: "power2.in" }, 2.15);
+      tl.to("#dip1", { opacity: 0, duration: 0.35, ease: "power2.out" }, 2.45);
+
+      // 2 · Sakuga — camera locked, the drawings move
+      tl.fromTo("#rain2", { y: 0 }, { y: 240, duration: 0.25, ease: "none", repeat: 16 }, 2.15);
+      tl.set("#cA", { opacity: 0 }, f(66));
+      tl.set("#cB", { opacity: 1 }, f(66)); // anticipation: 4 frames, the clouds close in
+      tl.set("#cB", { opacity: 0 }, f(70));
+      tl.set("#cC", { opacity: 1 }, f(70)); // the tear
+      tl.set("#speed", { opacity: 1 }, f(70));
+      tl.set("#cC", { opacity: 0 }, f(72));
+      tl.set("#cD", { opacity: 1 }, f(72)); // smear
+      tl.set("#cD", { opacity: 0 }, f(74));
+      tl.set("#speed", { opacity: 0 }, f(74));
+      tl.set("#cE", { opacity: 1 }, f(74)); // settled
+      tl.set("#halo", { opacity: 0.25 }, f(74));
+      tl.set("#rimE", { opacity: 1 }, f(74));
+      tl.set("#g1", { opacity: 0 }, f(78));
+      tl.set("#g2", { opacity: 1 }, f(78)); // the wind hits: hair whip
+      tl.set("#g2", { opacity: 0 }, f(82));
+      tl.set("#g3", { opacity: 1 }, f(82)); // she looks up, then holds
+
+      // cut 2 — dip to ink
+      tl.to("#dip2", { opacity: 1, duration: 0.25, ease: "power2.in" }, 5.75);
+      tl.to("#dip2", { opacity: 0, duration: 0.35, ease: "power2.out" }, 6.05);
+
+      // 3 · Button — follow-through, a hold, one blink, fade to ink
+      tl.fromTo("#rain3", { y: 0 }, { y: 240, duration: 0.25, ease: "none", repeat: 9 }, 5.75);
+      tl.set("#lockA", { opacity: 0 }, f(150));
+      tl.set("#lockB", { opacity: 1 }, f(150));
+      tl.set("#eyesOpen", { opacity: 0 }, f(168));
+      tl.set("#eyesShut", { opacity: 1 }, f(168));
+      tl.set("#eyesShut", { opacity: 0 }, f(170));
+      tl.set("#eyesOpen", { opacity: 1 }, f(170));
+      tl.to("#s3", { opacity: 0, duration: f(8), ease: "power1.in" }, 8 - f(8));
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines["film"] = tl;
+    </script>
+  </body>
+</html>
