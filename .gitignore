@@ -1,0 +1,7 @@
+.DS_Store
+Thumbs.db
+node_modules/
+.hyperframes/
+renders/
+*.mp4
+!media/film.mp4
