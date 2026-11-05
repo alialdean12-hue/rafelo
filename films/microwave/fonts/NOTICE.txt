@@ -1,0 +1,9 @@
+Amiri, weights 400 and 700, Arabic subset.
+Copyright 2010-2022 The Amiri Project Authors.
+Licensed under the SIL Open Font License, Version 1.1.
+https://github.com/aliftype/amiri
+
+Lalezar, weight 400, Arabic subset.
+Copyright 2015 The Lalezar Project Authors.
+Licensed under the SIL Open Font License, Version 1.1.
+https://github.com/BornaIz/Lalezar
