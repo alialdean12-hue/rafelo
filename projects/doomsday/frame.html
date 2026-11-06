@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<style>
+@font-face { font-family: Lalezar; src: url(fonts/Lalezar-Regular.ttf); }
+@font-face { font-family: Amiri; src: url(fonts/Amiri-Bold.ttf); }
+html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; background: #1b130c; }
+svg { display: block; }
+</style>
+</head>
+<body>
+<svg id="f" width="1080" height="1920" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <!-- torn paper edge -->
+  <filter id="torn" x="-5%" y="-5%" width="110%" height="110%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="4" seed="3" result="n"/>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="22"/>
+  </filter>
+  <filter id="tornS" x="-5%" y="-5%" width="110%" height="110%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.06" numOctaves="3" seed="9" result="n"/>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="12"/>
+    <feDropShadow dx="0" dy="14" stdDeviation="14" flood-color="#000" flood-opacity="0.55"/>
+  </filter>
+  <!-- paper fibre texture -->
+  <filter id="paper">
+    <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="5" result="t"/>
+    <feColorMatrix in="t" type="matrix" values="0 0 0 0 0.35  0 0 0 0 0.25  0 0 0 0 0.12  0 0 0 0.35 0" result="tc"/>
+    <feComposite in="tc" in2="SourceGraphic" operator="in" result="tx"/>
+    <feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="tx"/></feMerge>
+  </filter>
+  <!-- letterpress: ink speckle knocked out of the glyphs -->
+  <filter id="press" x="-10%" y="-10%" width="120%" height="120%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.55" numOctaves="2" seed="2" result="n"/>
+    <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.4 1.45" result="mask"/>
+    <feComposite in="SourceGraphic" in2="mask" operator="in" result="ink"/>
+    <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="2" seed="7" result="w"/>
+    <feDisplacementMap in="ink" in2="w" scale="6"/>
+  </filter>
+  <filter id="blur1"><feGaussianBlur stdDeviation="3.2"/></filter>
+  <filter id="blur2"><feGaussianBlur stdDeviation="7"/></filter>
+  <filter id="grain" x="0" y="0" width="100%" height="100%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="1" seed="11"/>
+    <feColorMatrix type="saturate" values="0"/>
+    <feComponentTransfer><feFuncA type="table" tableValues="0 0.16"/></feComponentTransfer>
+  </filter>
+  <pattern id="halftone" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+    <rect width="6" height="6" fill="#b9b0a0"/><circle cx="3" cy="3" r="2.5" fill="#171512"/>
+  </pattern>
+  <pattern id="halftoneL" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+    <rect width="6" height="6" fill="#e2d9c8"/><circle cx="3" cy="3" r="1.3" fill="#2a2620"/>
+  </pattern>
+  <radialGradient id="tung" cx="50%" cy="40%" r="62%">
+    <stop offset="0" stop-color="#ffcf8a" stop-opacity="0.38"/>
+    <stop offset="0.45" stop-color="#d9893c" stop-opacity="0.12"/>
+    <stop offset="1" stop-color="#000" stop-opacity="0.78"/>
+  </radialGradient>
+  <linearGradient id="studio" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#20160d"/><stop offset="1" stop-color="#3e2b19"/>
+  </linearGradient>
+  <linearGradient id="orange" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#e06a22"/><stop offset="1" stop-color="#b5481a"/>
+  </linearGradient>
+  <!-- one suited cutout figure, origin at feet -->
+  <path id="body" d="M-66 0 L-74 -150 Q-76 -206 -32 -220 L-12 -226 L0 -200 L12 -226 L32 -220 Q76 -206 74 -150 L66 0 Z"/>
+  <path id="head" d="M0 -306 C26 -306 36 -284 34 -258 C32 -232 18 -222 0 -222 C-18 -222 -32 -232 -34 -258 C-36 -284 -26 -306 0 -306 Z"/>
+  <path id="shirt" d="M-20 -224 L0 -150 L20 -224 L10 -228 L0 -214 L-10 -228 Z"/>
+  <path id="tie" d="M-6 -212 L6 -212 L9 -160 L0 -146 L-9 -160 Z"/>
+  <path id="lapel" d="M-32 -220 L-6 -150 L-20 -200 Z M32 -220 L6 -150 L20 -200 Z"/>
+</defs>
+
+<!-- studio -->
+<rect width="1080" height="1920" fill="url(#studio)"/>
+
+<!-- back wall: giant aged front page, out of focus -->
+<g filter="url(#blur2)" transform="rotate(-4 540 700)">
+  <g filter="url(#torn)">
+    <rect x="-80" y="120" width="1240" height="1240" fill="#c9b289"/>
+  </g>
+  <text x="540" y="330" text-anchor="middle" font-family="Amiri" font-size="150" fill="#3a2c1d" opacity="0.8">يوم القيامة</text>
+  <rect x="40" y="380" width="1000" height="10" fill="#3a2c1d" opacity="0.7"/>
+  <g fill="#5b4a33" opacity="0.55" id="cols"></g>
+</g>
+
+<!-- paper canyon walls, mid-ground -->
+<g filter="url(#blur1)">
+  <g filter="url(#tornS)"><path d="M-40 520 L330 600 L300 1500 L-40 1500 Z" fill="#b39a70"/></g>
+  <g filter="url(#tornS)"><path d="M1120 470 L760 560 L800 1500 L1120 1500 Z" fill="#a88e64"/></g>
+</g>
+<g id="wallText" opacity="0.5" fill="#4a3a26" filter="url(#blur1)"></g>
+
+<!-- THE prop: torn burnt-orange sheet with letterpress 13 -->
+<g transform="translate(540 820) rotate(-5)">
+  <g filter="url(#tornS)"><rect x="-250" y="-300" width="500" height="560" fill="url(#orange)"/></g>
+  <g filter="url(#paper)"><rect x="-240" y="-290" width="480" height="540" fill="url(#orange)" opacity="0.6"/></g>
+  <text x="0" y="170" text-anchor="middle" font-family="Lalezar" font-size="520" fill="#f1e2c4" filter="url(#press)" direction="ltr">13</text>
+  <rect x="-250" y="-300" width="500" height="26" fill="#000" opacity="0.18"/>
+</g>
+
+<!-- paper ground -->
+<g filter="url(#tornS)"><path d="M-40 1330 Q540 1270 1120 1340 L1120 1960 L-40 1960 Z" fill="#9c8259"/></g>
+<g filter="url(#paper)"><path d="M-40 1345 Q540 1290 1120 1355 L1120 1960 L-40 1960 Z" fill="#8f7550" opacity="0.7"/></g>
+
+<!-- three anonymous figures, censor bars, looking up -->
+<g id="figs"></g>
+
+<!-- foreground torn scrap, heavily out of focus (tilt-shift) -->
+<g filter="url(#blur2)"><g filter="url(#torn)"><path d="M-60 1560 L520 1610 L460 1960 L-60 1960 Z" fill="#c8b085"/></g></g>
+
+<!-- tungsten light + vignette -->
+<rect width="1080" height="1920" fill="url(#tung)" style="mix-blend-mode:multiply"/>
+<rect width="1080" height="1920" fill="url(#tung)" opacity="0.35" style="mix-blend-mode:screen"/>
+<rect width="1080" height="1920" filter="url(#grain)"/>
+<!-- dust -->
+<g id="dust" fill="#f3e3c3"></g>
+
+<!-- caption -->
+<g id="cap">
+  <rect x="70" y="1640" width="940" height="170" rx="6" fill="#120c07" opacity="0.72"/>
+  <text x="540" y="1705" text-anchor="middle" font-family="Amiri" font-size="50" fill="#efe1c4">بعدَ سبعةِ أيام، يومَ الجمعةِ الثالثَ عشر،</text>
+  <text x="540" y="1775" text-anchor="middle" font-family="Amiri" font-size="50" fill="#efe1c4">تنتهي البشرية. هكذا تقولُ معادلةٌ علمية.</text>
+</g>
+</svg>
+<script>
+const NS = 'http://www.w3.org/2000/svg';
+const el = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent.appendChild(e); return e; };
+let s = 4; const r = () => (s = (s * 16807) % 2147483647) / 2147483647;
+// newsprint columns: lines of "type" (bars), so no gibberish letters
+const cols = document.getElementById('cols');
+for (let c = 0; c < 5; c++) for (let l = 0; l < 46; l++) {
+  const w = 160 + r() * 30 - (l % 9 === 8 ? 70 : 0);
+  el('rect', { x: 60 + c * 196 + (190 - w), y: 420 + l * 20, width: w, height: 8, rx: 2 }, cols);
+}
+const wt = document.getElementById('wallText');
+for (let l = 0; l < 30; l++) { el('rect', { x: 40, y: 640 + l * 26, width: 180 + r() * 60, height: 7 }, wt); el('rect', { x: 830 + r() * 30, y: 620 + l * 26, width: 190, height: 7 }, wt); }
+// figures: halftone cutouts with white border + black censor bar
+const figs = document.getElementById('figs');
+[[300, 1420, 1.0, -3], [540, 1440, 1.12, 1], [780, 1415, 0.96, 4]].forEach(([x, y, k, rot], i) => {
+  const g = el('g', { transform: `translate(${x} ${y}) scale(${k}) rotate(${rot})`, filter: 'url(#tornS)' }, figs);
+  for (const id of ['#body', '#head']) el('use', { href: id, fill: '#f3ead8', stroke: '#f3ead8', 'stroke-width': 20, 'stroke-linejoin': 'round' }, g);
+  el('use', { href: '#body', fill: 'url(#halftone)' }, g);
+  el('use', { href: '#head', fill: 'url(#halftoneL)' }, g);
+  el('use', { href: '#shirt', fill: '#ece3d1' }, g);
+  el('use', { href: '#tie', fill: '#0d0c0b' }, g);
+  el('use', { href: '#lapel', fill: '#0d0c0b', opacity: 0.55 }, g);
+  el('rect', { x: -44, y: -276, width: 88, height: 20, fill: '#0b0b0b', transform: `rotate(${-rot * 0.6})` }, g);
+});
+// floating paper dust in the light beam
+const dust = document.getElementById('dust');
+for (let i = 0; i < 70; i++) el('circle', { cx: 200 + r() * 680, cy: 300 + r() * 1100, r: 1 + r() * 3.2, opacity: 0.15 + r() * 0.45 }, dust);
+window.ready = document.fonts.ready;
+</script>
+</body>
+</html>
