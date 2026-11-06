@@ -6,3 +6,4 @@ renders/
 *.mp4
 !media/film.mp4
 projects/*/voice/*/.cache/
+projects/*/voice/.cache/
