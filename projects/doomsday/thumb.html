@@ -1,0 +1,21 @@
+<!doctype html><html dir="rtl"><meta charset="utf-8"><style>
+@font-face{font-family:Cairo;src:url(fonts/Cairo.ttf);font-weight:200 1000}
+body{margin:0;width:1080px;height:1920px;overflow:hidden;background:radial-gradient(circle at 50% 33%,#5b4126 0,#2a1d12 40%,#120c07 80%);font-family:Cairo}
+h1{position:absolute;top:220px;white-space:nowrap;width:100%;margin:0;text-align:center;font-weight:900;line-height:1.05}
+.a{display:block;font-size:135px;color:#f2f2f2;-webkit-text-stroke:14px #111;paint-order:stroke fill}
+.b{display:block;font-size:138px;color:#e8b923;-webkit-text-stroke:16px #111;paint-order:stroke fill}
+.fr{position:absolute;left:90px;top:800px;width:880px;height:620px;transform:rotate(-2deg);padding:22px;background:linear-gradient(135deg,#8a6a2c,#e7c56e 45%,#8a6a2c);box-shadow:0 30px 60px #000a}
+.fr div{width:100%;height:100%;background-size:cover}
+svg{position:absolute;inset:0}
+</style><body>
+<h1><span class="a" id="l1"></span><span class="b" id="l2"></span></h1>
+<div class="fr"><div id="img"></div></div>
+<svg width="1080" height="1920"><path id="ring" fill="none" stroke="#ff3b30" stroke-width="12" stroke-linecap="round"/></svg>
+<script>
+const q=new URLSearchParams(location.search);
+l1.textContent=q.get('l1');l2.textContent=q.get('l2');
+img.style.backgroundImage=`url(${q.get('img')})`;img.style.backgroundPosition=q.get('pos');
+const [cx,cy,rx,ry]=q.get('ring').split(',').map(Number);let d='';
+for(let i=0;i<=100;i++){const a=-2+i/100*Math.PI*2*1.1,w=1+.04*Math.sin(i*.4)+i/100*.06;d+=(i?'L':'M')+(cx+Math.cos(a)*rx*w)+' '+(cy+Math.sin(a)*ry*w)}
+ring.setAttribute('d',d);
+</script>
