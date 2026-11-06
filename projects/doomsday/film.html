@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>الجمعة 13</title>
+<style>
+@font-face { font-family: Lalezar; src: url(fonts/Lalezar-Regular.ttf); }
+@font-face { font-family: Amiri; src: url(fonts/Amiri-Bold.ttf); }
+html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; background: #140e08; }
+#cam { position: absolute; inset: 0; transform-origin: 50% 45%; }
+#cam > svg { position: absolute; inset: 0; display: none; }
+#fx { position: absolute; inset: 0; pointer-events: none; }
+#cap { position: absolute; left: 70px; right: 70px; bottom: 56px; padding: 18px 30px 22px; background: rgba(18,12,7,.74);
+  color: #efe1c4; font: 46px/1.5 Amiri; text-align: center; direction: rtl; border-radius: 6px; }
+#end { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; opacity: 0; background: #120c07; }
+#end b { font: 150px Lalezar; color: #d9622a; } #end span { font: 60px Amiri; color: #efe1c4; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+<defs>
+  <filter id="torn" x="-5%" y="-5%" width="110%" height="110%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="4" seed="3" result="n"/>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="22"/>
+  </filter>
+  <filter id="tornS" x="-8%" y="-8%" width="116%" height="120%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.06" numOctaves="3" seed="9" result="n"/>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="12"/>
+    <feDropShadow dx="0" dy="14" stdDeviation="14" flood-color="#000" flood-opacity="0.55"/>
+  </filter>
+  <filter id="fig" x="-20%" y="-10%" width="140%" height="125%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="2" seed="4" result="n"/>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="5"/>
+    <feDropShadow dx="8" dy="12" stdDeviation="9" flood-color="#000" flood-opacity="0.6"/>
+  </filter>
+  <filter id="paper">
+    <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="5" result="t"/>
+    <feColorMatrix in="t" type="matrix" values="0 0 0 0 0.35  0 0 0 0 0.25  0 0 0 0 0.12  0 0 0 0.35 0" result="tc"/>
+    <feComposite in="tc" in2="SourceGraphic" operator="in" result="tx"/>
+    <feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="tx"/></feMerge>
+  </filter>
+  <filter id="press" x="-10%" y="-10%" width="120%" height="120%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.55" numOctaves="2" seed="2" result="n"/>
+    <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.4 1.45" result="mask"/>
+    <feComposite in="SourceGraphic" in2="mask" operator="in" result="ink"/>
+    <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="2" seed="7" result="w"/>
+    <feDisplacementMap in="ink" in2="w" scale="6"/>
+  </filter>
+  <filter id="blur1"><feGaussianBlur stdDeviation="3.2"/></filter>
+  <filter id="blur2"><feGaussianBlur stdDeviation="7"/></filter>
+  <filter id="grain" x="0" y="0" width="100%" height="100%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="1" seed="11"/>
+    <feColorMatrix type="saturate" values="0"/>
+    <feComponentTransfer><feFuncA type="table" tableValues="0 0.16"/></feComponentTransfer>
+  </filter>
+  <pattern id="htD" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+    <rect width="6" height="6" fill="#b3aa99"/><circle cx="3" cy="3" r="2.6" fill="#141210"/></pattern>
+  <pattern id="htM" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+    <rect width="6" height="6" fill="#cfc6b4"/><circle cx="3" cy="3" r="2.0" fill="#1d1a16"/></pattern>
+  <pattern id="htL" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+    <rect width="6" height="6" fill="#e6dccb"/><circle cx="3" cy="3" r="1.2" fill="#2a2620"/></pattern>
+  <linearGradient id="shadeL" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".4"/></linearGradient>
+  <radialGradient id="tung" cx="50%" cy="42%" r="62%">
+    <stop offset="0" stop-color="#ffcf8a" stop-opacity="0.38"/><stop offset="0.45" stop-color="#d9893c" stop-opacity="0.12"/><stop offset="1" stop-color="#000" stop-opacity="0.8"/></radialGradient>
+  <linearGradient id="studio" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#20160d"/><stop offset="1" stop-color="#3e2b19"/></linearGradient>
+  <linearGradient id="orange" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e06a22"/><stop offset="1" stop-color="#b5481a"/></linearGradient>
+
+  <!-- figure parts, origin at the feet, ~430 tall -->
+  <path id="fTrous" d="M-50 -70 L-47 -6 L-10 -6 L-4 -70 Z M4 -70 L10 -6 L47 -6 L50 -70 Z"/>
+  <path id="fShoe" d="M-52 -8 Q-52 6 -28 6 L-6 6 L-8 -10 Z M52 -8 Q52 6 28 6 L6 6 L8 -10 Z"/>
+  <path id="fArms" d="M-64 -222 Q-88 -214 -90 -180 L-88 -96 Q-86 -78 -72 -80 L-62 -84 Z M64 -222 Q88 -214 90 -180 L88 -96 Q86 -78 72 -80 L62 -84 Z"/>
+  <path id="fHands" d="M-88 -92 Q-90 -64 -76 -62 Q-64 -64 -66 -86 Z M88 -92 Q90 -64 76 -62 Q64 -64 66 -86 Z"/>
+  <path id="fJacket" d="M-60 -60 L-66 -220 Q-66 -244 -40 -252 L-14 -260 L0 -236 L14 -260 L40 -252 Q66 -244 66 -220 L60 -60 Q30 -52 0 -64 Q-30 -52 -60 -60 Z"/>
+  <path id="fShirt" d="M-18 -258 L0 -170 L18 -258 L9 -262 L0 -248 L-9 -262 Z"/>
+  <path id="fTie" d="M-6 -246 L6 -246 L9 -186 L0 -170 L-9 -186 Z"/>
+  <path id="fLapel" d="M-40 -252 L-8 -170 L-22 -226 L-30 -232 Z M40 -252 L8 -170 L22 -226 L30 -232 Z"/>
+  <path id="fNeck" d="M-12 -276 L12 -276 L14 -252 L-14 -252 Z"/>
+  <path id="fHead" d="M0 -350 C27 -350 36 -326 34 -300 C32 -276 18 -266 0 -266 C-18 -266 -32 -276 -34 -300 C-36 -326 -27 -350 0 -350 Z M-35 -312 Q-44 -310 -41 -296 Q-38 -288 -33 -292 Z M35 -312 Q44 -310 41 -296 Q38 -288 33 -292 Z"/>
+  <path id="fHair" d="M-35 -306 Q-40 -350 0 -354 Q40 -350 35 -306 Q30 -330 0 -334 Q-30 -330 -35 -306 Z"/>
+  <path id="fHat" d="M-62 -334 Q0 -320 62 -334 Q60 -344 34 -346 L30 -384 Q0 -396 -30 -384 L-34 -346 Q-60 -344 -62 -334 Z"/>
+  <path id="fOutline" d="M-52 -8 Q-52 10 -28 10 L28 10 Q52 10 52 -8 L50 -70 L60 -60 L62 -84 L66 -86 Q64 -64 76 -62 Q90 -64 88 -92 L90 -180 Q88 -214 64 -222 Q66 -244 40 -252 L14 -260 L14 -270 Q32 -276 34 -300 L41 -296 Q44 -310 35 -312 Q36 -352 0 -354 Q-36 -352 -35 -312 Q-44 -310 -41 -296 L-34 -300 Q-32 -276 -14 -270 L-14 -260 L-40 -252 Q-66 -244 -64 -222 Q-88 -214 -90 -180 L-88 -92 Q-90 -64 -76 -62 Q-64 -64 -66 -86 L-62 -84 L-60 -60 L-50 -70 Z"/>
+  <path id="fOutlineHat" d="M-62 -334 Q0 -320 62 -334 Q60 -344 34 -346 L30 -384 Q0 -396 -30 -384 L-34 -346 Q-60 -344 -62 -334 Z"/>
+</defs>
+</svg>
+
+<div id="cam"></div>
+<svg id="fx" width="1080" height="1920" viewBox="0 0 1080 1920">
+  <rect width="1080" height="1920" fill="url(#tung)" style="mix-blend-mode:multiply"/>
+  <rect width="1080" height="1920" fill="url(#tung)" opacity="0.35" style="mix-blend-mode:screen"/>
+  <rect id="grainR" width="1300" height="2100" filter="url(#grain)"/>
+  <g id="dust" fill="#f3e3c3"></g>
+  <rect id="flash" width="1080" height="1920" fill="#fff4dc" opacity="0"/>
+</svg>
+<div id="cap"></div>
+<div id="end"><b>الجمعة 13</b><span>ليست النهاية… بل تحذير</span></div>
+
+<script>
+const NS = 'http://www.w3.org/2000/svg', W = 1080, H = 1920, SCENE = 10;
+const CAPS = [
+  'بعدَ سبعةِ أيام، يومَ الجمعةِ الثالثَ عشر، تنتهي البشرية. هكذا تقولُ معادلةٌ علمية.',
+  'عامَ 1960، نشرتْ مجلةُ ساينس بحثًا علميًّا بعنوانٍ مرعب: يومُ القيامة.',
+  'العالِمُ هاينز فون فورستر رسمَ نموَّ البشرِ عبرَ ألفي عام، فوجدَ منحنًى يتسارعُ بلا توقّف.',
+  'حسبَ معادلتِه، يقتربُ عددُنا من اللانهاية في هذا اليوم. لا طعامَ يكفي، ولا أرضَ تتّسع.',
+  'لكنّ المعادلةَ أخطأت. بعدَ 3 سنواتٍ فقط، بلغَ نموُّنا ذروتَه… ثم بدأ يتباطأ.',
+  'اليومَ نحنُ أكثرُ من 8 مليارات، لا لانهاية. فإن رأيتَ منشورَ الجمعة، فأنتَ تعرفُ الحقيقة.'
+];
+// ---------- helpers ----------
+const el = (tag, attrs = {}, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+const eo = x => 1 - Math.pow(1 - x, 3);
+const eio = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const back = x => { const c = 1.9; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+const lerp = (a, b, x) => a + (b - a) * x;
+let sd = 4; const rnd = () => (sd = (sd * 16807) % 2147483647) / 2147483647;
+const tf = (e, x, y, s = 1, r = 0) => e.setAttribute('transform', `translate(${x} ${y}) rotate(${r}) scale(${s})`);
+
+function svgScene() { const s = el('svg', { width: W, height: H, viewBox: `0 0 ${W} ${H}` }); document.getElementById('cam').appendChild(s); el('rect', { width: W, height: H, fill: 'url(#studio)' }, s); return s; }
+function newsPage(p, x, y, w, h, rot, head, blur, color = '#c9b289') {
+  const g = el('g', { transform: `rotate(${rot} ${x + w / 2} ${y + h / 2})`, filter: blur ? `url(#${blur})` : '' }, p);
+  el('rect', { x, y, width: w, height: h, fill: color, filter: 'url(#torn)' }, g);
+  if (head) el('text', { x: x + w / 2, y: y + 190, 'text-anchor': 'middle', 'font-family': 'Amiri', 'font-size': 140, fill: '#3a2c1d', opacity: .8 }, g).textContent = head;
+  el('rect', { x: x + 120, y: y + 240, width: w - 240, height: 9, fill: '#3a2c1d', opacity: .7 }, g);
+  const cols = Math.max(2, Math.floor((w - 200) / 200));
+  for (let c = 0; c < cols; c++) for (let l = 0; l < Math.floor((h - 300) / 22); l++) {
+    const lw = 150 + rnd() * 30 - (l % 9 === 8 ? 70 : 0);
+    el('rect', { x: x + 120 + c * ((w - 240) / cols) + (170 - lw), y: y + 280 + l * 22, width: lw, height: 8, rx: 2, fill: '#5b4a33', opacity: .55 }, g);
+  }
+  return g;
+}
+function wall(p, d, fill) { el('path', { d, fill, filter: 'url(#tornS)' }, p); }
+function ground(p, y = 1330) {
+  el('path', { d: `M-40 ${y} Q540 ${y - 60} 1120 ${y + 10} L1120 1960 L-40 1960 Z`, fill: '#9c8259', filter: 'url(#tornS)' }, p);
+  el('path', { d: `M-40 ${y + 15} Q540 ${y - 40} 1120 ${y + 25} L1120 1960 L-40 1960 Z`, fill: '#8f7550', opacity: .7, filter: 'url(#paper)' }, p);
+}
+// a halftone-printed suited man on a paper cutout, with a censor bar
+function figure(p, x, y, k, o = {}) {
+  const g = el('g', {}, p); tf(g, x, y, k);
+  const inner = el('g', { filter: 'url(#fig)' }, g);
+  const cut = { fill: '#f1e8d5', stroke: '#f1e8d5', 'stroke-width': 18, 'stroke-linejoin': 'round' };
+  el('use', { href: '#fOutline', ...cut }, inner);
+  if (o.hat) el('use', { href: '#fOutlineHat', ...cut }, inner);
+  const suit = o.light ? 'url(#htM)' : 'url(#htD)';
+  el('use', { href: '#fTrous', fill: suit }, inner);
+  el('use', { href: '#fShoe', fill: '#0e0d0c' }, inner);
+  el('use', { href: '#fArms', fill: suit }, inner);
+  el('use', { href: '#fJacket', fill: suit }, inner);
+  el('use', { href: '#fHands', fill: 'url(#htL)' }, inner);
+  el('use', { href: '#fNeck', fill: 'url(#htL)' }, inner);
+  el('use', { href: '#fShirt', fill: '#ece3d1' }, inner);
+  el('use', { href: '#fTie', fill: '#0d0c0b' }, inner);
+  el('use', { href: '#fLapel', fill: '#0d0c0b', opacity: .5 }, inner);
+  for (const by of [-150, -116]) el('circle', { cx: 0, cy: by, r: 4, fill: '#0d0c0b' }, inner);
+  el('path', { d: 'M30 -206 L48 -206 L46 -196 L30 -198 Z', fill: '#ece3d1' }, inner); // pocket square
+  el('use', { href: '#fHead', fill: 'url(#htL)' }, inner);
+  el('use', { href: o.hat ? '#fHat' : '#fHair', fill: o.hat ? 'url(#htD)' : '#1b1814' }, inner);
+  if (o.glasses) el('path', { d: 'M-26 -306 h20 v12 h-20 Z M6 -306 h20 v12 h-20 Z M-6 -300 h12', fill: 'none', stroke: '#111', 'stroke-width': 3 }, inner);
+  el('use', { href: '#fJacket', fill: 'url(#shadeL)' }, inner);
+  el('use', { href: '#fHead', fill: 'url(#shadeL)' }, inner);
+  const bar = el('rect', { x: -46, y: -318, width: 92, height: 22, fill: '#090909' }, g);
+  return { g, bar };
+}
+// torn burnt-orange paper with one letterpress label
+function stamp(p, label, w, h, size, font = 'Lalezar') {
+  const g = el('g', {}, p);
+  el('rect', { x: -w / 2, y: -h / 2, width: w, height: h, fill: 'url(#orange)', filter: 'url(#tornS)' }, g);
+  el('rect', { x: -w / 2 + 10, y: -h / 2 + 10, width: w - 20, height: h - 20, fill: 'url(#orange)', opacity: .6, filter: 'url(#paper)' }, g);
+  el('text', { x: 0, y: size * 0.33, 'text-anchor': 'middle', 'font-family': font, 'font-size': size, fill: '#f1e2c4', filter: 'url(#press)', direction: 'ltr' }, g).textContent = label;
+  return g;
+}
+// orange paper strip that draws itself along a path
+function strip(p, d, width = 18) {
+  const sh = el('path', { d, fill: 'none', stroke: '#000', 'stroke-opacity': .35, 'stroke-width': width + 6, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', transform: 'translate(6 12)', filter: 'url(#blur1)' }, p);
+  const e = el('path', { d, fill: 'none', stroke: '#d9622a', 'stroke-width': width, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, p);
+  const L = e.getTotalLength();
+  for (const x of [sh, e]) { x.style.strokeDasharray = L; x.style.strokeDashoffset = L; }
+  return p2 => { for (const x of [sh, e]) x.style.strokeDashoffset = L * (1 - clamp(p2)); };
+}
+const paperStrip = (p, x, y, w, h, fill = '#e8dcc0') => el('rect', { x, y, width: w, height: h, fill, filter: 'url(#tornS)' }, p);
+function smallLabel(p, x, y, s, size = 46) { const t = el('text', { x, y, 'text-anchor': 'middle', 'font-family': 'Amiri', 'font-size': size, fill: '#2e2216' }, p); t.textContent = s; return t; }
+
+// ---------- scenes ----------
+const scenes = [];
+
+// 1. the date: a torn 13 over a doomsday front page, three anonymous men look up
+scenes.push((() => {
+  const s = svgScene();
+  newsPage(s, -80, 120, 1240, 1240, -4, 'يوم القيامة', 'blur2');
+  const mid = el('g', { filter: 'url(#blur1)' }, s);
+  wall(mid, 'M-40 520 L330 600 L300 1500 L-40 1500 Z', '#b39a70'); wall(mid, 'M1120 470 L760 560 L800 1500 L1120 1500 Z', '#a88e64');
+  const sheet = el('g', {}, s); const st = stamp(sheet, '13', 500, 560, 520);
+  el('rect', { x: -250, y: -280, width: 500, height: 26, fill: '#000', opacity: .18 }, st);
+  ground(s);
+  const figs = [[300, 1420, 1.0, { hat: true }], [540, 1445, 1.1, {}], [780, 1415, 0.95, { light: true, glasses: true }]].map(([x, y, k, o]) => ({ x, y, k, ...figure(s, x, y, k, o) }));
+  el('path', { d: 'M-60 1560 L520 1610 L460 1960 L-60 1960 Z', fill: '#c8b085', filter: 'url(#blur2)' }, s);
+  return { s, impacts: [1.0, 2.2, 2.45, 2.7], f(t) {
+    const d = eo(prog(t, 0.2, 1.0)); tf(sheet, 540, lerp(-500, 820, d), lerp(1.3, 1, d), lerp(-18, -5, back(prog(t, 0.2, 1.1))));
+    figs.forEach((F, i) => {
+      const a = back(prog(t, 1.3 + i * 0.12, 1.9 + i * 0.12)); tf(F.g, F.x, lerp(F.y + 700, F.y, a), F.k, Math.sin(t * 1.3 + i) * 1.2);
+      const b = eo(prog(t, 2.2 + i * 0.25, 2.35 + i * 0.25)); F.bar.setAttribute('y', lerp(-420, -318, b)); F.bar.setAttribute('opacity', b > 0 ? 1 : 0);
+    });
+  } };
+})());
+
+// 2. 1960: the Science paper
+scenes.push((() => {
+  const s = svgScene();
+  newsPage(s, -120, -60, 1320, 900, 3, '', 'blur2', '#bca47b');
+  const page = el('g', {}, s);
+  el('rect', { x: 120, y: 330, width: 840, height: 1150, fill: '#e3d6b9', filter: 'url(#tornS)' }, page);
+  el('rect', { x: 120, y: 330, width: 840, height: 1150, fill: '#e3d6b9', opacity: .7, filter: 'url(#paper)' }, page);
+  el('text', { x: 540, y: 440, 'text-anchor': 'middle', 'font-family': 'Amiri', 'font-size': 64, fill: '#1f1810', 'letter-spacing': 14, direction: 'ltr' }, page).textContent = 'SCIENCE';
+  el('rect', { x: 180, y: 470, width: 720, height: 5, fill: '#1f1810' }, page);
+  el('text', { x: 540, y: 600, 'text-anchor': 'middle', 'font-family': 'Amiri', 'font-size': 120, fill: '#1f1810' }, page).textContent = 'يوم القيامة';
+  el('text', { x: 540, y: 680, 'text-anchor': 'middle', 'font-family': 'Amiri', 'font-size': 36, fill: '#3b2d1c', direction: 'ltr' }, page).textContent = 'DOOMSDAY: FRIDAY, 13 NOVEMBER, A.D. 2026';
+  for (let c = 0; c < 2; c++) for (let l = 0; l < 30; l++) { const lw = 300 + rnd() * 40 - (l % 8 === 7 ? 120 : 0); el('rect', { x: 180 + c * 370 + (340 - lw), y: 740 + l * 22, width: lw, height: 7, fill: '#55462f', opacity: .6 }, page); }
+  // the equation strip, in the paper
+  el('text', { x: 540, y: 1430, 'text-anchor': 'middle', 'font-family': 'Amiri', 'font-size': 58, fill: '#1f1810', direction: 'ltr', 'font-style': 'italic' }, page).textContent = 'N = C / (2026.87 − t)';
+  const st = el('g', {}, s); stamp(st, '1960', 470, 230, 210);
+  ground(s, 1560);
+  const fig = figure(s, 960, 1620, 0.7, { hat: true });
+  return { s, impacts: [3.0], f(t) {
+    const tilt = eio(prog(t, 0, 9)); tf(page, lerp(0, 0, tilt), lerp(120, -40, tilt), 1, lerp(-3, 2, tilt));
+    const a = prog(t, 2.6, 3.0), b = back(prog(t, 3.0, 3.5));
+    tf(st, 560, 1070 - 40 * tilt, a < 1 ? lerp(3, 1.15, eo(a)) : lerp(1.15, 1, b), -8); st.setAttribute('opacity', a > 0 ? 1 : 0);
+    tf(fig.g, lerp(1300, 960, eo(prog(t, 4.5, 5.6))), 1620, 0.7, -3);
+  } };
+})());
+
+// 3. the curve: 2000 years of growth on a paper chart
+const X0 = 150, X1 = 930, Y0 = 1380, Y1 = 380;
+function hyper(y0, y1, from, to, vmax) { let d = ''; for (let yr = from; yr <= to; yr += (to - yr > 80 ? 20 : 2)) { const v = 1 / (2027 - yr); const x = lerp(X0, X1, (yr - y0) / (y1 - y0)), y = Y0 - (Y0 - Y1) * Math.min(8, v / vmax); d += (d ? 'L' : 'M') + x.toFixed(1) + ' ' + y.toFixed(1); } return d; }
+function chart(s) {
+  const g = el('g', {}, s);
+  el('rect', { x: 90, y: 300, width: 900, height: 1180, fill: '#d9caa7', filter: 'url(#tornS)' }, g);
+  el('rect', { x: 90, y: 300, width: 900, height: 1180, fill: '#d9caa7', opacity: .6, filter: 'url(#paper)' }, g);
+  for (let i = 0; i < 9; i++) el('rect', { x: X0, y: Y1 + i * 125, width: X1 - X0, height: 2, fill: '#6b5a40', opacity: .35 }, g);
+  paperStrip(g, X0 - 10, Y0, X1 - X0 + 20, 12, '#2e2216'); paperStrip(g, X0 - 12, Y1 - 40, 12, Y0 - Y1 + 52, '#2e2216');
+  return g;
+}
+scenes.push((() => {
+  const s = svgScene();
+  newsPage(s, -100, 80, 1280, 1300, -3, '', 'blur2');
+  const g = chart(s);
+  smallLabel(g, X0 + 10, Y0 + 60, '1'); smallLabel(g, (X0 + X1) / 2, Y0 + 60, '1000'); smallLabel(g, X1 - 10, Y0 + 60, '1960');
+  const draw = strip(g, hyper(0, 1960, 0, 1960, 1 / 67), 18);
+  const st = el('g', {}, s); stamp(st, '∞', 260, 230, 240, 'Amiri');
+  ground(s, 1560);
+  const sci = figure(s, 60, 1640, 0.7, { glasses: true, light: true });
+  return { s, impacts: [7.6], f(t) {
+    draw(eio(prog(t, 1.2, 6.8)));
+    tf(g, 0, 0, lerp(1, 1.06, eio(prog(t, 0, 10))), 0);
+    const a = prog(t, 7.2, 7.6), b = back(prog(t, 7.6, 8.1));
+    tf(st, 820, 420, a < 1 ? lerp(3, 1.15, eo(a)) : lerp(1.15, 1, b), 8); st.setAttribute('opacity', a > 0 ? 1 : 0);
+    tf(sci.g, lerp(-300, 60, eo(prog(t, 0.4, 1.4))), 1640, 0.7, 2);
+  } };
+})());
+
+// 4. toward infinity: the curve leaves the page, the crowd fills the ground
+scenes.push((() => {
+  const s = svgScene();
+  newsPage(s, -100, 80, 1280, 1300, 2, '', 'blur2');
+  const g = chart(s);
+  smallLabel(g, X0 + 10, Y0 + 60, '1900'); smallLabel(g, X1 - 10, Y0 + 60, '2026');
+  const draw = strip(g, hyper(1900, 2026, 1900, 2026.5, 1 / 67), 18);
+  const st = el('g', {}, s); stamp(st, '2026', 470, 230, 210);
+  ground(s, 1440);
+  const crowd = []; for (let r = 0; r < 4; r++) for (let c = 0; c < 10; c++) {
+    const k = 0.26 + r * 0.05, x = 60 + c * 106 + (r % 2) * 50 + (rnd() - .5) * 20, y = 1470 + r * 50;
+    crowd.push({ ...figure(s, x, y, k, { hat: rnd() < .3, light: rnd() < .4 }), x, y, k, d: rnd() });
+  }
+  return { s, impacts: [6.6], f(t) {
+    draw(eio(prog(t, 0.6, 6.2)));
+    tf(g, 0, 0, lerp(1, 1.05, eio(prog(t, 0, 10))), 0);
+    const a = prog(t, 6.2, 6.6), b = back(prog(t, 6.6, 7.1));
+    tf(st, 540, 520, a < 1 ? lerp(3, 1.15, eo(a)) : lerp(1.15, 1, b), -6); st.setAttribute('opacity', a > 0 ? 1 : 0);
+    crowd.forEach(F => { const p = back(prog(t, 1.0 + F.d * 6, 1.4 + F.d * 6)); tf(F.g, F.x, lerp(F.y + 500, F.y, p), F.k * (p > 0 ? 1 : 0)); F.bar.setAttribute('opacity', 1); });
+  } };
+})());
+
+// 5. the turn: growth peaks in 1963, then slows
+scenes.push((() => {
+  const s = svgScene();
+  newsPage(s, -100, 80, 1280, 1300, -2, '', 'blur2');
+  const g = chart(s);
+  // schematic growth-rate hump: ~1.8% (1950) → 2.3% peak (1963) → ~0.9% (2024)
+  const pts = [[1950, 1.8], [1957, 2.05], [1963, 2.3], [1970, 2.05], [1980, 1.8], [1990, 1.65], [2000, 1.3], [2010, 1.2], [2024, 0.9]];
+  const xs = yr => lerp(X0, X1, (yr - 1950) / 74), ys = v => Y0 - (Y0 - Y1) * v / 2.6;
+  let d = `M${xs(pts[0][0])} ${ys(pts[0][1])}`; for (let i = 1; i < pts.length; i++) { const [a, b] = [pts[i - 1], pts[i]]; const mx = (xs(a[0]) + xs(b[0])) / 2; d += ` C${mx} ${ys(a[1])} ${mx} ${ys(b[1])} ${xs(b[0])} ${ys(b[1])}`; }
+  smallLabel(g, X0 + 10, Y0 + 60, '1950'); smallLabel(g, X1 - 10, Y0 + 60, '2024');
+  const draw = strip(g, d, 18);
+  const pin = el('g', {}, g); el('line', { x1: xs(1963), y1: ys(2.3), x2: xs(1963), y2: Y0, stroke: '#2e2216', 'stroke-width': 4, 'stroke-dasharray': '10 10' }, pin); el('circle', { cx: xs(1963), cy: ys(2.3), r: 16, fill: '#1a140d' }, pin);
+  const st = el('g', {}, s); stamp(st, '1963', 430, 210, 190);
+  ground(s, 1560);
+  const fig = figure(s, 1010, 1640, 0.7, { hat: true });
+  return { s, impacts: [3.6], f(t) {
+    draw(eio(prog(t, 0.8, 7.5)));
+    const a = prog(t, 3.2, 3.6), b = back(prog(t, 3.6, 4.1));
+    tf(st, 560, 300, a < 1 ? lerp(3, 1.1, eo(a)) : lerp(1.1, 0.95, b), 5); st.setAttribute('opacity', a > 0 ? 1 : 0);
+    pin.setAttribute('opacity', prog(t, 2.6, 3.0));
+    tf(g, 0, 0, lerp(1.04, 1, eio(prog(t, 0, 10))), 0);
+    tf(fig.g, lerp(1300, 1010, eo(prog(t, 5.0, 6.0))), 1640, 0.7, -2);
+  } };
+})());
+
+// 6. 8.2 billion, not infinity: the 13 tears in half
+scenes.push((() => {
+  const s = svgScene();
+  newsPage(s, -80, 120, 1240, 1240, 3, 'يوم القيامة', 'blur2');
+  const L = el('g', {}, s), R = el('g', {}, s);
+  for (const [half, clip] of [[L, 'M-300 -400 L10 -400 L-20 -100 L25 120 L-10 400 L-300 400 Z'], [R, 'M10 -400 L300 -400 L300 400 L-10 400 L25 120 L-20 -100 Z']]) {
+    const id = 'c' + Math.random().toString(36).slice(2); const cp = el('clipPath', { id }, s); el('path', { d: clip }, cp);
+    const inner = el('g', { 'clip-path': `url(#${id})` }, half); stamp(inner, '13', 500, 560, 520);
+  }
+  const st = el('g', {}, s); stamp(st, '8.2B', 440, 220, 180);
+  ground(s, 1380);
+  const crowd = []; for (let r = 0; r < 3; r++) for (let c = 0; c < 8; c++) {
+    const k = 0.36 + r * 0.06, x = 100 + c * 128 + (r % 2) * 64, y = 1450 + r * 75; crowd.push({ ...figure(s, x, y, k, { hat: rnd() < .3, light: rnd() < .4 }), x, y, k, ph: rnd() * 6 });
+  }
+  return { s, impacts: [2.4, 5.4], f(t) {
+    const tear = eo(prog(t, 5.4, 6.6));
+    tf(L, 540 - tear * 360, 760 + tear * 260, 1, -5 - tear * 24); tf(R, 540 + tear * 360, 760 + tear * 300, 1, -5 + tear * 30);
+    const a = prog(t, 2.0, 2.4), b = back(prog(t, 2.4, 2.9));
+    tf(st, 540, 330, a < 1 ? lerp(3, 1.1, eo(a)) : lerp(1.1, 1, b), -4); st.setAttribute('opacity', a > 0 ? 1 : 0);
+    crowd.forEach(F => tf(F.g, F.x, F.y + Math.sin(t * 2 + F.ph) * 3, F.k));
+  } };
+})());
+
+// ---------- camera, fx, render ----------
+const cam = document.getElementById('cam'), cap = document.getElementById('cap'), end = document.getElementById('end');
+const flash = document.getElementById('flash'), grainR = document.getElementById('grainR');
+const dust = []; { const g = document.getElementById('dust'); for (let i = 0; i < 80; i++) dust.push({ e: el('circle', { r: 1 + rnd() * 3.2, opacity: .15 + rnd() * .45 }, g), x: rnd() * W, y: rnd() * H, v: 8 + rnd() * 30, p: rnd() * 9 }); }
+window.IMPACTS = scenes.flatMap((sc, k) => sc.impacts.map(t => k * SCENE + t));
+window.render = function (T) {
+  const k = Math.min(5, Math.floor(T / SCENE)), t = T - k * SCENE;
+  scenes.forEach((sc, i) => sc.s.style.display = i === k ? 'block' : 'none');
+  scenes[k].f(t);
+  // one continuous camera: slow push, every boundary hidden in a blurred dive
+  let sc = lerp(1, 1.08, eio(t / SCENE)), blur = 0;
+  if (t < 0.45 && k > 0) { const p = eo(t / 0.45); sc *= lerp(0.72, 1, p); blur = lerp(16, 0, p); }
+  if (t > 9.55 && k < 5) { const p = Math.pow((t - 9.55) / 0.45, 2); sc *= lerp(1, 1.9, p); blur = lerp(0, 18, p); }
+  // impact: short shake + warm flash
+  let sh = 0, fl = 0; for (const it of scenes[k].impacts) { const d = t - it; if (d >= 0 && d < 0.35) { sh = Math.max(sh, (1 - d / 0.35) * 14); fl = Math.max(fl, (1 - d / 0.2) * 0.22); } }
+  const sx = sh * Math.sin(T * 91), sy = sh * Math.cos(T * 73);
+  cam.style.transform = `translate(${sx}px, ${sy}px) scale(${sc})`;
+  cam.style.filter = blur > 0.3 ? `blur(${blur}px)` : 'none';
+  flash.setAttribute('opacity', clamp(fl));
+  grainR.setAttribute('x', -((T * 997) % 200)); grainR.setAttribute('y', -((T * 613) % 180));
+  dust.forEach(d => { d.e.setAttribute('cx', (d.x + Math.sin(T * .7 + d.p) * 30) % W); d.e.setAttribute('cy', ((d.y - T * d.v) % H + H) % H); });
+  cap.textContent = CAPS[k]; cap.style.opacity = prog(t, 0.2, 0.6) * (1 - prog(t, 9.6, 10)) * (k === 5 ? 1 - prog(t, 8.2, 8.6) : 1);
+  end.style.opacity = k === 5 ? prog(t, 8.4, 9.0) : 0;
+};
+window.ready = document.fonts.ready.then(() => { render(0); return true; });
+</script>
+</body>
+</html>
