@@ -11,5 +11,41 @@
     "ruflo-core@ruflo": true,
     "ruflo-swarm@ruflo": true,
     "ruflo-autopilot@ruflo": true
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/ponytail-hooks/ponytail-activate.js\"",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/ponytail-hooks/ponytail-mode-tracker.js\"",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/ponytail-hooks/ponytail-subagent.js\"",
+            "timeout": 15
+          }
+        ]
+      }
+    ]
   }
 }
