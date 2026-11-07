@@ -8,3 +8,4 @@ renders/
 projects/*/voice/*/.cache/
 projects/*/voice/.cache/
 projects/
+tools/images/
