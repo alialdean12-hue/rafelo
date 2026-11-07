@@ -11,5 +11,51 @@
     "ruflo-core@ruflo": true,
     "ruflo-swarm@ruflo": true,
     "ruflo-autopilot@ruflo": true
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/ponytail-hooks/ponytail-activate.js\"",
+            "timeout": 15
+          }
+        ]
+      },
+      {
+        "matcher": "startup|resume",
+        "hooks": [
+          {
+            "type": "command",
+            "timeout": 10,
+            "command": "curl -s -m 2 localhost:8000/health >/dev/null || (cd \"$CLAUDE_PROJECT_DIR\" && SSL_CERT_FILE=/root/.ccr/ca-bundle.crt nohup python3 tools/image-tool.py >/tmp/image-tool.log 2>&1 &)"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/ponytail-hooks/ponytail-mode-tracker.js\"",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/ponytail-hooks/ponytail-subagent.js\"",
+            "timeout": 15
+          }
+        ]
+      }
+    ]
   }
 }
