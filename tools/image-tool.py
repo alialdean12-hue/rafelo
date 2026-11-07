@@ -5,7 +5,7 @@ import base64, json, os, sys, time, urllib.error, urllib.parse, urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-ACC = os.environ.get("CLOUDFLARE_ACCOUNT_ID", "495db0a1b5547c8412c7595892704ab3")
+ACC = os.environ.get("CLOUDFLARE_ACCOUNT_ID", "dcd46978eb6be240a350849b7a112b1e")
 TOK = os.environ.get("CLOUDFLARE_API_TOKEN", "proxy-injected")  # real token is injected by the session proxy
 MODEL = "@cf/black-forest-labs/flux-1-schnell"
 OUT = Path(__file__).parent / "images"
