@@ -87,6 +87,7 @@ console.log(sheet.ok ? sheet.markdown : sheet.error);
 - `skills/html-anime-timing/SKILL.md` — twos, holds, the smear
 - `skills/html-anime-camera/SKILL.md` — the cut and the frame
 - `skills/html-anime-render/SKILL.md` — the HyperFrames file
+- `skills/faceless-shorts/SKILL.md` — narrated faceless vertical shorts in six styles, with a local voice and word-synced captions (separate from the anime pipeline)
 - `harness/compile.js` — logline to sheet
 - `media/film.mp4` — Kokuyō, the film
 - `media/city.jpg`, `media/moon.jpg`, `media/fight.jpg`, `media/helm.jpg`, `media/ren.jpg` — stills from it
