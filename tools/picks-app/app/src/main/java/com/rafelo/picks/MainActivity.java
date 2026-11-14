@@ -164,6 +164,7 @@ public class MainActivity extends Activity {
         row2.addView(button("حسابي", v -> web.loadUrl(HOME_URL), false));
         recordBtn = button("بدء التسجيل (مؤقت)", v -> toggleRecording(), false);
         row2.addView(recordBtn);
+        row2.addView(button("فتح الرابط", v -> openFirstLink(), false));
         row2.addView(button("نسخ السجل", v -> copyLog(), false));
         HorizontalScrollView scroller = new HorizontalScrollView(this);
         scroller.setHorizontalScrollBarEnabled(false);
@@ -495,6 +496,19 @@ public class MainActivity extends Activity {
             recordBtn.setTextColor(Color.BLACK);
             setStatus("توقف التسجيل. في السجل " + log.size() + " طلب.", INK);
         }
+    }
+
+    // Opens the first link in the box without reading or adding anything.
+    private void openFirstLink() {
+        List<String> urls = extractUrls(linkInput.getText().toString());
+        if (urls.isEmpty()) {
+            setStatus("لم أجد رابطاً في الخانة.", RED);
+            return;
+        }
+        readingCarts = false;
+        picking = false;
+        rewriteArmed = false;
+        web.loadUrl(urls.get(0));
     }
 
     private void copyLog() {
