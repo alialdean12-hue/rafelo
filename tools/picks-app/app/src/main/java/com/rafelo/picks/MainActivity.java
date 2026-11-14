@@ -190,7 +190,7 @@ public class MainActivity extends Activity {
         status.setTextSize(13);
         status.setTextColor(INK);
         status.setPadding(0, dp(4), 0, 0);
-        status.setText("الإصدار 0.4.2 · الصق رابط سلة أو أكثر، ثم اضغط «نقل إلى اختياراتي».");
+        status.setText("الإصدار 0.4.3 · الصق رابط سلة أو أكثر، ثم اضغط «نقل إلى اختياراتي».");
         panel.addView(status);
 
         root.addView(panel);
@@ -265,6 +265,12 @@ public class MainActivity extends Activity {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest req) {
                 String scheme = req.getUrl().getScheme();
+                String host = req.getUrl().getHost() == null ? "" : req.getUrl().getHost();
+                if (host.endsWith("play.google.com") || host.endsWith("apps.apple.com")) {
+                    // The partner page tries to send the user to the SHEIN app; stay on the website instead.
+                    setStatus("الصفحة حاولت فتح تطبيق شي ان في المتجر، فمنعتها.", RED);
+                    return true;
+                }
                 // Keep everything inside the app: block jumps to the SHEIN app or the Play Store.
                 return !("http".equals(scheme) || "https".equals(scheme));
             }
@@ -537,7 +543,7 @@ public class MainActivity extends Activity {
             toast("السجل فارغ. اضغط «بدء التسجيل» أولاً.");
             return;
         }
-        StringBuilder sb = new StringBuilder("zahra 0.4.2 log\n");
+        StringBuilder sb = new StringBuilder("zahra 0.4.3 log\n");
         synchronized (log) { for (String l : log) sb.append(l).append("\n"); }
         ClipboardManager cb = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
         if (cb != null) cb.setPrimaryClip(android.content.ClipData.newPlainText("log", sb.toString()));

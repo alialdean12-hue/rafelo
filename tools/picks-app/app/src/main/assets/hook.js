@@ -19,8 +19,8 @@
   var rec = false;
   try { rec = !!B.isRecording(); } catch (e) {}
   window.__picksSetRec = function (v) { rec = !!v; };
-  var NOISE = /abt|multi_language|srmdata|\/configs?\/|i18n|privacy|cookie_banner|userinfo_ugid|apolloConfig|zpnv|metric|journeyBranch|\/ccc\/|\/devices\/|\/risk\/|csrf|mapping_config|sample_config|cardConfig|pop_batch|strategy-center|assist_mark|update_country|userInfoManager|\.(js|css|png|jpe?g|webp|gif|svg|woff2?)(\?|$)/;
-  var SECRET_KEY = /token|cookie|auth|sign|csrf|armor|session|passw|pwd|secret|smdata|device|email|phone|mobile|oest/i;
+  var NOISE = /abt|multi_language|srmdata|\/configs?\/|i18n|privacy|cookie_banner|userinfo_ugid|apolloConfig|zpnv|metric|journeyBranch|\/devices\/|\/risk\/|csrf|mapping_config|sample_config|cardConfig|pop_batch|strategy-center|assist_mark|update_country|userInfoManager|\.(js|css|png|jpe?g|webp|gif|svg|woff2?)(\?|$)/;
+  var SECRET_KEY = /token|cookie|auth|sign|csrf|armor|session|passw|pwd|secret|smdata|device|email|phone|mobile|oest|anti-in|cs-random|ad-flag|gw-auth|nickname|member_id/i;
   function redactHeaders(h) {
     var o = {};
     for (var k in h) o[k] = SECRET_KEY.test(k) ? '[محذوف]' : String(h[k]).slice(0, 200);

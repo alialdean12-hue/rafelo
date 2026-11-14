@@ -24,4 +24,4 @@
 export ANDROID_HOME=/path/to/android-sdk
 gradle assembleDebug
 ```
-الملف الجاهز: `dist/zahra-shein-0.4.2.apk`. المفتاح `debug.keystore` محفوظ في المجلد حتى تُثبَّت كل نسخة جديدة فوق القديمة.
+الملف الجاهز: `dist/zahra-shein-0.4.3.apk`. المفتاح `debug.keystore` محفوظ في المجلد حتى تُثبَّت كل نسخة جديدة فوق القديمة.
