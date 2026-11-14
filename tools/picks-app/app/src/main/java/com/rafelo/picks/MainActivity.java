@@ -60,6 +60,11 @@ public class MainActivity extends Activity {
     private final Handler ui = new Handler(Looper.getMainLooper());
     private volatile String currentHost = "";
 
+    // Temporary recording for the learning build.
+    private final List<String> log = java.util.Collections.synchronizedList(new ArrayList<>());
+    private volatile boolean recording = false;
+    private Button recordBtn;
+
     private WebView web;
     private EditText linkInput;
     private TextView status;
@@ -157,6 +162,9 @@ public class MainActivity extends Activity {
         row2.addView(button("المنتجات", v -> showProducts(), false));
         row2.addView(button("برنامج الشركاء", v -> web.loadUrl(AFFILIATE_URL), false));
         row2.addView(button("حسابي", v -> web.loadUrl(HOME_URL), false));
+        recordBtn = button("بدء التسجيل (مؤقت)", v -> toggleRecording(), false);
+        row2.addView(recordBtn);
+        row2.addView(button("نسخ السجل", v -> copyLog(), false));
         HorizontalScrollView scroller = new HorizontalScrollView(this);
         scroller.setHorizontalScrollBarEnabled(false);
         scroller.addView(row2);
@@ -258,6 +266,17 @@ public class MainActivity extends Activity {
     }
 
     private class Bridge {
+        @JavascriptInterface
+        public boolean isRecording() { return recording && isShein(currentHost); }
+
+        @JavascriptInterface
+        public void log(String entry) {
+            if (!recording || !isShein(currentHost)) return;
+            if (log.size() >= 300) log.remove(0);
+            log.add(entry);
+            ui.post(() -> setStatus("التسجيل يعمل: " + log.size() + " طلب.", RED));
+        }
+
         @JavascriptInterface
         public void cartData(String list) {
             if (!isShein(currentHost)) return;
@@ -459,6 +478,35 @@ public class MainActivity extends Activity {
         AlertDialog.Builder d = dialog("أُضيف " + ok + " من " + pickTargets.length(), sb.toString().trim());
         if (!failed.isEmpty()) d.setPositiveButton("إعادة محاولة الفاشلة", (x, w) -> startPick(failed));
         d.show();
+    }
+
+    // ---------- temporary recording ----------
+
+    private void toggleRecording() {
+        recording = !recording;
+        web.evaluateJavascript("window.__picksSetRec&&window.__picksSetRec(" + recording + ");", null);
+        if (recording) {
+            log.clear();
+            recordBtn.setText("إيقاف التسجيل");
+            recordBtn.setTextColor(RED);
+            setStatus("التسجيل يعمل. افتح رابط الشريك، انزل حتى آخر المنتجات، ثم أضف منتجاً واحداً إلى السلة بمقاس، ثم «نسخ السجل».", RED);
+        } else {
+            recordBtn.setText("بدء التسجيل (مؤقت)");
+            recordBtn.setTextColor(Color.BLACK);
+            setStatus("توقف التسجيل. في السجل " + log.size() + " طلب.", INK);
+        }
+    }
+
+    private void copyLog() {
+        if (log.isEmpty()) {
+            toast("السجل فارغ. اضغط «بدء التسجيل» أولاً.");
+            return;
+        }
+        StringBuilder sb = new StringBuilder("zahra 0.4 log\n");
+        synchronized (log) { for (String l : log) sb.append(l).append("\n"); }
+        ClipboardManager cb = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        if (cb != null) cb.setPrimaryClip(android.content.ClipData.newPlainText("log", sb.toString()));
+        toast("نُسخ السجل (" + log.size() + " طلب). راجعه ثم أرسله.");
     }
 
     // ---------- helpers ----------
