@@ -18,6 +18,54 @@
     return o;
   }
 
+  // Last headers the affiliate pages sent. Kept in this page only, never passed to the app.
+  var AFF_API = /\/affiliate\/api\//;
+  var PICK_URL = /\/affiliate\/api\/pick\/update/;
+  var affHeaders = null;
+  function remember(u, h) {
+    if (AFF_API.test(u) && h && (h.token || h.armortoken || h.armorToken)) affHeaders = h;
+  }
+
+  // Adds the given products to the request the site is about to send when "اختار" is tapped.
+  function rewritePick(u, body) {
+    var add = window.__picksRewrite;
+    if (!add || !PICK_URL.test(u) || typeof body !== 'string') return null;
+    try {
+      var o = JSON.parse(body);
+      if (o.pickType != 1 || !Array.isArray(o.goodsIds)) return null;
+      o.skcNames = o.skcNames || [];
+      add.forEach(function (i) {
+        var id = Number(i.id);
+        if (o.goodsIds.indexOf(id) < 0) { o.goodsIds.push(id); o.skcNames.push(i.sn); }
+      });
+      window.__picksRewrite = null;
+      return JSON.stringify(o);
+    } catch (e) { return null; }
+  }
+
+  // Called by the app: picks the given products directly, reusing the headers the site just sent.
+  window.__picksPick = function (items) {
+    if (!affHeaders) { B.pickResult(JSON.stringify({ mode: 'direct', ok: false, reason: 'no-headers' })); return; }
+    var lang = (location.pathname.split('/')[1] || 'ar');
+    var x = new XMLHttpRequest();
+    x.open('POST', '/' + lang + '/affiliate/api/pick/update');
+    for (var k in affHeaders) {
+      if (/^(content-type|content-length|cookie|host)$/i.test(k)) continue;
+      try { x.setRequestHeader(k, affHeaders[k]); } catch (e) {}
+    }
+    x.setRequestHeader('content-type', 'application/json; charset=utf-8');
+    x.__picksDirect = true;
+    x.addEventListener('loadend', function () {
+      B.pickResult(JSON.stringify({ mode: 'direct', ok: x.status === 200, status: x.status, resp: String(x.responseText || '').slice(0, 4000) }));
+    });
+    x.send(JSON.stringify({
+      goodsIds: items.map(function (i) { return Number(i.id); }),
+      skcNames: items.map(function (i) { return i.sn; }),
+      pickType: 1,
+      sourceType: 1
+    }));
+  };
+
   function redactText(s) {
     if (!s) return '';
     s = String(s);
@@ -94,8 +142,21 @@
       var b = bodyText(init.body);
       var abs = u;
       try { abs = new URL(u, location.href).href; } catch (e) {}
-      return origFetch.apply(this, arguments).then(function (res) {
-        try { res.clone().text().then(function (t) { report(m, abs, h, b, res.status, t); }); } catch (e) {}
+      remember(abs, h);
+      var args = arguments;
+      var nb = rewritePick(abs, init.body);
+      var rewritten = false;
+      if (nb !== null) {
+        args = [input, Object.assign({}, init, { body: nb })];
+        b = nb; rewritten = true;
+      }
+      return origFetch.apply(this, args).then(function (res) {
+        try {
+          res.clone().text().then(function (t) {
+            if (rewritten) B.pickResult(JSON.stringify({ mode: 'rewrite', ok: res.status === 200, status: res.status, resp: String(t).slice(0, 4000) }));
+            report(m, abs, h, b, res.status, t);
+          });
+        } catch (e) {}
         return res;
       });
     };
@@ -113,7 +174,13 @@
   };
   XP.send = function (body) {
     var x = this, p = x.__picks;
+    var args = arguments;
     if (p) {
+      var abs0 = p.u;
+      try { abs0 = new URL(p.u, location.href).href; } catch (e) {}
+      if (!x.__picksDirect) remember(abs0, p.h);
+      var nb = rewritePick(abs0, body);
+      if (nb !== null) { body = nb; args = [nb]; p.rewritten = true; }
       var b = bodyText(body);
       x.addEventListener('loadend', function () {
         var t = '';
@@ -123,9 +190,10 @@
         } catch (e) {}
         var abs = p.u;
         try { abs = new URL(p.u, location.href).href; } catch (e) {}
+        if (p.rewritten) B.pickResult(JSON.stringify({ mode: 'rewrite', ok: x.status === 200, status: x.status, resp: String(t).slice(0, 4000) }));
         report(p.m, abs, p.h, b, x.status, t);
       });
     }
-    return xSend.apply(this, arguments);
+    return xSend.apply(this, args);
   };
 })();

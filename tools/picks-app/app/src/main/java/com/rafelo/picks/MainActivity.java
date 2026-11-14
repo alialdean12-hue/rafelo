@@ -65,6 +65,17 @@ public class MainActivity extends Activity {
     private String rawCart = "";
     private boolean waitingForCart = false;
 
+    // Picking state
+    private static final int CHUNK = 20;
+    private boolean picking = false;
+    private boolean sendScheduled = false;
+    private boolean rewriteArmed = false;
+    private int pickAttempts = 0;
+    private int chunkIndex = 0;
+    private final List<JSONArray> chunks = new ArrayList<>();
+    private JSONArray pickTargets = new JSONArray();
+    private final java.util.Set<String> pickedIds = new java.util.HashSet<>();
+
     @Override
     protected void onCreate(Bundle saved) {
         super.onCreate(saved);
@@ -122,6 +133,7 @@ public class MainActivity extends Activity {
 
         LinearLayout row2 = new LinearLayout(this);
         row2.setOrientation(LinearLayout.HORIZONTAL);
+        row2.addView(button("نقل إلى اختياراتي", v -> startPick(products), true));
         row2.addView(button("المنتجات", v -> showProducts(), false));
         row2.addView(button("برنامج الشركاء", v -> web.loadUrl(AFFILIATE_URL), false));
         recordBtn = button("بدء التسجيل", v -> toggleRecording(), false);
@@ -208,6 +220,11 @@ public class MainActivity extends Activity {
             @Override
             public void onPageFinished(WebView view, String url) {
                 currentHost = hostOf(url);
+                if (picking && !sendScheduled && url.contains("/affiliate")) {
+                    sendScheduled = true;
+                    ui.postDelayed(() -> trySendChunk(), 4000);
+                }
+                if (rewriteArmed && isShein(currentHost)) armRewriteInPage();
                 if (waitingForCart && url.contains("/cart/share")) {
                     // If the site's own request was not seen in 8 s, read the products off the page instead.
                     ui.postDelayed(() -> { if (waitingForCart) scrapeCartPage(); }, 8000);
@@ -223,6 +240,12 @@ public class MainActivity extends Activity {
             if (log.size() >= 200) log.remove(0);
             log.add(entry);
             ui.post(() -> status.setText("التسجيل يعمل: " + log.size() + " طلب. اضغط «اختار» على منتج واحد ثم «نسخ السجل»."));
+        }
+
+        @JavascriptInterface
+        public void pickResult(String json) {
+            if (!isShein(currentHost)) return;
+            ui.post(() -> onPickResult(json));
         }
 
         @JavascriptInterface
@@ -315,13 +338,149 @@ public class MainActivity extends Activity {
     private void copyCartForDeveloper() {
         try {
             JSONObject o = new JSONObject();
-            o.put("app", "picks 0.1");
+            o.put("app", "picks 0.2");
             o.put("products", products);
             o.put("raw", rawCart);
             copy(o.toString(1), "نُسخت بيانات السلة. أرسلها كما هي.");
         } catch (Exception e) {
             toast("تعذر النسخ.");
         }
+    }
+
+    // ---------- picking ----------
+
+    private void startPick(JSONArray items) {
+        if (items == null || items.length() == 0) {
+            toast("اقرأ السلة أولاً: الصق الرابط واضغط «قراءة السلة».");
+            return;
+        }
+        pickTargets = items;
+        chunks.clear();
+        JSONArray cur = new JSONArray();
+        for (int i = 0; i < items.length(); i++) {
+            JSONObject p = items.optJSONObject(i);
+            if (p == null) continue;
+            try {
+                JSONObject o = new JSONObject();
+                o.put("id", p.optString("id"));
+                o.put("sn", p.optString("sn"));
+                cur.put(o);
+            } catch (Exception ignored) { }
+            if (cur.length() == CHUNK) { chunks.add(cur); cur = new JSONArray(); }
+        }
+        if (cur.length() > 0) chunks.add(cur);
+        chunkIndex = 0;
+        pickAttempts = 0;
+        pickedIds.clear();
+        rewriteArmed = false;
+        picking = true;
+        sendScheduled = false;
+        status.setTextColor(Color.parseColor("#16232A"));
+        status.setText("أفتح برنامج الشركاء وأضيف " + items.length() + " منتجات إلى اختياراتي…");
+        web.loadUrl(AFFILIATE_URL);
+    }
+
+    private void trySendChunk() {
+        if (!picking || chunkIndex >= chunks.size()) return;
+        String items = chunks.get(chunkIndex).toString();
+        String js = "(function(){if(!window.__picksPick)return 'nohook';window.__picksPick(" + items + ");return 'sent';})()";
+        web.evaluateJavascript(js, v -> {
+            if (v != null && v.contains("nohook")) onPickResult("{\"mode\":\"direct\",\"ok\":false,\"reason\":\"no-headers\"}");
+        });
+    }
+
+    private void onPickResult(String json) {
+        try {
+            JSONObject r = new JSONObject(json);
+            String mode = r.optString("mode");
+            if ("direct".equals(mode) && !picking) return;
+            if ("no-headers".equals(r.optString("reason"))) {
+                if (++pickAttempts < 4) {
+                    status.setText("أنتظر أن تكتمل صفحة برنامج الشركاء… (" + pickAttempts + ")");
+                    ui.postDelayed(this::trySendChunk, 3000);
+                } else {
+                    armRewrite("لم يكتمل تحميل برنامج الشركاء أو لم تسجّل الدخول.");
+                }
+                return;
+            }
+            JSONObject resp = null;
+            try { resp = new JSONObject(r.optString("resp")); } catch (Exception ignored) { }
+            boolean okCode = r.optBoolean("ok") && resp != null && "0".equals(resp.optString("code"));
+            if (okCode) {
+                JSONObject info = resp.optJSONObject("info");
+                JSONArray list = info == null ? null : info.optJSONArray("pickedGoodsIdList");
+                if (list != null) for (int i = 0; i < list.length(); i++) pickedIds.add(String.valueOf(list.optLong(i)));
+                if ("direct".equals(mode) && ++chunkIndex < chunks.size()) {
+                    status.setText("أُضيفت دفعة " + chunkIndex + " من " + chunks.size() + "…");
+                    ui.postDelayed(this::trySendChunk, 1500);
+                } else {
+                    finishPick();
+                }
+                return;
+            }
+            String msg = resp != null ? resp.optString("msg") : ("رمز " + r.optInt("status"));
+            if ("direct".equals(mode)) armRewrite("رفض الموقع الإضافة المباشرة (" + msg + ").");
+            else {
+                rewriteArmed = false;
+                status.setTextColor(RED);
+                status.setText("رفض الموقع الإضافة: " + msg + ". اضغط «نسخ السجل» بعد تشغيل التسجيل وأرسله للمطوّر.");
+            }
+        } catch (Exception e) {
+            status.setText("نتيجة غير مفهومة من الموقع.");
+        }
+    }
+
+    // Fallback: the user taps "اختار" on any product and the app adds the cart products to that same request.
+    private void armRewrite(String reason) {
+        picking = false;
+        rewriteArmed = true;
+        armRewriteInPage();
+        status.setTextColor(RED);
+        status.setText(reason + " الطريقة البديلة: اضغط «اختار» على أي منتج غير مختار في هذه الصفحة، وسأضيف معه منتجات السلة.");
+    }
+
+    private void armRewriteInPage() {
+        JSONArray remaining = new JSONArray();
+        for (int i = chunkIndex; i < chunks.size(); i++) {
+            JSONArray c = chunks.get(i);
+            for (int j = 0; j < c.length(); j++) remaining.put(c.opt(j));
+        }
+        web.evaluateJavascript("window.__picksRewrite=" + remaining + ";", null);
+    }
+
+    private void finishPick() {
+        picking = false;
+        rewriteArmed = false;
+        web.evaluateJavascript("window.__picksRewrite=null;", null);
+        JSONArray failed = new JSONArray();
+        StringBuilder sb = new StringBuilder();
+        int ok = 0;
+        for (int i = 0; i < pickTargets.length(); i++) {
+            JSONObject p = pickTargets.optJSONObject(i);
+            if (p == null) continue;
+            boolean done = pickedIds.isEmpty() || pickedIds.contains(p.optString("id"));
+            if (done) ok++; else failed.put(p);
+            String name = p.optString("name");
+            if (name.length() > 60) name = name.substring(0, 60) + "…";
+            sb.append(done ? "✓ " : "✗ ").append(name).append("\n\n");
+        }
+        status.setTextColor(failed.length() == 0 ? TEAL : RED);
+        status.setText("أُضيف " + ok + " من " + pickTargets.length() + " إلى اختياراتي.");
+        TextView tv = new TextView(this);
+        tv.setText(sb.toString().trim());
+        tv.setPadding(dp(20), dp(12), dp(20), dp(12));
+        tv.setTextSize(14);
+        ScrollView sv = new ScrollView(this);
+        sv.addView(tv);
+        AlertDialog.Builder d = new AlertDialog.Builder(this)
+                .setTitle("أُضيف " + ok + " من " + pickTargets.length())
+                .setView(sv)
+                .setNegativeButton("إغلاق", null);
+        if (failed.length() > 0) {
+            final JSONArray retry = failed;
+            d.setPositiveButton("إعادة محاولة الفاشلة", (x, w) -> startPick(retry));
+        }
+        d.show();
     }
 
     // ---------- recording ----------
@@ -345,7 +504,7 @@ public class MainActivity extends Activity {
             toast("السجل فارغ. اضغط «بدء التسجيل» ثم «اختار» على منتج.");
             return;
         }
-        StringBuilder sb = new StringBuilder("picks 0.1 log\n");
+        StringBuilder sb = new StringBuilder("picks 0.2 log\n");
         synchronized (log) {
             for (String l : log) sb.append(l).append("\n");
         }
