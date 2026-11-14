@@ -162,20 +162,35 @@ public class MainActivity extends Activity {
         row2.addView(button("المنتجات", v -> showProducts(), false));
         row2.addView(button("برنامج الشركاء", v -> web.loadUrl(AFFILIATE_URL), false));
         row2.addView(button("حسابي", v -> web.loadUrl(HOME_URL), false));
-        recordBtn = button("بدء التسجيل (مؤقت)", v -> toggleRecording(), false);
-        row2.addView(recordBtn);
-        row2.addView(button("فتح الرابط", v -> openFirstLink(), false));
-        row2.addView(button("نسخ السجل", v -> copyLog(), false));
         HorizontalScrollView scroller = new HorizontalScrollView(this);
         scroller.setHorizontalScrollBarEnabled(false);
         scroller.addView(row2);
         panel.addView(scroller);
 
+        // Temporary learning tools, in their own clearly marked row so they are always visible.
+        LinearLayout learn = new LinearLayout(this);
+        learn.setOrientation(LinearLayout.HORIZONTAL);
+        learn.setGravity(Gravity.CENTER_VERTICAL);
+        learn.setPadding(dp(6), dp(4), dp(6), dp(4));
+        learn.setBackgroundColor(Color.parseColor("#FDECEA"));
+        TextView learnLabel = new TextView(this);
+        learnLabel.setText("أدوات مؤقتة:");
+        learnLabel.setTextColor(RED);
+        learnLabel.setTextSize(12);
+        learn.addView(learnLabel);
+        recordBtn = button("بدء التسجيل", v -> toggleRecording(), false);
+        learn.addView(recordBtn, weighted());
+        learn.addView(button("فتح الرابط", v -> openFirstLink(), false), weighted());
+        learn.addView(button("نسخ السجل", v -> copyLog(), false), weighted());
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.topMargin = dp(4);
+        panel.addView(learn, lp);
+
         status = new TextView(this);
         status.setTextSize(13);
         status.setTextColor(INK);
         status.setPadding(0, dp(4), 0, 0);
-        status.setText("الصق رابط سلة أو أكثر، ثم اضغط «نقل إلى اختياراتي».");
+        status.setText("الإصدار 0.4.2 · الصق رابط سلة أو أكثر، ثم اضغط «نقل إلى اختياراتي».");
         panel.addView(status);
 
         root.addView(panel);
@@ -200,6 +215,12 @@ public class MainActivity extends Activity {
         lp.setMarginStart(dp(4));
         b.setLayoutParams(lp);
         return b;
+    }
+
+    private LinearLayout.LayoutParams weighted() {
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
+        lp.setMarginStart(dp(4));
+        return lp;
     }
 
     private void setStatus(String text, int color) {
@@ -492,7 +513,7 @@ public class MainActivity extends Activity {
             recordBtn.setTextColor(RED);
             setStatus("التسجيل يعمل. افتح رابط الشريك، انزل حتى آخر المنتجات، ثم أضف منتجاً واحداً إلى السلة بمقاس، ثم «نسخ السجل».", RED);
         } else {
-            recordBtn.setText("بدء التسجيل (مؤقت)");
+            recordBtn.setText("بدء التسجيل");
             recordBtn.setTextColor(Color.BLACK);
             setStatus("توقف التسجيل. في السجل " + log.size() + " طلب.", INK);
         }
@@ -516,7 +537,7 @@ public class MainActivity extends Activity {
             toast("السجل فارغ. اضغط «بدء التسجيل» أولاً.");
             return;
         }
-        StringBuilder sb = new StringBuilder("zahra 0.4 log\n");
+        StringBuilder sb = new StringBuilder("zahra 0.4.2 log\n");
         synchronized (log) { for (String l : log) sb.append(l).append("\n"); }
         ClipboardManager cb = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
         if (cb != null) cb.setPrimaryClip(android.content.ClipData.newPlainText("log", sb.toString()));
