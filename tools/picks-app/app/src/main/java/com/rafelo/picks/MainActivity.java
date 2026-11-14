@@ -49,32 +49,38 @@ import java.util.regex.Pattern;
 
 public class MainActivity extends Activity {
 
+    private static final String VERSION = "0.5";
     private static final String AFFILIATE_URL = "https://m.shein.com/ar/affiliate";
     private static final String HOME_URL = "https://m.shein.com/ar/user/index";
-    private static final int TEAL = Color.parseColor("#2F7FB8");
+    private static final String CART_URL = "https://m.shein.com/ar/cart";
+    private static final int BLUE = Color.parseColor("#2F7FB8");
     private static final int RED = Color.parseColor("#B3261E");
     private static final int INK = Color.parseColor("#16232A");
+    private static final int PANEL = Color.parseColor("#E7F3FA");
     private static final long CART_TIMEOUT_MS = 20000;
+    private static final long LINK_TIMEOUT_MS = 25000;
     private static final int CHUNK = 20;
+
+    private enum Goal { PICKS, PARTNER_CART }
 
     private final Handler ui = new Handler(Looper.getMainLooper());
     private volatile String currentHost = "";
 
-    // Temporary recording for the learning build.
-    private final List<String> log = java.util.Collections.synchronizedList(new ArrayList<>());
-    private volatile boolean recording = false;
-    private Button recordBtn;
-
     private WebView web;
-    private EditText linkInput;
     private TextView status;
+    private Button tabPicks, tabPartner;
+    private LinearLayout picksPanel, partnerPanel;
+    private EditText linkInput;          // picks: cart links
+    private EditText partnerCartInput;   // partner: cart links
+    private EditText partnerLinksInput;  // partner: partner product links
 
     private String hookJs = "";
 
-    // All products read so far, by goods id, in the order they were found.
+    // Products read from the cart links, by goods id.
     private final Map<String, JSONObject> products = new LinkedHashMap<>();
 
     // Reading several cart links one after another.
+    private Goal goal = Goal.PICKS;
     private final List<String> cartQueue = new ArrayList<>();
     private final List<String> cartReport = new ArrayList<>();
     private int cartIndex = -1;
@@ -90,6 +96,21 @@ public class MainActivity extends Activity {
     private final List<JSONArray> chunks = new ArrayList<>();
     private JSONArray pickTargets = new JSONArray();
     private final Set<String> pickedIds = new HashSet<>();
+
+    // Adding matching partner products to the cart.
+    private boolean partnerRunning = false;
+    private final List<String> partnerLinks = new ArrayList<>();
+    private int partnerIndex = -1;
+    private int partnerToken = 0;
+    private boolean linkHandled = false;
+    private String addingId = null;
+    private int addAttempt = 0;
+    private final Set<String> partnerSeenIds = new HashSet<>();
+    private final List<String> addedLines = new ArrayList<>();
+    private final List<String> failedLines = new ArrayList<>();
+    private final Set<String> addedIds = new HashSet<>();
+    private int linksNotInCart = 0;
+    private int linksNotOpened = 0;
 
     @Override
     protected void onCreate(Bundle saved) {
@@ -136,68 +157,111 @@ public class MainActivity extends Activity {
 
         LinearLayout panel = new LinearLayout(this);
         panel.setOrientation(LinearLayout.VERTICAL);
-        panel.setPadding(pad, pad, pad, dp(6));
-        panel.setBackgroundColor(Color.parseColor("#E7F3FA"));
+        panel.setPadding(pad, dp(6), pad, dp(6));
+        panel.setBackgroundColor(PANEL);
 
-        LinearLayout row1 = new LinearLayout(this);
-        row1.setOrientation(LinearLayout.HORIZONTAL);
-        row1.setGravity(Gravity.CENTER_VERTICAL);
-        linkInput = new EditText(this);
-        linkInput.setHint("الصق رابطاً أو أكثر، كل رابط في سطر");
-        linkInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE | InputType.TYPE_TEXT_VARIATION_URI);
-        linkInput.setMinLines(2);
-        linkInput.setMaxLines(4);
-        linkInput.setTextSize(13);
-        row1.addView(linkInput, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
-        LinearLayout side = new LinearLayout(this);
-        side.setOrientation(LinearLayout.VERTICAL);
-        side.addView(button("لصق", v -> pasteFromClipboard(), false));
-        side.addView(button("مسح", v -> { linkInput.setText(""); }, false));
-        row1.addView(side);
-        panel.addView(row1);
+        // Tabs
+        LinearLayout tabs = new LinearLayout(this);
+        tabs.setOrientation(LinearLayout.HORIZONTAL);
+        tabPicks = button("نقل إلى اختياراتي", v -> showTab(Goal.PICKS), false);
+        tabPartner = button("سلة الشركاء", v -> showTab(Goal.PARTNER_CART), false);
+        tabs.addView(tabPicks, weighted());
+        tabs.addView(tabPartner, weighted());
+        panel.addView(tabs);
 
+        // Picks panel
+        picksPanel = new LinearLayout(this);
+        picksPanel.setOrientation(LinearLayout.VERTICAL);
+        linkInput = input("الصق رابط سلة أو أكثر، كل رابط في سطر", 2, 4);
+        picksPanel.addView(inputRow(linkInput));
         LinearLayout row2 = new LinearLayout(this);
         row2.setOrientation(LinearLayout.HORIZONTAL);
-        row2.addView(button("نقل إلى اختياراتي", v -> startFromLinks(), true));
+        row2.addView(button("نقل إلى اختياراتي", v -> startFromLinks(Goal.PICKS), true));
         row2.addView(button("المنتجات", v -> showProducts(), false));
         row2.addView(button("برنامج الشركاء", v -> web.loadUrl(AFFILIATE_URL), false));
         row2.addView(button("حسابي", v -> web.loadUrl(HOME_URL), false));
         HorizontalScrollView scroller = new HorizontalScrollView(this);
         scroller.setHorizontalScrollBarEnabled(false);
         scroller.addView(row2);
-        panel.addView(scroller);
+        picksPanel.addView(scroller);
+        panel.addView(picksPanel);
 
-        // Temporary learning tools, in their own clearly marked row so they are always visible.
-        LinearLayout learn = new LinearLayout(this);
-        learn.setOrientation(LinearLayout.HORIZONTAL);
-        learn.setGravity(Gravity.CENTER_VERTICAL);
-        learn.setPadding(dp(6), dp(4), dp(6), dp(4));
-        learn.setBackgroundColor(Color.parseColor("#FDECEA"));
-        TextView learnLabel = new TextView(this);
-        learnLabel.setText("أدوات مؤقتة:");
-        learnLabel.setTextColor(RED);
-        learnLabel.setTextSize(12);
-        learn.addView(learnLabel);
-        recordBtn = button("بدء التسجيل", v -> toggleRecording(), false);
-        learn.addView(recordBtn, weighted());
-        learn.addView(button("فتح الرابط", v -> openFirstLink(), false), weighted());
-        learn.addView(button("نسخ السجل", v -> copyLog(), false), weighted());
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        lp.topMargin = dp(4);
-        panel.addView(learn, lp);
+        // Partner-cart panel
+        partnerPanel = new LinearLayout(this);
+        partnerPanel.setOrientation(LinearLayout.VERTICAL);
+        partnerPanel.addView(label("رابط السلة (فيه المقاسات والكميات):"));
+        partnerCartInput = input("الصق رابط السلة هنا", 1, 3);
+        partnerPanel.addView(inputRow(partnerCartInput));
+        partnerPanel.addView(label("روابط منتجات الشركاء، كل رابط في سطر:"));
+        partnerLinksInput = input("الصق روابط المنتجات التي نشرها الشركاء", 2, 5);
+        partnerPanel.addView(inputRow(partnerLinksInput));
+        LinearLayout prow = new LinearLayout(this);
+        prow.setOrientation(LinearLayout.HORIZONTAL);
+        prow.addView(button("نقل المتطابق إلى سلتي", v -> startFromLinks(Goal.PARTNER_CART), true), weighted());
+        prow.addView(button("سلتي", v -> web.loadUrl(CART_URL), false));
+        partnerPanel.addView(prow);
+        panel.addView(partnerPanel);
 
         status = new TextView(this);
         status.setTextSize(13);
         status.setTextColor(INK);
         status.setPadding(0, dp(4), 0, 0);
-        status.setText("الإصدار 0.4.3 · الصق رابط سلة أو أكثر، ثم اضغط «نقل إلى اختياراتي».");
         panel.addView(status);
 
         root.addView(panel);
 
         web = new WebView(this);
         root.addView(web, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1));
+        showTab(Goal.PICKS);
         return root;
+    }
+
+    private void showTab(Goal g) {
+        boolean picks = g == Goal.PICKS;
+        picksPanel.setVisibility(picks ? View.VISIBLE : View.GONE);
+        partnerPanel.setVisibility(picks ? View.GONE : View.VISIBLE);
+        styleTab(tabPicks, picks);
+        styleTab(tabPartner, !picks);
+        setStatus("الإصدار " + VERSION + " · " + (picks
+                ? "الصق رابط سلة أو أكثر، ثم اضغط «نقل إلى اختياراتي»."
+                : "الصق رابط السلة وروابط منتجات الشركاء، ثم اضغط «نقل المتطابق إلى سلتي»."), INK);
+    }
+
+    private void styleTab(Button b, boolean active) {
+        b.setBackgroundColor(active ? INK : Color.parseColor("#D3DDE0"));
+        b.setTextColor(active ? Color.WHITE : INK);
+    }
+
+    private EditText input(String hint, int minLines, int maxLines) {
+        EditText e = new EditText(this);
+        e.setHint(hint);
+        e.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE | InputType.TYPE_TEXT_VARIATION_URI);
+        e.setMinLines(minLines);
+        e.setMaxLines(maxLines);
+        e.setTextSize(13);
+        return e;
+    }
+
+    private View inputRow(EditText e) {
+        LinearLayout row = new LinearLayout(this);
+        row.setOrientation(LinearLayout.HORIZONTAL);
+        row.setGravity(Gravity.CENTER_VERTICAL);
+        row.addView(e, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
+        LinearLayout side = new LinearLayout(this);
+        side.setOrientation(LinearLayout.VERTICAL);
+        side.addView(button("لصق", v -> pasteInto(e), false));
+        side.addView(button("مسح", v -> e.setText(""), false));
+        row.addView(side);
+        return row;
+    }
+
+    private TextView label(String text) {
+        TextView t = new TextView(this);
+        t.setText(text);
+        t.setTextSize(12);
+        t.setTextColor(INK);
+        t.setPadding(0, dp(4), 0, 0);
+        return t;
     }
 
     private Button button(String text, View.OnClickListener l, boolean primary) {
@@ -207,7 +271,7 @@ public class MainActivity extends Activity {
         b.setTextSize(13);
         b.setOnClickListener(l);
         if (primary) {
-            b.setBackgroundColor(TEAL);
+            b.setBackgroundColor(BLUE);
             b.setTextColor(Color.WHITE);
         }
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
@@ -241,7 +305,6 @@ public class MainActivity extends Activity {
         s.setMediaPlaybackRequiresUserGesture(true);
         // Present as regular mobile Chrome rather than an embedded web view.
         s.setUserAgentString(s.getUserAgentString().replace("; wv", "").replace("Version/4.0 ", ""));
-        // Smoother scrolling on long product pages.
         s.setOffscreenPreRaster(true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             web.setRendererPriorityPolicy(WebView.RENDERER_PRIORITY_IMPORTANT, true);
@@ -267,11 +330,10 @@ public class MainActivity extends Activity {
                 String scheme = req.getUrl().getScheme();
                 String host = req.getUrl().getHost() == null ? "" : req.getUrl().getHost();
                 if (host.endsWith("play.google.com") || host.endsWith("apps.apple.com")) {
-                    // The partner page tries to send the user to the SHEIN app; stay on the website instead.
-                    setStatus("الصفحة حاولت فتح تطبيق شي ان في المتجر، فمنعتها.", RED);
+                    // Partner pages try to send the user to the SHEIN app; stay on the website instead.
                     return true;
                 }
-                // Keep everything inside the app: block jumps to the SHEIN app or the Play Store.
+                // Keep everything inside the app: block jumps to the SHEIN app.
                 return !("http".equals(scheme) || "https".equals(scheme));
             }
 
@@ -289,22 +351,16 @@ public class MainActivity extends Activity {
                     ui.postDelayed(MainActivity.this::trySendChunk, 4000);
                 }
                 if (rewriteArmed && isShein(currentHost)) armRewriteInPage();
+                if (partnerRunning && !linkHandled) {
+                    // Product pages also carry the id in their address: "...-p-123456.html".
+                    Matcher m = Pattern.compile("-p-(\\d+)").matcher(url);
+                    if (m.find()) { final String id = m.group(1); ui.postDelayed(() -> onProductSeen(id), 2500); }
+                }
             }
         });
     }
 
     private class Bridge {
-        @JavascriptInterface
-        public boolean isRecording() { return recording && isShein(currentHost); }
-
-        @JavascriptInterface
-        public void log(String entry) {
-            if (!recording || !isShein(currentHost)) return;
-            if (log.size() >= 300) log.remove(0);
-            log.add(entry);
-            ui.post(() -> setStatus("التسجيل يعمل: " + log.size() + " طلب.", RED));
-        }
-
         @JavascriptInterface
         public void cartData(String list) {
             if (!isShein(currentHost)) return;
@@ -316,18 +372,40 @@ public class MainActivity extends Activity {
             if (!isShein(currentHost)) return;
             ui.post(() -> onPickResult(json));
         }
+
+        @JavascriptInterface
+        public void productSeen(String id) {
+            if (!isShein(currentHost)) return;
+            ui.post(() -> onProductSeen(id));
+        }
+
+        @JavascriptInterface
+        public void cartAddResult(String json) {
+            if (!isShein(currentHost)) return;
+            ui.post(() -> onCartAddResult(json));
+        }
     }
 
     // ---------- reading carts ----------
 
-    private void startFromLinks() {
-        List<String> urls = extractUrls(linkInput.getText().toString());
+    private void startFromLinks(Goal g) {
+        String text = (g == Goal.PICKS ? linkInput : partnerCartInput).getText().toString();
+        List<String> urls = extractUrls(text);
         if (urls.isEmpty()) {
-            setStatus("لم أجد رابطاً. الصق رسالة المشاركة أو الرابط الذي يبدأ بـ https.", RED);
+            setStatus("لم أجد رابط سلة. الصق رسالة المشاركة أو الرابط الذي يبدأ بـ https.", RED);
             return;
         }
-        picking = false;
-        rewriteArmed = false;
+        if (g == Goal.PARTNER_CART) {
+            partnerLinks.clear();
+            partnerLinks.addAll(extractUrls(partnerLinksInput.getText().toString()));
+            partnerLinks.removeAll(urls);
+            if (partnerLinks.isEmpty()) {
+                setStatus("الصق روابط منتجات الشركاء في الخانة الثانية.", RED);
+                return;
+            }
+        }
+        goal = g;
+        stopAll();
         products.clear();
         cartQueue.clear();
         cartQueue.addAll(urls);
@@ -337,16 +415,26 @@ public class MainActivity extends Activity {
         nextCart();
     }
 
+    private void stopAll() {
+        readingCarts = false;
+        picking = false;
+        rewriteArmed = false;
+        partnerRunning = false;
+        cartToken++;
+        partnerToken++;
+    }
+
     private void nextCart() {
         cartIndex++;
         if (cartIndex >= cartQueue.size()) {
             readingCarts = false;
             if (products.isEmpty()) {
-                setStatus("لم أجد منتجات في الروابط. تأكد أنها روابط سلة مشتركة.", RED);
+                setStatus("لم أجد منتجات في رابط السلة. تأكد أنه رابط سلة مشتركة.", RED);
                 showReport("لم أجد منتجات", String.join("\n", cartReport));
                 return;
             }
-            startPick(new ArrayList<>(products.values()));
+            if (goal == Goal.PICKS) startPick(new ArrayList<>(products.values()));
+            else startPartnerLinks();
             return;
         }
         final int token = ++cartToken;
@@ -354,7 +442,7 @@ public class MainActivity extends Activity {
         web.loadUrl(cartQueue.get(cartIndex));
         ui.postDelayed(() -> {
             if (readingCarts && token == cartToken) {
-                cartReport.add("✗ الرابط " + (cartIndex + 1) + ": لم تُقرأ السلة (انتهت المهلة)");
+                cartReport.add("✗ رابط السلة " + (cartIndex + 1) + ": لم يُقرأ (انتهت المهلة)");
                 nextCart();
             }
         }, CART_TIMEOUT_MS);
@@ -372,7 +460,7 @@ public class MainActivity extends Activity {
                 if (!id.isEmpty() && !products.containsKey(id)) { products.put(id, p); added++; }
             }
             if (arr.length() == 0) return; // wait for the next response or the timeout
-            cartReport.add("✓ الرابط " + (cartIndex + 1) + ": " + arr.length() + " منتجات"
+            cartReport.add("✓ رابط السلة " + (cartIndex + 1) + ": " + arr.length() + " منتجات"
                     + (added < arr.length() ? " (" + (arr.length() - added) + " مكررة)" : ""));
             cartToken++; // cancel this cart's timeout
             ui.postDelayed(this::nextCart, 800);
@@ -444,8 +532,7 @@ public class MainActivity extends Activity {
                 }
                 return;
             }
-            JSONObject resp = null;
-            try { resp = new JSONObject(r.optString("resp")); } catch (Exception ignored) { }
+            JSONObject resp = parse(r.optString("resp"));
             boolean okCode = r.optBoolean("ok") && resp != null && "0".equals(resp.optString("code"));
             if (okCode) {
                 JSONObject info = resp.optJSONObject("info");
@@ -502,52 +589,135 @@ public class MainActivity extends Activity {
             if (done) ok++; else failed.add(p);
             sb.append(done ? "✓ " : "✗ ").append(shorten(p.optString("name"), 60)).append("\n");
         }
-        setStatus("أُضيف " + ok + " من " + pickTargets.length() + " إلى اختياراتي.", failed.isEmpty() ? TEAL : RED);
+        setStatus("أُضيف " + ok + " من " + pickTargets.length() + " إلى اختياراتي.", failed.isEmpty() ? BLUE : RED);
         AlertDialog.Builder d = dialog("أُضيف " + ok + " من " + pickTargets.length(), sb.toString().trim());
         if (!failed.isEmpty()) d.setPositiveButton("إعادة محاولة الفاشلة", (x, w) -> startPick(failed));
         d.show();
     }
 
-    // ---------- temporary recording ----------
+    // ---------- partner products → my cart ----------
 
-    private void toggleRecording() {
-        recording = !recording;
-        web.evaluateJavascript("window.__picksSetRec&&window.__picksSetRec(" + recording + ");", null);
-        if (recording) {
-            log.clear();
-            recordBtn.setText("إيقاف التسجيل");
-            recordBtn.setTextColor(RED);
-            setStatus("التسجيل يعمل. افتح رابط الشريك، انزل حتى آخر المنتجات، ثم أضف منتجاً واحداً إلى السلة بمقاس، ثم «نسخ السجل».", RED);
-        } else {
-            recordBtn.setText("بدء التسجيل");
-            recordBtn.setTextColor(Color.BLACK);
-            setStatus("توقف التسجيل. في السجل " + log.size() + " طلب.", INK);
+    private void startPartnerLinks() {
+        partnerRunning = true;
+        partnerIndex = -1;
+        partnerSeenIds.clear();
+        addedLines.clear();
+        failedLines.clear();
+        addedIds.clear();
+        linksNotInCart = 0;
+        linksNotOpened = 0;
+        nextPartnerLink();
+    }
+
+    private void nextPartnerLink() {
+        if (!partnerRunning) return;
+        partnerIndex++;
+        if (partnerIndex >= partnerLinks.size()) { finishPartner(); return; }
+        linkHandled = false;
+        addingId = null;
+        final int token = ++partnerToken;
+        setStatus("أفتح رابط الشريك " + (partnerIndex + 1) + " من " + partnerLinks.size()
+                + " · أُضيف حتى الآن " + addedIds.size(), INK);
+        web.loadUrl(partnerLinks.get(partnerIndex));
+        ui.postDelayed(() -> {
+            if (partnerRunning && token == partnerToken && !linkHandled) {
+                linkHandled = true;
+                linksNotOpened++;
+                failedLines.add("✗ رابط الشريك " + (partnerIndex + 1) + ": لم يفتح صفحة منتج");
+                nextPartnerLink();
+            }
+        }, LINK_TIMEOUT_MS);
+    }
+
+    private void onProductSeen(String id) {
+        if (!partnerRunning || linkHandled) return;
+        linkHandled = true;
+        partnerToken++; // cancel this link's timeout
+        partnerSeenIds.add(id);
+        JSONObject item = products.get(id);
+        if (item == null || addedIds.contains(id)) {
+            if (item == null) linksNotInCart++;
+            ui.postDelayed(this::nextPartnerLink, 600);
+            return;
+        }
+        addingId = id;
+        addAttempt = 1;
+        // Give the product page a moment to finish its own requests before adding.
+        ui.postDelayed(this::sendAddToCart, 2000);
+    }
+
+    private void sendAddToCart() {
+        if (!partnerRunning || addingId == null) return;
+        JSONObject p = products.get(addingId);
+        if (p == null) return;
+        try {
+            JSONObject item = new JSONObject();
+            item.put("id", p.optString("id"));
+            item.put("sku", p.optString("sku"));
+            item.put("qty", p.optString("qty", "1"));
+            item.put("mall", p.optString("mall", "1"));
+            boolean withSdk = addAttempt >= 3;
+            String js = "(function(){if(!window.__picksAddCart)return 'nohook';window.__picksAddCart(" + item + "," + withSdk + ");return 'sent';})()";
+            web.evaluateJavascript(js, v -> {
+                if (v != null && v.contains("nohook"))
+                    onCartAddResult("{\"id\":\"" + addingId + "\",\"ok\":false,\"reason\":\"no-headers\"}");
+            });
+        } catch (Exception e) {
+            onCartAddResult("{\"ok\":false,\"reason\":\"error\"}");
         }
     }
 
-    // Opens the first link in the box without reading or adding anything.
-    private void openFirstLink() {
-        List<String> urls = extractUrls(linkInput.getText().toString());
-        if (urls.isEmpty()) {
-            setStatus("لم أجد رابطاً في الخانة.", RED);
+    private void onCartAddResult(String json) {
+        if (!partnerRunning || addingId == null) return;
+        JSONObject r = parse(json);
+        if (r == null) return;
+        if (!r.optString("id").isEmpty() && !r.optString("id").equals(addingId)) return;
+        JSONObject p = products.get(addingId);
+        String name = p == null ? addingId : shorten(p.optString("name"), 50);
+        String qty = p == null ? "1" : p.optString("qty", "1");
+        String attr = p == null ? "" : p.optString("attr");
+        JSONObject resp = parse(r.optString("resp"));
+        boolean ok = r.optBoolean("ok") && resp != null && "0".equals(resp.optString("code"));
+        if (ok) {
+            addedIds.add(addingId);
+            addedLines.add("✓ " + name + (attr.isEmpty() ? "" : " · " + attr) + " · الكمية " + qty);
+            addingId = null;
+            ui.postDelayed(this::nextPartnerLink, 1200);
             return;
         }
-        readingCarts = false;
-        picking = false;
-        rewriteArmed = false;
-        web.loadUrl(urls.get(0));
+        // Attempt 1-2: let the page add its own security headers; attempt 3: copy them too.
+        if (addAttempt < 3) {
+            addAttempt++;
+            ui.postDelayed(this::sendAddToCart, "no-headers".equals(r.optString("reason")) ? 2500 : 1200);
+            return;
+        }
+        String msg = resp != null && !resp.optString("msg").isEmpty() ? resp.optString("msg")
+                : ("no-headers".equals(r.optString("reason")) ? "لم تكتمل صفحة المنتج" : "رمز " + r.optInt("status"));
+        failedLines.add("✗ " + name + " · " + msg);
+        addingId = null;
+        ui.postDelayed(this::nextPartnerLink, 800);
     }
 
-    private void copyLog() {
-        if (log.isEmpty()) {
-            toast("السجل فارغ. اضغط «بدء التسجيل» أولاً.");
-            return;
+    private void finishPartner() {
+        partnerRunning = false;
+        List<String> missing = new ArrayList<>();
+        for (JSONObject p : products.values()) {
+            if (!partnerSeenIds.contains(p.optString("id")))
+                missing.add("• " + shorten(p.optString("name"), 50) + (p.optString("attr").isEmpty() ? "" : " · " + p.optString("attr")));
         }
-        StringBuilder sb = new StringBuilder("zahra 0.4.3 log\n");
-        synchronized (log) { for (String l : log) sb.append(l).append("\n"); }
-        ClipboardManager cb = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-        if (cb != null) cb.setPrimaryClip(android.content.ClipData.newPlainText("log", sb.toString()));
-        toast("نُسخ السجل (" + log.size() + " طلب). راجعه ثم أرسله.");
+        StringBuilder sb = new StringBuilder();
+        sb.append("أُضيف إلى سلتك (").append(addedLines.size()).append("):\n");
+        sb.append(addedLines.isEmpty() ? "لا شيء" : String.join("\n", addedLines)).append("\n\n");
+        if (!failedLines.isEmpty()) sb.append("لم يُضف (").append(failedLines.size()).append("):\n").append(String.join("\n", failedLines)).append("\n\n");
+        sb.append("في السلة وليس في روابط الشركاء (").append(missing.size()).append("):\n");
+        sb.append(missing.isEmpty() ? "لا شيء" : String.join("\n", missing));
+        if (linksNotInCart > 0) sb.append("\n\nروابط شركاء لمنتجات ليست في السلة: ").append(linksNotInCart);
+        if (!cartReport.isEmpty()) sb.append("\n\n").append(String.join("\n", cartReport));
+        setStatus("أُضيف " + addedLines.size() + " منتجات إلى سلتك · " + missing.size() + " ليست في روابط الشركاء.",
+                failedLines.isEmpty() ? BLUE : RED);
+        dialog("نتيجة سلة الشركاء", sb.toString())
+                .setPositiveButton("فتح سلتي", (x, w) -> web.loadUrl(CART_URL))
+                .show();
     }
 
     // ---------- helpers ----------
@@ -565,25 +735,30 @@ public class MainActivity extends Activity {
         return new AlertDialog.Builder(this).setTitle(title).setView(sv).setNegativeButton("إغلاق", null);
     }
 
+    private static JSONObject parse(String s) {
+        try { return new JSONObject(s); } catch (Exception e) { return null; }
+    }
+
     private boolean handleShareIntent(Intent intent) {
         if (intent != null && Intent.ACTION_SEND.equals(intent.getAction())) {
             String text = intent.getStringExtra(Intent.EXTRA_TEXT);
             if (text != null && !extractUrls(text).isEmpty()) {
+                showTab(Goal.PICKS);
                 linkInput.setText(text);
-                startFromLinks();
+                startFromLinks(Goal.PICKS);
                 return true;
             }
         }
         return false;
     }
 
-    private void pasteFromClipboard() {
+    private void pasteInto(EditText e) {
         ClipboardManager cb = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
         if (cb != null && cb.hasPrimaryClip() && cb.getPrimaryClip().getItemCount() > 0) {
             CharSequence t = cb.getPrimaryClip().getItemAt(0).coerceToText(this);
-            String cur = linkInput.getText().toString().trim();
-            linkInput.setText(cur.isEmpty() ? t : cur + "\n" + t);
-            linkInput.setSelection(linkInput.getText().length());
+            String cur = e.getText().toString().trim();
+            e.setText(cur.isEmpty() ? t : cur + "\n" + t);
+            e.setSelection(e.getText().length());
         }
     }
 
