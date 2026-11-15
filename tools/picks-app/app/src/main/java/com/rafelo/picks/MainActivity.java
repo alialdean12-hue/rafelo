@@ -49,7 +49,7 @@ import java.util.regex.Pattern;
 
 public class MainActivity extends Activity {
 
-    private static final String VERSION = "0.6";
+    private static final String VERSION = "0.6.1";
     private static final String AFFILIATE_URL = "https://m.shein.com/ar/affiliate";
     private static final String HOME_URL = "https://m.shein.com/ar/user/index";
     private static final String CART_URL = "https://m.shein.com/ar/cart";
@@ -69,7 +69,8 @@ public class MainActivity extends Activity {
     private WebView web;
     private TextView status;
     private Button tabPicks, tabPartner;
-    private LinearLayout picksPanel, partnerPanel;
+    private LinearLayout picksPanel, partnerPanel, controls;
+    private Button toggleBtn;
     private EditText linkInput;          // picks: cart links
     private EditText partnerCartInput;   // partner: cart links
     private EditText partnerLinksInput;  // partner: partner product links
@@ -118,6 +119,7 @@ public class MainActivity extends Activity {
     private final Set<String> scanIds = new HashSet<>();
     private final List<String> listQueue = new ArrayList<>();
     private int partnerListCount = 0;
+    private boolean listModeUsed = false;
 
     @Override
     protected void onCreate(Bundle saved) {
@@ -167,6 +169,9 @@ public class MainActivity extends Activity {
         panel.setPadding(pad, dp(6), pad, dp(6));
         panel.setBackgroundColor(PANEL);
 
+        controls = new LinearLayout(this);
+        controls.setOrientation(LinearLayout.VERTICAL);
+
         // Tabs
         LinearLayout tabs = new LinearLayout(this);
         tabs.setOrientation(LinearLayout.HORIZONTAL);
@@ -174,7 +179,7 @@ public class MainActivity extends Activity {
         tabPartner = button("سلة الشركاء", v -> showTab(Goal.PARTNER_CART), false);
         tabs.addView(tabPicks, weighted());
         tabs.addView(tabPartner, weighted());
-        panel.addView(tabs);
+        controls.addView(tabs);
 
         // Picks panel
         picksPanel = new LinearLayout(this);
@@ -191,7 +196,7 @@ public class MainActivity extends Activity {
         scroller.setHorizontalScrollBarEnabled(false);
         scroller.addView(row2);
         picksPanel.addView(scroller);
-        panel.addView(picksPanel);
+        controls.addView(picksPanel);
 
         // Partner-cart panel
         partnerPanel = new LinearLayout(this);
@@ -207,7 +212,16 @@ public class MainActivity extends Activity {
         prow.addView(button("نقل المتطابق إلى سلتي", v -> startFromLinks(Goal.PARTNER_CART), true), weighted());
         prow.addView(button("سلتي", v -> web.loadUrl(CART_URL), false));
         partnerPanel.addView(prow);
-        panel.addView(partnerPanel);
+        controls.addView(partnerPanel);
+        panel.addView(controls);
+
+        // Always-visible bar: hide the tools to see more of the page, and close site pop-ups.
+        LinearLayout bar = new LinearLayout(this);
+        bar.setOrientation(LinearLayout.HORIZONTAL);
+        toggleBtn = button("▲ إخفاء الأدوات", v -> setControlsVisible(controls.getVisibility() != View.VISIBLE), false);
+        bar.addView(toggleBtn, weighted());
+        bar.addView(button("✕ إغلاق الإعلان", v -> closePopups(true), false), weighted());
+        panel.addView(bar);
 
         status = new TextView(this);
         status.setTextSize(13);
@@ -221,6 +235,26 @@ public class MainActivity extends Activity {
         root.addView(web, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1));
         showTab(Goal.PICKS);
         return root;
+    }
+
+    private void setControlsVisible(boolean visible) {
+        controls.setVisibility(visible ? View.VISIBLE : View.GONE);
+        toggleBtn.setText(visible ? "▲ إخفاء الأدوات" : "▼ إظهار الأدوات");
+    }
+
+    // Closes SHEIN pop-ups (coupons, gifts) that can cover the page.
+    private static final String CLOSE_POPUPS_JS = "(function(){var n=0;"
+            + "document.querySelectorAll('[class*=close],[class*=Close],[aria-label*=close i],[aria-label*=\u0625\u063a\u0644\u0627\u0642]').forEach(function(el){"
+            + "var r=el.getBoundingClientRect();if(r.width>0&&r.width<90&&r.height>0&&r.height<90){try{el.click();n++;}catch(e){}}});"
+            + "document.querySelectorAll('body *').forEach(function(el){var st=getComputedStyle(el);"
+            + "if(st.position==='fixed'&&parseInt(st.zIndex||'0',10)>=100){var r=el.getBoundingClientRect();"
+            + "if(r.width>=innerWidth*0.9&&r.height>=innerHeight*0.5){el.style.setProperty('display','none','important');n++;}}});"
+            + "document.body.style.overflow='auto';document.documentElement.style.overflow='auto';return n;})()";
+
+    private void closePopups(boolean tell) {
+        web.evaluateJavascript(CLOSE_POPUPS_JS, v -> {
+            if (tell) toast(v != null && !"0".equals(v) ? "أُغلقت النوافذ." : "لم أجد نافذة لإغلاقها.");
+        });
     }
 
     private void showTab(Goal g) {
@@ -429,6 +463,7 @@ public class MainActivity extends Activity {
         }
         goal = g;
         stopAll();
+        setControlsVisible(false);
         products.clear();
         cartQueue.clear();
         cartQueue.addAll(urls);
@@ -631,6 +666,7 @@ public class MainActivity extends Activity {
         linksNotInCart = 0;
         linksNotOpened = 0;
         partnerListCount = 0;
+        listModeUsed = false;
         nextPartnerLink();
     }
 
@@ -743,6 +779,7 @@ public class MainActivity extends Activity {
     private void startListScan() {
         setStatus("أقرأ منتجات صفحة الشريك… (ينزل التطبيق في الصفحة تلقائياً)", INK);
         final int token = partnerToken;
+        ui.postDelayed(() -> closePopups(false), 1200);
         for (int i = 1; i <= 8; i++) {
             ui.postDelayed(() -> {
                 if (partnerRunning && token == partnerToken)
@@ -773,6 +810,7 @@ public class MainActivity extends Activity {
     private void onListRead() {
         if (!partnerRunning) return;
         partnerListCount += scanIds.size();
+        listModeUsed = true;
         partnerSeenIds.addAll(scanIds);
         listQueue.clear();
         for (String id : products.keySet()) {
@@ -808,7 +846,8 @@ public class MainActivity extends Activity {
         if (partnerListCount > 0) sb.append("\n\nعدد المنتجات التي وُجدت في صفحات الشركاء: ").append(partnerListCount)
                 .append("\nقارنه بعدد منتجات الشريك في تطبيق شي ان لتعرف إن كانت القائمة كاملة.");
         if (!cartReport.isEmpty()) sb.append("\n\n").append(String.join("\n", cartReport));
-        setStatus("أُضيف " + addedLines.size() + " منتجات إلى سلتك · " + missing.size() + " ليست في روابط الشركاء.",
+        setStatus("أُضيف " + addedLines.size() + " منتجات إلى سلتك · " + missing.size() + " ليست في روابط الشركاء"
+                + (partnerListCount > 0 || listModeUsed ? " · وُجد في صفحة الشريك " + partnerListCount + " منتجاً." : "."),
                 failedLines.isEmpty() ? BLUE : RED);
         dialog("نتيجة سلة الشركاء", sb.toString())
                 .setPositiveButton("فتح سلتي", (x, w) -> web.loadUrl(CART_URL))
