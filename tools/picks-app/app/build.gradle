@@ -7,8 +7,8 @@ android {
         applicationId "com.rafelo.picks"
         minSdk 24
         targetSdk 35
-        versionCode 8
-        versionName "0.5"
+        versionCode 9
+        versionName "0.6"
     }
     signingConfigs {
         // A fixed debug key kept in the repo so every build can install over the last one.

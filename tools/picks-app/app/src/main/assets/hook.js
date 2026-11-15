@@ -4,6 +4,7 @@
 //  - product-detail requests, to know which product a partner link opened;
 //  - affiliate and other site API requests, only to reuse their headers when the app
 //    adds products to "اختياراتي" or to the cart.
+//  - while reading a partner's list page, product ids in the page's own responses.
 // Nothing is recorded or sent anywhere else.
 (function () {
   if (window.__picksHook) return;
@@ -22,6 +23,20 @@
   var affHeaders = null; // kept in this page only
   var bffHeaders = null; // kept in this page only
   var seenIds = {};
+
+  // While the app reads a partner's list page, collect product ids from the page's own data.
+  var scan = false;
+  try { scan = !!B.isScanning(); } catch (e) {}
+  var SCAN_SKIP = /cart|order|lure_info|recommend|user-api|search|wishlist|affiliate/i;
+  var ID_RE = /"(?:goods_id|goodsId)"\s*:\s*"?(\d{5,})/g;
+  function scanText(u, t) {
+    if (!scan || !t || SCAN_SKIP.test(u)) return;
+    var ids = {}, m, n = 0;
+    ID_RE.lastIndex = 0;
+    while ((m = ID_RE.exec(t)) && n < 500) { ids[m[1]] = 1; n++; }
+    var list = Object.keys(ids);
+    if (list.length) B.scanIds(JSON.stringify(list));
+  }
 
   function remember(u, h) {
     if (!h || !(h.token || h.armortoken || h.armorToken)) return;
@@ -124,7 +139,8 @@
   };
 
   function absUrl(u) { try { return new URL(u, location.href).href; } catch (e) { return String(u); } }
-  function interesting(u) { return CART.test(u) || AFF_API.test(u) || BFF.test(u); }
+  function sameSite(u) { return /^https:\/\/[^\/]*shein\.com\//.test(u); }
+  function interesting(u) { return CART.test(u) || AFF_API.test(u) || BFF.test(u) || (scan && sameSite(u)); }
 
   var origFetch = window.fetch;
   if (origFetch) {
@@ -141,8 +157,9 @@
       var nb = rewritePick(u, init.body);
       if (nb !== null) args = [input, Object.assign({}, init, { body: nb })];
       return origFetch.apply(this, args).then(function (res) {
-        if (CART.test(u) || nb !== null) {
+        if (CART.test(u) || nb !== null || scan) {
           res.clone().text().then(function (t) {
+            scanText(u, t);
             if (CART.test(u)) onCart(t);
             if (nb !== null) B.pickResult(JSON.stringify({ mode: 'rewrite', ok: res.status === 200, status: res.status, resp: String(t).slice(0, 4000) }));
           }).catch(function () {});
@@ -171,13 +188,14 @@
     var args = arguments;
     var nb = rewritePick(p.u, body);
     if (nb !== null) args = [nb];
-    if (CART.test(p.u) || nb !== null) {
+    if (CART.test(p.u) || nb !== null || scan) {
       x.addEventListener('loadend', function () {
         var t = '';
         try {
           if (x.responseType === '' || x.responseType === 'text') t = x.responseText;
           else if (x.responseType === 'json') t = JSON.stringify(x.response);
         } catch (e) {}
+        scanText(p.u, t);
         if (CART.test(p.u)) onCart(t);
         if (nb !== null) B.pickResult(JSON.stringify({ mode: 'rewrite', ok: x.status === 200, status: x.status, resp: String(t).slice(0, 4000) }));
       });

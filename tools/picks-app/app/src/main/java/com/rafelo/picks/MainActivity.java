@@ -49,7 +49,7 @@ import java.util.regex.Pattern;
 
 public class MainActivity extends Activity {
 
-    private static final String VERSION = "0.5";
+    private static final String VERSION = "0.6";
     private static final String AFFILIATE_URL = "https://m.shein.com/ar/affiliate";
     private static final String HOME_URL = "https://m.shein.com/ar/user/index";
     private static final String CART_URL = "https://m.shein.com/ar/cart";
@@ -111,6 +111,13 @@ public class MainActivity extends Activity {
     private final Set<String> addedIds = new HashSet<>();
     private int linksNotInCart = 0;
     private int linksNotOpened = 0;
+
+    // Reading a partner's list page.
+    private volatile boolean scanningLink = false;
+    private boolean listMode = false;
+    private final Set<String> scanIds = new HashSet<>();
+    private final List<String> listQueue = new ArrayList<>();
+    private int partnerListCount = 0;
 
     @Override
     protected void onCreate(Bundle saved) {
@@ -192,8 +199,8 @@ public class MainActivity extends Activity {
         partnerPanel.addView(label("رابط السلة (فيه المقاسات والكميات):"));
         partnerCartInput = input("الصق رابط السلة هنا", 1, 3);
         partnerPanel.addView(inputRow(partnerCartInput));
-        partnerPanel.addView(label("روابط منتجات الشركاء، كل رابط في سطر:"));
-        partnerLinksInput = input("الصق روابط المنتجات التي نشرها الشركاء", 2, 5);
+        partnerPanel.addView(label("رابط قائمة الشريك، أو روابط منتجاته، كل رابط في سطر:"));
+        partnerLinksInput = input("الصق رابط الشريك هنا", 2, 5);
         partnerPanel.addView(inputRow(partnerLinksInput));
         LinearLayout prow = new LinearLayout(this);
         prow.setOrientation(LinearLayout.HORIZONTAL);
@@ -224,7 +231,7 @@ public class MainActivity extends Activity {
         styleTab(tabPartner, !picks);
         setStatus("الإصدار " + VERSION + " · " + (picks
                 ? "الصق رابط سلة أو أكثر، ثم اضغط «نقل إلى اختياراتي»."
-                : "الصق رابط السلة وروابط منتجات الشركاء، ثم اضغط «نقل المتطابق إلى سلتي»."), INK);
+                : "الصق رابط السلة ورابط الشريك، ثم اضغط «نقل المتطابق إلى سلتي»."), INK);
     }
 
     private void styleTab(Button b, boolean active) {
@@ -351,6 +358,13 @@ public class MainActivity extends Activity {
                     ui.postDelayed(MainActivity.this::trySendChunk, 4000);
                 }
                 if (rewriteArmed && isShein(currentHost)) armRewriteInPage();
+                if (partnerRunning && !linkHandled && url.contains("/ark/")) {
+                    // A partner's list page: read the products it holds.
+                    linkHandled = true;
+                    listMode = true;
+                    partnerToken++; // cancel the product-page timeout
+                    startListScan();
+                }
                 if (partnerRunning && !linkHandled) {
                     // Product pages also carry the id in their address: "...-p-123456.html".
                     Matcher m = Pattern.compile("-p-(\\d+)").matcher(url);
@@ -377,6 +391,15 @@ public class MainActivity extends Activity {
         public void productSeen(String id) {
             if (!isShein(currentHost)) return;
             ui.post(() -> onProductSeen(id));
+        }
+
+        @JavascriptInterface
+        public boolean isScanning() { return scanningLink && isShein(currentHost); }
+
+        @JavascriptInterface
+        public void scanIds(String json) {
+            if (!scanningLink || !isShein(currentHost)) return;
+            ui.post(() -> addScanIds(json));
         }
 
         @JavascriptInterface
@@ -420,6 +443,7 @@ public class MainActivity extends Activity {
         picking = false;
         rewriteArmed = false;
         partnerRunning = false;
+        scanningLink = false;
         cartToken++;
         partnerToken++;
     }
@@ -606,6 +630,7 @@ public class MainActivity extends Activity {
         addedIds.clear();
         linksNotInCart = 0;
         linksNotOpened = 0;
+        partnerListCount = 0;
         nextPartnerLink();
     }
 
@@ -614,6 +639,10 @@ public class MainActivity extends Activity {
         partnerIndex++;
         if (partnerIndex >= partnerLinks.size()) { finishPartner(); return; }
         linkHandled = false;
+        listMode = false;
+        listQueue.clear();
+        scanIds.clear();
+        scanningLink = true;
         addingId = null;
         final int token = ++partnerToken;
         setStatus("أفتح رابط الشريك " + (partnerIndex + 1) + " من " + partnerLinks.size()
@@ -630,7 +659,7 @@ public class MainActivity extends Activity {
     }
 
     private void onProductSeen(String id) {
-        if (!partnerRunning || linkHandled) return;
+        if (!partnerRunning || linkHandled || listMode) return;
         linkHandled = true;
         partnerToken++; // cancel this link's timeout
         partnerSeenIds.add(id);
@@ -682,7 +711,7 @@ public class MainActivity extends Activity {
             addedIds.add(addingId);
             addedLines.add("✓ " + name + (attr.isEmpty() ? "" : " · " + attr) + " · الكمية " + qty);
             addingId = null;
-            ui.postDelayed(this::nextPartnerLink, 1200);
+            ui.postDelayed(this::afterAdd, 1200);
             return;
         }
         // Attempt 1-2: let the page add its own security headers; attempt 3: copy them too.
@@ -695,11 +724,75 @@ public class MainActivity extends Activity {
                 : ("no-headers".equals(r.optString("reason")) ? "لم تكتمل صفحة المنتج" : "رمز " + r.optInt("status"));
         failedLines.add("✗ " + name + " · " + msg);
         addingId = null;
-        ui.postDelayed(this::nextPartnerLink, 800);
+        ui.postDelayed(this::afterAdd, 800);
+    }
+
+    private void afterAdd() {
+        if (listMode && !listQueue.isEmpty()) addNextFromList();
+        else nextPartnerLink();
+    }
+
+    private void addScanIds(String json) {
+        try {
+            JSONArray a = new JSONArray(json);
+            for (int i = 0; i < a.length(); i++) scanIds.add(a.optString(i));
+        } catch (Exception ignored) { }
+    }
+
+    // Scrolls the partner page so it loads more products, then reads every product id on it.
+    private void startListScan() {
+        setStatus("أقرأ منتجات صفحة الشريك… (ينزل التطبيق في الصفحة تلقائياً)", INK);
+        final int token = partnerToken;
+        for (int i = 1; i <= 8; i++) {
+            ui.postDelayed(() -> {
+                if (partnerRunning && token == partnerToken)
+                    web.evaluateJavascript("window.scrollBy(0, window.innerHeight*0.9);", null);
+            }, 1500L * i);
+        }
+        ui.postDelayed(() -> { if (partnerRunning && token == partnerToken) readListPage(); }, 1500L * 9 + 1000);
+    }
+
+    private void readListPage() {
+        String js = "(function(){var ids={};"
+                + "document.querySelectorAll('a[href]').forEach(function(a){var m=a.href.match(/-p-(\\d{5,})/);if(m)ids[m[1]]=1;});"
+                + "document.querySelectorAll('[data-id],[data-goods-id],[goods-id],[data-goodsid]').forEach(function(el){"
+                + "['data-id','data-goods-id','goods-id','data-goodsid'].forEach(function(k){var v=el.getAttribute(k);if(v&&/^\\d{5,}$/.test(v))ids[v]=1;});});"
+                + "var re=/(?:goods_id|goodsId)[\\\\\"']*\\s*[:=]\\s*[\\\\\"']*(\\d{5,})/g,h=document.documentElement.innerHTML,m,n=0;"
+                + "while((m=re.exec(h))&&n<2000){ids[m[1]]=1;n++;}"
+                + "window.scrollTo(0,0);return JSON.stringify(Object.keys(ids));})()";
+        web.evaluateJavascript(js, value -> {
+            try {
+                String list = new JSONArray("[" + value + "]").getString(0);
+                addScanIds(list);
+            } catch (Exception ignored) { }
+            scanningLink = false;
+            onListRead();
+        });
+    }
+
+    private void onListRead() {
+        if (!partnerRunning) return;
+        partnerListCount += scanIds.size();
+        partnerSeenIds.addAll(scanIds);
+        listQueue.clear();
+        for (String id : products.keySet()) {
+            if (scanIds.contains(id) && !addedIds.contains(id)) listQueue.add(id);
+        }
+        setStatus("وجدت " + scanIds.size() + " منتجاً في صفحة الشريك، منها " + listQueue.size() + " في السلة. أضيفها…", INK);
+        if (listQueue.isEmpty()) ui.postDelayed(this::nextPartnerLink, 500);
+        else addNextFromList();
+    }
+
+    private void addNextFromList() {
+        if (!partnerRunning || listQueue.isEmpty()) { nextPartnerLink(); return; }
+        addingId = listQueue.remove(0);
+        addAttempt = 1;
+        sendAddToCart();
     }
 
     private void finishPartner() {
         partnerRunning = false;
+        scanningLink = false;
         List<String> missing = new ArrayList<>();
         for (JSONObject p : products.values()) {
             if (!partnerSeenIds.contains(p.optString("id")))
@@ -712,6 +805,8 @@ public class MainActivity extends Activity {
         sb.append("في السلة وليس في روابط الشركاء (").append(missing.size()).append("):\n");
         sb.append(missing.isEmpty() ? "لا شيء" : String.join("\n", missing));
         if (linksNotInCart > 0) sb.append("\n\nروابط شركاء لمنتجات ليست في السلة: ").append(linksNotInCart);
+        if (partnerListCount > 0) sb.append("\n\nعدد المنتجات التي وُجدت في صفحات الشركاء: ").append(partnerListCount)
+                .append("\nقارنه بعدد منتجات الشريك في تطبيق شي ان لتعرف إن كانت القائمة كاملة.");
         if (!cartReport.isEmpty()) sb.append("\n\n").append(String.join("\n", cartReport));
         setStatus("أُضيف " + addedLines.size() + " منتجات إلى سلتك · " + missing.size() + " ليست في روابط الشركاء.",
                 failedLines.isEmpty() ? BLUE : RED);
