@@ -219,7 +219,8 @@ public class ReaderService extends Service {
                 count = r.optInt("count", list == null ? 0 : list.length());
             } catch (Exception ignored) { }
             String err = list != null ? null : ("timeout".equals(error) ? "لم تُقرأ السلة خلال المهلة" : "رابط غير صالح");
-            log(id, ok, count, totalUsd, totalIqd, err == null ? secs + " ثانية" : err);
+            String mode = guestMode ? " · كزائر" : " · بحسابك (الهاتف لا يدعم وضع الزائر)";
+            log(id, ok, count, totalUsd, totalIqd, (err == null ? secs + " ثانية" : err) + mode);
             if (ok) alert("زبون حسب سلته", count + " قطعة · " + String.format(java.util.Locale.US, "%,d", totalIqd) + " د.ع");
             else alert("تعذر حساب سلة زبون", err == null ? "لم يقبل الموقع النتيجة" : err);
             ui.post(() -> done(-1));
@@ -248,15 +249,30 @@ public class ReaderService extends Service {
 
     // ---------- web view ----------
 
+    private static final String GUEST_PROFILE = "guest";
+    private boolean guestMode = false;
+
     private WebView makeWebView() {
         WebView w = new WebView(this);
+        // Read customers' carts as a signed-out visitor, so prices show the public offers only
+        // and never the owner's account coupons. The owner's login lives in the default profile.
+        guestMode = false;
+        CookieManager cookies = CookieManager.getInstance();
+        if (WebViewFeature.isFeatureSupported(WebViewFeature.MULTI_PROFILE)) {
+            try {
+                androidx.webkit.Profile p = androidx.webkit.ProfileStore.getInstance().getOrCreateProfile(GUEST_PROFILE);
+                WebViewCompat.setProfile(w, GUEST_PROFILE);
+                cookies = p.getCookieManager();
+                guestMode = true;
+            } catch (Exception ignored) { }
+        }
         WebSettings s = w.getSettings();
         s.setJavaScriptEnabled(true);
         s.setDomStorageEnabled(true);
         s.setBlockNetworkImage(true); // images are not needed to read prices
         s.setUserAgentString(s.getUserAgentString().replace("; wv", "").replace("Version/4.0 ", ""));
-        CookieManager.getInstance().setAcceptCookie(true);
-        CookieManager.getInstance().setAcceptThirdPartyCookies(w, true);
+        cookies.setAcceptCookie(true);
+        cookies.setAcceptThirdPartyCookies(w, true);
         // The view is never on screen; give it a phone-sized layout so the page renders normally.
         w.layout(0, 0, 1080, 2400);
         w.addJavascriptInterface(new Bridge(), "PicksBridge");
