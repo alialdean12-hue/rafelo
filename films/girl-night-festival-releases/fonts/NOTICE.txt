@@ -1,0 +1,4 @@
+Cairo, variable weight, Arabic subset.
+Copyright 2018 The Cairo Project Authors.
+Licensed under the SIL Open Font License, Version 1.1.
+https://github.com/Gue3bara/Cairo
