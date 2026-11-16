@@ -170,9 +170,9 @@ async function createQuote(request, env) {
   const recent = await env.DB.prepare('SELECT COUNT(*) AS n FROM jobs WHERE ip = ? AND created > ?').bind(ip, now - 3600 * 1000).first();
   if (recent && recent.n >= PER_IP_PER_HOUR) return json({ error: 'limit', message: 'طلبات كثيرة خلال ساعة. حاول لاحقاً.' }, 429);
 
-  // Reuse a fresh result for the same link (last 10 minutes) instead of reading it again.
-  const same = await env.DB.prepare("SELECT id FROM jobs WHERE url = ? AND status IN ('pending','working','done') AND created > ? ORDER BY created DESC LIMIT 1")
-    .bind(url, now - 10 * 60 * 1000).first();
+  // Only join a read of the same link that is still running (e.g. a double tap); otherwise read it fresh.
+  const same = await env.DB.prepare("SELECT id FROM jobs WHERE url = ? AND status IN ('pending','working') AND created > ? ORDER BY created DESC LIMIT 1")
+    .bind(url, now - 60 * 1000).first();
   if (same) return json({ id: same.id });
 
   const id = randomId(12);
