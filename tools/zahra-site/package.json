@@ -2,8 +2,9 @@
   "name": "zahra-site",
   "private": true,
   "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy",
+    "build": "node build-static.mjs",
+    "dev": "node build-static.mjs && wrangler dev",
+    "deploy": "node build-static.mjs && wrangler deploy",
     "db:init": "wrangler d1 execute zahra --remote --file=schema.sql",
     "db:init-local": "wrangler d1 execute zahra --local --file=schema.sql"
   },

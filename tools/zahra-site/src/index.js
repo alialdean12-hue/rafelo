@@ -1,3 +1,5 @@
+import STATIC from './static.js';
+
 // Zahra SHEIN quote site.
 // Customers paste a shared SHEIN cart link; the owner's reader phone opens it,
 // sends back the items, and this worker prices them in Iraqi dinar.
@@ -13,7 +15,7 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname;
     try {
-      if (!path.startsWith('/api/')) return env.ASSETS.fetch(request);
+      if (!path.startsWith('/api/')) return serveStatic(path);
 
       // ----- customers -----
       if (path === '/api/public-settings' && request.method === 'GET') return publicSettings(env);
@@ -51,6 +53,25 @@ export default {
     }
   }
 };
+
+// ---------- pages ----------
+
+const PAGE_ALIASES = { '/': '/index.html', '/admin': '/admin.html', '/admin/': '/admin.html', '/pair': '/pair.html' };
+
+function serveStatic(path) {
+  const f = STATIC[PAGE_ALIASES[path] || path];
+  if (!f) return new Response('Not found', { status: 404 });
+  const bytes = Uint8Array.from(atob(f.b64), c => c.charCodeAt(0));
+  const isHtml = f.type.startsWith('text/html');
+  return new Response(bytes, {
+    headers: {
+      'content-type': f.type,
+      'cache-control': isHtml ? 'no-cache' : 'public, max-age=3600',
+      'x-content-type-options': 'nosniff',
+      'referrer-policy': 'strict-origin-when-cross-origin'
+    }
+  });
+}
 
 // ---------- helpers ----------
 

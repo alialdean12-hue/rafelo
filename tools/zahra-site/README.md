@@ -11,12 +11,15 @@
 - المجموع يُقرَّب للأعلى لأقرب 250 دينار. العربون = نسبة من المجموع، مقرّبة للأعلى لأقرب 250.
 - الشحن غير محسوب، والقطع النافدة محسوبة.
 
-## النشر (مرة واحدة)
+الموقع منشور على: https://zahra-shein.zahrashein.workers.dev (صفحة التحكم: `/admin`).
+
+## النشر
+الصفحات في `public/` تُجمع داخل `src/static.js` (`npm run build`)، فيخدمها الخادم بنفسه دون رفع ملفات منفصل.
 ```
 npm install
-npx wrangler d1 create zahra          # ضع database_id الناتج في wrangler.toml
+npx wrangler d1 create zahra          # مرة واحدة؛ ضع database_id الناتج في wrangler.toml
 npx wrangler d1 execute zahra --remote --file=schema.sql
-npx wrangler deploy
+npm run deploy
 ```
 ثم افتح `/admin`، اختر كلمة السر، وارفع ملفي Firebase، وانسخ رمز الربط إلى التطبيق.
 
