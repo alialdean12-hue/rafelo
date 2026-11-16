@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>زهرة SHEIN · التحكم</title>
+<link rel="icon" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@400;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/site.css">
+</head>
+<body class="admin">
+<main class="wrap">
+  <header class="brand">
+    <img src="/logo.png" alt="" width="64" height="64">
+    <div><h1>التحكم</h1><p>زهرة SHEIN · خاص بصاحب الصفحة</p></div>
+  </header>
+
+  <!-- First time: choose a password -->
+  <section class="card stack" id="setupCard" hidden>
+    <h2>اختر كلمة السر</h2>
+    <p class="hint">هذه أول مرة تفتح صفحة التحكم. كلمة السر 6 أحرف على الأقل، ولا يعرفها أحد غيرك.</p>
+    <label>كلمة السر<input type="password" id="setupPass" autocomplete="new-password"></label>
+    <label>أعد كتابتها<input type="password" id="setupPass2" autocomplete="new-password"></label>
+    <button class="primary" id="setupBtn">حفظ والدخول</button>
+    <p class="error" id="setupErr" hidden></p>
+  </section>
+
+  <!-- Login -->
+  <section class="card stack" id="loginCard" hidden>
+    <h2>تسجيل الدخول</h2>
+    <label>كلمة السر<input type="password" id="loginPass" autocomplete="current-password"></label>
+    <button class="primary" id="loginBtn">دخول</button>
+    <p class="error" id="loginErr" hidden></p>
+  </section>
+
+  <div id="panel" class="stack" hidden>
+    <section class="card stack">
+      <h2>الأسعار</h2>
+      <div class="row">
+        <label>سعر الدولار بالدينار ($1 =)<input type="number" id="rate" min="1" step="1" inputmode="numeric"></label>
+        <label>نسبة العربون %<input type="number" id="deposit" min="0" max="100" step="1" inputmode="numeric"></label>
+      </div>
+      <p class="hint" id="ratePer100"></p>
+      <label class="switch"><input type="checkbox" id="serviceOn"> الخدمة تعمل للزبائن</label>
+      <label>رسالة تظهر للزبائن (اختياري)<input type="text" id="notice" maxlength="300" placeholder="مثال: الأسعار محدّثة يومياً"></label>
+      <button class="primary" id="saveBtn">حفظ</button>
+      <p class="toast" id="saveMsg" role="status"></p>
+    </section>
+
+    <section class="card stack">
+      <h2>هاتف القارئ (سامسونج)</h2>
+      <p>الحالة: <span id="readerState" class="pill"></span> <span class="hint" id="readerSeen"></span></p>
+      <p class="hint">انسخ رمز الربط وألصقه في تطبيق Zahra shein على هاتف سامسونج، في تبويب «الموقع».</p>
+      <div class="code" id="pairCode"></div>
+      <div class="actions">
+        <button class="ghost" id="copyPair">نسخ رمز الربط</button>
+        <button class="ghost" id="testPush">تجربة إيقاظ الهاتف</button>
+        <button class="ghost" id="resetPair">رمز ربط جديد</button>
+      </div>
+      <p class="toast" id="readerMsg" role="status"></p>
+    </section>
+
+    <section class="card stack">
+      <h2>Firebase</h2>
+      <p>الحالة: <span id="fbState" class="pill"></span></p>
+      <label>ملف google-services.json<input type="file" id="gsFile" accept=".json,application/json"></label>
+      <label>ملف مفتاح حساب الخدمة (Service account)<input type="file" id="saFile" accept=".json,application/json"></label>
+      <button class="primary" id="fbBtn">رفع الملفات</button>
+      <p class="toast" id="fbMsg" role="status"></p>
+    </section>
+
+    <section class="card stack">
+      <h2>آخر 24 ساعة</h2>
+      <p id="stats" class="hint"></p>
+    </section>
+
+    <section class="card stack">
+      <h2>تغيير كلمة السر</h2>
+      <label>كلمة السر الجديدة<input type="password" id="newPass" autocomplete="new-password"></label>
+      <button class="ghost" id="passBtn">تغيير</button>
+      <p class="toast" id="passMsg" role="status"></p>
+    </section>
+
+    <button class="ghost" id="logoutBtn">تسجيل الخروج</button>
+  </div>
+</main>
+
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var fmt = function (n) { return Number(n).toLocaleString('en-US'); };
+  var token = '';
+  try { token = localStorage.getItem('zahraAdmin') || ''; } catch (e) {}
+  function saveToken(t) { token = t; try { localStorage.setItem('zahraAdmin', t); } catch (e) {} }
+
+  function api(path, method, body) {
+    return fetch(path, {
+      method: method || 'GET',
+      headers: Object.assign({ 'content-type': 'application/json' }, token ? { authorization: 'Bearer ' + token } : {}),
+      body: body ? JSON.stringify(body) : undefined
+    }).then(function (r) { return r.json().then(function (j) { j._status = r.status; return j; }); });
+  }
+  function show(id, on) { $(id).hidden = !on; }
+  function msg(id, text) { $(id).textContent = text; }
+
+  function boot() {
+    if (token) {
+      api('/api/admin/settings').then(function (s) { if (s._status === 200) render(s); else start(); });
+    } else start();
+  }
+  function start() {
+    api('/api/admin/state').then(function (s) {
+      show('setupCard', !s.hasPassword); show('loginCard', !!s.hasPassword); show('panel', false);
+    });
+  }
+
+  $('setupBtn').onclick = function () {
+    var a = $('setupPass').value, b = $('setupPass2').value;
+    if (a.length < 6) { msg('setupErr', 'كلمة السر 6 أحرف على الأقل.'); show('setupErr', true); return; }
+    if (a !== b) { msg('setupErr', 'الكلمتان غير متطابقتين.'); show('setupErr', true); return; }
+    api('/api/admin/setup', 'POST', { password: a }).then(function (j) {
+      if (j.token) { saveToken(j.token); boot(); } else { msg('setupErr', j.message || 'تعذر الحفظ.'); show('setupErr', true); }
+    });
+  };
+  $('loginBtn').onclick = function () {
+    api('/api/admin/login', 'POST', { password: $('loginPass').value }).then(function (j) {
+      if (j.token) { saveToken(j.token); boot(); } else { msg('loginErr', j.message || 'تعذر الدخول.'); show('loginErr', true); }
+    });
+  };
+  $('loginPass').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('loginBtn').click(); });
+
+  function render(s) {
+    show('setupCard', false); show('loginCard', false); show('panel', true);
+    $('rate').value = s.rate; $('deposit').value = s.depositPct;
+    $('serviceOn').checked = s.serviceOn; $('notice').value = s.notice || '';
+    per100();
+    var paired = s.reader.paired;
+    $('readerState').textContent = paired ? 'مربوط' : 'غير مربوط';
+    $('readerState').className = 'pill ' + (paired ? 'ok' : 'bad');
+    $('readerSeen').textContent = s.reader.lastSeen ? 'آخر اتصال: ' + new Date(s.reader.lastSeen).toLocaleString('ar-IQ') : '';
+    $('pairCode').textContent = s.pairingCode;
+    var fbOk = s.firebase.client && s.firebase.serviceAccount;
+    $('fbState').textContent = fbOk ? 'جاهز · ' + s.firebase.project : (s.firebase.client || s.firebase.serviceAccount ? 'ينقصه ملف' : 'لم يُرفع');
+    $('fbState').className = 'pill ' + (fbOk ? 'ok' : 'bad');
+    var st = s.last24h || {};
+    $('stats').textContent = 'سلال محسوبة: ' + (st.done || 0) + ' · فشلت: ' + (st.failed || 0) + ' · قيد القراءة: ' + ((st.pending || 0) + (st.working || 0));
+  }
+
+  function per100() {
+    var r = Number($('rate').value) || 0;
+    $('ratePer100').textContent = 'كل $100 = ' + fmt(r * 100) + ' دينار';
+  }
+  $('rate').addEventListener('input', per100);
+
+  $('saveBtn').onclick = function () {
+    api('/api/admin/settings', 'POST', {
+      rate: Number($('rate').value), depositPct: Number($('deposit').value),
+      serviceOn: $('serviceOn').checked, notice: $('notice').value
+    }).then(function (j) {
+      if (j._status === 200) { render(j); msg('saveMsg', 'حُفظ. الأسعار الجديدة تظهر للزبائن فوراً.'); }
+      else msg('saveMsg', j.message || 'تعذر الحفظ.');
+    });
+  };
+
+  function copy(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(text);
+    return Promise.reject();
+  }
+  $('copyPair').onclick = function () {
+    copy($('pairCode').textContent).then(function () { msg('readerMsg', 'نُسخ رمز الربط.'); },
+      function () { msg('readerMsg', 'حدد الرمز وانسخه يدوياً.'); });
+  };
+  $('resetPair').onclick = function () {
+    if (!$('resetPair').dataset.sure) { $('resetPair').dataset.sure = '1'; msg('readerMsg', 'اضغط مرة أخرى للتأكيد. سيتوقف الهاتف الحالي حتى تربطه بالرمز الجديد.'); return; }
+    delete $('resetPair').dataset.sure;
+    api('/api/admin/pairing/reset', 'POST', {}).then(function (j) { render(j); msg('readerMsg', 'أُنشئ رمز جديد. اربط الهاتف به.'); });
+  };
+  $('testPush').onclick = function () {
+    msg('readerMsg', 'أرسل إشارة…');
+    api('/api/admin/test-push', 'POST', {}).then(function (j) {
+      msg('readerMsg', j.ok ? 'أُرسلت الإشارة. يجب أن يظهر إشعار قصير على هاتف سامسونج.' : 'لم تُرسل: ' + (j.error || ''));
+    });
+  };
+
+  function readFile(input) {
+    return new Promise(function (ok) {
+      var f = input.files && input.files[0]; if (!f) return ok(null);
+      var r = new FileReader(); r.onload = function () { ok(String(r.result)); }; r.readAsText(f);
+    });
+  }
+  $('fbBtn').onclick = function () {
+    Promise.all([readFile($('gsFile')), readFile($('saFile'))]).then(function (v) {
+      if (!v[0] && !v[1]) { msg('fbMsg', 'اختر ملفاً واحداً على الأقل.'); return; }
+      api('/api/admin/firebase', 'POST', { googleServices: v[0] || undefined, serviceAccount: v[1] || undefined }).then(function (j) {
+        if (j._status === 200) { render(j); msg('fbMsg', 'رُفعت الملفات.'); $('gsFile').value = ''; $('saFile').value = ''; }
+        else msg('fbMsg', j.message || 'تعذر الرفع.');
+      });
+    });
+  };
+  $('passBtn').onclick = function () {
+    api('/api/admin/password', 'POST', { password: $('newPass').value }).then(function (j) {
+      if (j.token) { saveToken(j.token); $('newPass').value = ''; msg('passMsg', 'تغيّرت كلمة السر.'); }
+      else msg('passMsg', j.message || 'تعذر التغيير.');
+    });
+  };
+  $('logoutBtn').onclick = function () { try { localStorage.removeItem('zahraAdmin'); } catch (e) {} token = ''; start(); };
+
+  boot();
+})();
+</script>
+</body>
+</html>

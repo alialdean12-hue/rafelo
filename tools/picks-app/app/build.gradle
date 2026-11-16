@@ -7,8 +7,8 @@ android {
         applicationId "com.rafelo.picks"
         minSdk 24
         targetSdk 35
-        versionCode 10
-        versionName "0.6.1"
+        versionCode 11
+        versionName "0.7"
     }
     signingConfigs {
         // A fixed debug key kept in the repo so every build can install over the last one.
@@ -31,4 +31,5 @@ android {
 
 dependencies {
     implementation "androidx.webkit:webkit:1.12.1"
+    implementation "com.google.firebase:firebase-messaging:24.1.0"
 }

@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>زهرة SHEIN · احسب سلتك بالدينار</title>
+<meta name="description" content="الصق رابط سلتك من شي ان واحصل على سعر كل قطعة والمجموع بالدينار العراقي.">
+<meta name="theme-color" content="#1D4F7A">
+<link rel="icon" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@400;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/site.css">
+</head>
+<body>
+<div class="petals" aria-hidden="true"></div>
+<main class="wrap">
+  <header class="brand">
+    <img src="/logo.png" alt="شعار زهرة SHEIN" width="88" height="88">
+    <div>
+      <h1>زهرة <span>SHEIN</span></h1>
+      <p>الصق رابط سلتك من شي ان، ونحسب لك سعر كل قطعة والمجموع بالدينار العراقي.</p>
+    </div>
+  </header>
+
+  <ul class="chips" id="chips" aria-label="معلومات الحساب">
+    <li><b id="chipRate">1,520 د.ع</b><span>سعر الدولار</span></li>
+    <li><b id="chipDeposit">10%</b><span>العربون</span></li>
+    <li><b>ستور الكويت</b><span>المتجر</span></li>
+  </ul>
+
+  <div class="notice" id="notice" hidden></div>
+
+  <section class="card ask" id="askCard">
+    <label for="cartUrl">رابط سلتك من شي ان</label>
+    <div class="field">
+      <input id="cartUrl" type="url" inputmode="url" autocomplete="off" placeholder="https://onelink.shein.com/…" dir="ltr">
+      <button type="button" class="ghost" id="pasteBtn">لصق</button>
+    </div>
+    <p class="hint">من تطبيق شي ان: افتح السلة ← زر المشاركة ← نسخ الرابط. يمكنك لصق الرسالة كاملة.</p>
+    <button type="button" class="primary" id="calcBtn">احسب السعر</button>
+    <p class="error" id="askError" role="alert" hidden></p>
+  </section>
+
+  <section class="card waiting" id="waitCard" hidden aria-live="polite">
+    <div class="spinner" aria-hidden="true"></div>
+    <h2>نقرأ سلتك من شي ان…</h2>
+    <p>يستغرق هذا عادة من 15 إلى 30 ثانية. لا تغلق الصفحة.</p>
+    <div class="bar"><i id="waitBar"></i></div>
+  </section>
+
+  <section id="resultCard" hidden>
+    <div class="card summary">
+      <div class="total">
+        <span>المجموع بالدينار العراقي</span>
+        <b id="totalIqd">0</b>
+        <small id="totalUsd"></small>
+      </div>
+      <dl class="facts">
+        <div><dt>عدد القطع</dt><dd id="count">0</dd></div>
+        <div><dt id="depositLabel">العربون 10%</dt><dd id="deposit">0</dd></div>
+        <div><dt>سعر الصرف</dt><dd id="rateUsed">1,520</dd></div>
+      </dl>
+      <div class="actions">
+        <button type="button" class="primary insta" id="igBtn">اطلب عبر انستغرام</button>
+        <button type="button" class="ghost" id="copyBtn">نسخ عرض السعر</button>
+        <button type="button" class="ghost" id="againBtn">سلة جديدة</button>
+      </div>
+      <p class="toast" id="toast" role="status"></p>
+      <p class="fine">المجموع مقرّب للأعلى لأقرب 250 دينار. السعر هو سعر القطعة الظاهر في السلة مع خصوماتها، والشحن غير محسوب.</p>
+    </div>
+    <h2 class="list-title">تفاصيل القطع</h2>
+    <ol class="items" id="items"></ol>
+  </section>
+
+  <footer class="foot">
+    <a href="https://www.instagram.com/zahra_._shein/" target="_blank" rel="noopener">@zahra_._shein</a>
+    <span>حجز فقط بعربون · التوصيل من 15 إلى 20 يوماً</span>
+  </footer>
+</main>
+
+<script>
+(function () {
+  var IG_USER = 'zahra_._shein';
+  var $ = function (id) { return document.getElementById(id); };
+  var fmt = function (n) { return Number(n).toLocaleString('en-US'); };
+  var lastQuote = null, lastUrl = '', pollTimer = null, waitTimer = null;
+
+  function show(el, on) { el.hidden = !on; }
+
+  fetch('/api/public-settings').then(function (r) { return r.json(); }).then(function (s) {
+    $('chipRate').textContent = fmt(s.rate) + ' د.ع';
+    $('chipDeposit').textContent = s.depositPct + '%';
+    if (!s.serviceOn || s.notice) {
+      $('notice').textContent = s.notice || 'الخدمة متوقفة مؤقتاً.';
+      show($('notice'), true);
+    }
+    if (!s.serviceOn) $('calcBtn').disabled = true;
+  }).catch(function () {});
+
+  $('pasteBtn').addEventListener('click', function () {
+    if (!navigator.clipboard || !navigator.clipboard.readText) { $('cartUrl').focus(); return; }
+    navigator.clipboard.readText().then(function (t) { $('cartUrl').value = t.trim(); }).catch(function () { $('cartUrl').focus(); });
+  });
+
+  function askError(msg) { $('askError').textContent = msg; show($('askError'), !!msg); }
+
+  $('calcBtn').addEventListener('click', start);
+  $('cartUrl').addEventListener('keydown', function (e) { if (e.key === 'Enter') start(); });
+
+  function start() {
+    var text = $('cartUrl').value.trim();
+    var m = text.match(/https?:\/\/[^\s"'<>]+/);
+    if (!m) { askError('الصق رابط السلة الذي يبدأ بـ https.'); return; }
+    askError('');
+    lastUrl = m[0];
+    $('calcBtn').disabled = true;
+    fetch('/api/quote', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ url: lastUrl }) })
+      .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+      .then(function (res) {
+        $('calcBtn').disabled = false;
+        if (!res.ok || !res.j.id) { askError(res.j.message || 'تعذر الطلب. حاول بعد قليل.'); return; }
+        wait(res.j.id);
+      })
+      .catch(function () { $('calcBtn').disabled = false; askError('تعذر الاتصال. تأكد من الإنترنت وحاول مجدداً.'); });
+  }
+
+  function wait(id) {
+    show($('askCard'), false); show($('resultCard'), false); show($('waitCard'), true);
+    var t0 = Date.now();
+    clearInterval(waitTimer);
+    waitTimer = setInterval(function () {
+      var p = Math.min(95, (Date.now() - t0) / 300);
+      $('waitBar').style.width = p + '%';
+    }, 300);
+    var poll = function () {
+      fetch('/api/quote/' + id).then(function (r) { return r.json(); }).then(function (j) {
+        if (j.status === 'done') { done(j); return; }
+        if (j.status === 'failed' || j.error) { fail(j.message || 'لم نتمكن من قراءة السلة الآن.'); return; }
+        pollTimer = setTimeout(poll, 2000);
+      }).catch(function () { pollTimer = setTimeout(poll, 3000); });
+    };
+    poll();
+  }
+
+  function fail(msg) {
+    clearInterval(waitTimer);
+    show($('waitCard'), false); show($('askCard'), true);
+    askError(msg);
+  }
+
+  function done(q) {
+    clearInterval(waitTimer);
+    lastQuote = q;
+    show($('waitCard'), false); show($('resultCard'), true);
+    $('totalIqd').textContent = fmt(q.totalIqd) + ' د.ع';
+    $('totalUsd').textContent = '$' + q.totalUsd.toFixed(2) + ' بالدولار';
+    $('count').textContent = fmt(q.count);
+    $('depositLabel').textContent = 'العربون ' + q.depositPct + '%';
+    $('deposit').textContent = fmt(q.depositIqd) + ' د.ع';
+    $('rateUsed').textContent = '$1 = ' + fmt(q.rate);
+    var ol = $('items');
+    ol.innerHTML = '';
+    q.items.forEach(function (it) {
+      var li = document.createElement('li');
+      li.className = 'item' + (it.soldOut ? ' sold' : '');
+      var img = document.createElement('img');
+      img.loading = 'lazy'; img.alt = ''; img.referrerPolicy = 'no-referrer';
+      if (it.img) img.src = it.img;
+      var body = document.createElement('div');
+      body.className = 'item-body';
+      var name = document.createElement('p'); name.className = 'name'; name.textContent = it.name;
+      var meta = document.createElement('p'); meta.className = 'meta';
+      meta.textContent = [it.attr, 'الكمية ' + it.qty].filter(Boolean).join(' · ');
+      var price = document.createElement('div'); price.className = 'price';
+      var usd = document.createElement('span'); usd.className = 'usd';
+      usd.textContent = '$' + it.usd.toFixed(2) + (it.qty > 1 ? ' × ' + it.qty : '');
+      if (it.usdBefore) { var s = document.createElement('s'); s.textContent = '$' + it.usdBefore.toFixed(2); usd.prepend(s, ' '); }
+      var iqd = document.createElement('b'); iqd.textContent = fmt(it.lineIqd) + ' د.ع';
+      price.append(usd, iqd);
+      body.append(name, meta, price);
+      if (it.soldOut) { var tag = document.createElement('span'); tag.className = 'tag'; tag.textContent = 'نفدت · محسوبة'; body.prepend(tag); }
+      li.append(img, body);
+      ol.append(li);
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function quoteText() {
+    var q = lastQuote; if (!q) return '';
+    var lines = ['عرض سعر · زهرة SHEIN', ''];
+    q.items.forEach(function (it, i) {
+      lines.push((i + 1) + ') ' + it.name.slice(0, 70) + (it.name.length > 70 ? '…' : ''));
+      lines.push('   ' + [it.attr, 'الكمية ' + it.qty].filter(Boolean).join(' · ') + ' · $' + it.lineUsd.toFixed(2) + ' · ' + fmt(it.lineIqd) + ' د.ع' + (it.soldOut ? ' (نفدت)' : ''));
+    });
+    lines.push('', 'عدد القطع: ' + q.count, 'المجموع: $' + q.totalUsd.toFixed(2) + ' = ' + fmt(q.totalIqd) + ' د.ع',
+      'العربون ' + q.depositPct + '%: ' + fmt(q.depositIqd) + ' د.ع', '', 'رابط السلة: ' + lastUrl);
+    return lines.join('\n');
+  }
+
+  function toast(msg) { $('toast').textContent = msg; clearTimeout(toast.t); toast.t = setTimeout(function () { $('toast').textContent = ''; }, 4000); }
+
+  function copy(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(text);
+    return new Promise(function (ok, no) {
+      var ta = document.createElement('textarea'); ta.value = text; document.body.append(ta); ta.select();
+      try { document.execCommand('copy') ? ok() : no(); } catch (e) { no(e); } ta.remove();
+    });
+  }
+
+  $('copyBtn').addEventListener('click', function () {
+    copy(quoteText()).then(function () { toast('نُسخ عرض السعر.'); }, function () { toast('تعذر النسخ. انسخه يدوياً.'); });
+  });
+  $('igBtn').addEventListener('click', function () {
+    var go = function () { window.location.href = 'https://ig.me/m/' + IG_USER; };
+    copy(quoteText()).then(function () { toast('نُسخ عرض السعر. الصقه في المحادثة.'); setTimeout(go, 700); }, go);
+  });
+  $('againBtn').addEventListener('click', function () {
+    lastQuote = null; $('cartUrl').value = '';
+    show($('resultCard'), false); show($('askCard'), true); $('cartUrl').focus();
+  });
+})();
+</script>
+</body>
+</html>

@@ -64,15 +64,26 @@
         sku: String(o.sku_code || o.itemSku || o.skuCode || ''),
         mall: String(o.mall_code || o.mallCode || '1'),
         qty: String(o.quantity || o.goods_num || o.goodsNum || o.buyNum || '1'),
-        attr: String(o.goodsAttr || '')
+        attr: String(o.goodsAttr || ''),
+        img: String(o.goods_img || o.goodsImg || ''),
+        usd: usdOf(dig(o, ['priceData', 'unitPrice', 'price']) || dig(o, ['showUnitPriceInfo', 'price']) || o.salePrice),
+        usdBefore: usdOf(o.retailPrice || dig(o, ['priceData', 'originalPrice', 'price'])),
+        soldOut: o.soldOutStatus === true || o.is_on_sale === 0 || o.is_on_sale === '0' || o.stock === '0'
       });
     }
     for (var k in o) if (o.hasOwnProperty(k) && o[k] && typeof o[k] === 'object') extractProducts(o[k], out, seen);
   }
 
+  function dig(o, path) {
+    for (var i = 0; i < path.length; i++) { if (!o || typeof o !== 'object') return null; o = o[path[i]]; }
+    return o;
+  }
+  function usdOf(p) { return p && p.usdAmount ? String(p.usdAmount) : ''; }
+
   function onCart(text) {
-    var list = [];
-    try { extractProducts(JSON.parse(text), list, {}); } catch (e) {}
+    var list = [], data = null;
+    try { data = JSON.parse(text); extractProducts(data, list, {}); } catch (e) {}
+    try { var n = dig(data, ['info', 'allProductSize']); if (n) B.cartTotal(String(n)); } catch (e) {}
     B.cartData(JSON.stringify(list));
   }
 

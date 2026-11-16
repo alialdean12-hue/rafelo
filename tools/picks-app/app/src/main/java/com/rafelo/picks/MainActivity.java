@@ -49,7 +49,7 @@ import java.util.regex.Pattern;
 
 public class MainActivity extends Activity {
 
-    private static final String VERSION = "0.6.1";
+    private static final String VERSION = "0.7";
     private static final String AFFILIATE_URL = "https://m.shein.com/ar/affiliate";
     private static final String HOME_URL = "https://m.shein.com/ar/user/index";
     private static final String CART_URL = "https://m.shein.com/ar/cart";
@@ -68,7 +68,10 @@ public class MainActivity extends Activity {
 
     private WebView web;
     private TextView status;
-    private Button tabPicks, tabPartner;
+    private Button tabPicks, tabPartner, tabSite;
+    private LinearLayout sitePanel;
+    private EditText pairInput;
+    private TextView siteState;
     private LinearLayout picksPanel, partnerPanel, controls;
     private Button toggleBtn;
     private EditText linkInput;          // picks: cart links
@@ -179,6 +182,8 @@ public class MainActivity extends Activity {
         tabPartner = button("سلة الشركاء", v -> showTab(Goal.PARTNER_CART), false);
         tabs.addView(tabPicks, weighted());
         tabs.addView(tabPartner, weighted());
+        tabSite = button("الموقع", v -> showSite(), false);
+        tabs.addView(tabSite, weighted());
         controls.addView(tabs);
 
         // Picks panel
@@ -213,6 +218,7 @@ public class MainActivity extends Activity {
         prow.addView(button("سلتي", v -> web.loadUrl(CART_URL), false));
         partnerPanel.addView(prow);
         controls.addView(partnerPanel);
+        controls.addView(buildSitePanel());
         panel.addView(controls);
 
         // Always-visible bar: hide the tools to see more of the page, and close site pop-ups.
@@ -261,11 +267,141 @@ public class MainActivity extends Activity {
         boolean picks = g == Goal.PICKS;
         picksPanel.setVisibility(picks ? View.VISIBLE : View.GONE);
         partnerPanel.setVisibility(picks ? View.GONE : View.VISIBLE);
+        sitePanel.setVisibility(View.GONE);
         styleTab(tabPicks, picks);
         styleTab(tabPartner, !picks);
+        styleTab(tabSite, false);
         setStatus("الإصدار " + VERSION + " · " + (picks
                 ? "الصق رابط سلة أو أكثر، ثم اضغط «نقل إلى اختياراتي»."
                 : "الصق رابط السلة ورابط الشريك، ثم اضغط «نقل المتطابق إلى سلتي»."), INK);
+    }
+
+    // ---------- website reader ----------
+
+    private View buildSitePanel() {
+        sitePanel = new LinearLayout(this);
+        sitePanel.setOrientation(LinearLayout.VERTICAL);
+        siteState = label("");
+        sitePanel.addView(siteState);
+        sitePanel.addView(label("رمز الربط من صفحة التحكم في الموقع:"));
+        pairInput = input("الصق رمز الربط هنا", 1, 3);
+        sitePanel.addView(inputRow(pairInput));
+        LinearLayout r1 = new LinearLayout(this);
+        r1.setOrientation(LinearLayout.HORIZONTAL);
+        r1.addView(button("ربط الهاتف", v -> pair(), true), weighted());
+        r1.addView(button("سجل الزبائن", v -> showSiteLog(), false), weighted());
+        sitePanel.addView(r1);
+        LinearLayout r2 = new LinearLayout(this);
+        r2.setOrientation(LinearLayout.HORIZONTAL);
+        r2.addView(button("إعدادات البطارية", v -> openAppSettings(), false), weighted());
+        r2.addView(button("فحص الطلبات الآن", v -> checkNow(), false), weighted());
+        sitePanel.addView(r2);
+        sitePanel.setVisibility(View.GONE);
+        return sitePanel;
+    }
+
+    private void showSite() {
+        picksPanel.setVisibility(View.GONE);
+        partnerPanel.setVisibility(View.GONE);
+        sitePanel.setVisibility(View.VISIBLE);
+        styleTab(tabPicks, false);
+        styleTab(tabPartner, false);
+        styleTab(tabSite, true);
+        refreshSiteState();
+        setStatus("الإصدار " + VERSION + " · هذا الهاتف يقرأ سلال زبائن الموقع في الخلفية بعد ربطه.", INK);
+    }
+
+    private void refreshSiteState() {
+        if (!Reader.paired(this)) {
+            siteState.setText("الحالة: غير مربوط بالموقع.");
+            siteState.setTextColor(RED);
+        } else {
+            siteState.setText("الحالة: مربوط بـ " + Uri.parse(Reader.site(this)).getHost()
+                    + (Reader.initFirebase(this) ? "" : " · Firebase غير جاهز"));
+            siteState.setTextColor(BLUE);
+        }
+    }
+
+    private void pair() {
+        String text = pairInput.getText().toString().trim();
+        Matcher m = Pattern.compile("(https?://[^/\\s#]+)/pair#([A-Za-z0-9]+)").matcher(text);
+        if (!m.find()) { setStatus("رمز الربط غير صحيح. انسخه كاملاً من صفحة التحكم.", RED); return; }
+        final String site = m.group(1), token = m.group(2);
+        setStatus("أربط الهاتف بالموقع…", INK);
+        if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 5);
+        }
+        new Thread(() -> {
+            try {
+                JSONObject conf = Reader.call(site, token, "GET", "/api/reader/config", null);
+                if (conf.optInt("_status") == 401) { ui.post(() -> setStatus("الرمز قديم أو غير صحيح. انسخ الرمز الحالي من صفحة التحكم.", RED)); return; }
+                JSONObject fb = conf.optJSONObject("firebase");
+                if (fb == null) { ui.post(() -> setStatus("ارفع ملفات Firebase في صفحة التحكم أولاً، ثم أعد الربط.", RED)); return; }
+                String oldFb = Reader.prefs(this).getString("firebase", "");
+                Reader.prefs(this).edit().putString("site", site).putString("token", token).putString("firebase", fb.toString()).apply();
+                boolean changed = !oldFb.isEmpty() && !oldFb.equals(fb.toString()) && !com.google.firebase.FirebaseApp.getApps(this).isEmpty();
+                if (changed) { ui.post(() -> setStatus("تغيّر مشروع Firebase. أغلق التطبيق تماماً وافتحه، ثم اضغط «ربط الهاتف» مرة أخرى.", RED)); return; }
+                if (!Reader.initFirebase(this)) { ui.post(() -> setStatus("تعذر تشغيل Firebase بالإعدادات المرفوعة.", RED)); return; }
+                com.google.firebase.messaging.FirebaseMessaging.getInstance().getToken().addOnCompleteListener(t -> {
+                    if (!t.isSuccessful() || t.getResult() == null) {
+                        setStatus("تعذر الحصول على رمز الإشعارات من جوجل. تأكد من خدمات Google Play والإنترنت.", RED);
+                        return;
+                    }
+                    String fcm = t.getResult();
+                    new Thread(() -> {
+                        try {
+                            JSONObject b = new JSONObject();
+                            b.put("fcmToken", fcm);
+                            JSONObject r = Reader.call(site, token, "POST", "/api/reader/register", b);
+                            boolean ok = r.optBoolean("ok");
+                            ui.post(() -> {
+                                refreshSiteState();
+                                pairInput.setText("");
+                                setStatus(ok ? "تم الربط. جرّب «تجربة إيقاظ الهاتف» من صفحة التحكم، ثم اضبط إعدادات البطارية."
+                                        : "تعذر تسجيل الهاتف في الموقع.", ok ? BLUE : RED);
+                            });
+                        } catch (Exception e) {
+                            ui.post(() -> setStatus("تعذر الاتصال بالموقع.", RED));
+                        }
+                    }).start();
+                });
+            } catch (Exception e) {
+                ui.post(() -> setStatus("تعذر الاتصال بالموقع. تأكد من الرابط والإنترنت.", RED));
+            }
+        }).start();
+    }
+
+    private void checkNow() {
+        if (!Reader.paired(this)) { setStatus("اربط الهاتف بالموقع أولاً.", RED); return; }
+        Intent i = new Intent(this, ReaderService.class).putExtra(ReaderService.EXTRA_PENDING, true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) startForegroundService(i); else startService(i);
+        setStatus("أفحص طلبات الزبائن المعلّقة…", INK);
+    }
+
+    private void openAppSettings() {
+        toast("اختر «البطارية» ثم «غير مقيد».");
+        startActivity(new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                Uri.parse("package:" + getPackageName())));
+    }
+
+    private void showSiteLog() {
+        JSONArray a = Reader.log(this);
+        if (a.length() == 0) { showReport("سجل الزبائن", "لا توجد سلال بعد."); return; }
+        java.text.DateFormat df = java.text.DateFormat.getDateTimeInstance(java.text.DateFormat.SHORT, java.text.DateFormat.SHORT);
+        StringBuilder sb = new StringBuilder();
+        int ok = 0;
+        for (int i = 0; i < a.length(); i++) {
+            JSONObject e = a.optJSONObject(i);
+            if (e == null) continue;
+            if (e.optBoolean("ok")) ok++;
+            sb.append(e.optBoolean("ok") ? "✓ " : (e.optString("job").isEmpty() ? "• " : "✗ "))
+              .append(df.format(new java.util.Date(e.optLong("t")))).append("\n");
+            if (e.optBoolean("ok"))
+                sb.append("   ").append(e.optInt("count")).append(" قطعة · $").append(String.format(java.util.Locale.US, "%.2f", e.optDouble("usd")))
+                  .append(" · ").append(String.format(java.util.Locale.US, "%,d", e.optLong("iqd"))).append(" د.ع\n");
+            sb.append("   ").append(e.optString("note")).append("\n\n");
+        }
+        showReport("سجل الزبائن · " + ok + " ناجحة", sb.toString().trim());
     }
 
     private void styleTab(Button b, boolean active) {
