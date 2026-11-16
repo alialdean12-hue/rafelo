@@ -11,21 +11,28 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@400;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="/site.css">
 </head>
-<body>
-<div class="petals" aria-hidden="true"></div>
-<main class="wrap">
-  <header class="brand">
-    <img src="/logo.png" alt="شعار زهرة SHEIN" width="88" height="88">
-    <div>
-      <h1>زهرة <span>SHEIN</span></h1>
-      <p>الصق رابط سلتك من شي ان، ونحسب لك سعر كل قطعة والمجموع بالدينار العراقي.</p>
-    </div>
-  </header>
+<body class="customer">
+<header class="hero">
+  <svg class="hero-art" viewBox="0 0 400 220" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <g fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+      <path d="M330 40c-18 0-30 14-30 30s14 26 30 26 30-12 30-28-12-28-30-28zm0 12c-9 0-16 7-16 16s7 14 16 14"/>
+      <path d="M330 96c0 30-6 60-24 92M330 130c16-4 30 2 38 16-16 6-30 2-38-16zM318 150c-16-6-30 0-38 14 16 6 30 0 38-14z"/>
+      <path d="M60 150c-12 0-20 9-20 20s9 17 20 17 20-8 20-19-8-18-20-18zm0 8c-6 0-11 5-11 11s5 9 11 9"/>
+      <path d="M60 187c0 14-3 24-10 33M60 200c10-3 19 1 24 10-10 4-19 1-24-10z"/>
+    </g>
+  </svg>
+  <div class="hero-in">
+    <img class="logo" src="/logo.png" alt="شعار زهرة SHEIN" width="96" height="96">
+    <h1>زهرة <span>SHEIN</span></h1>
+    <p>الصق رابط سلتك، ونحسب لك كل قطعة بالدينار العراقي</p>
+  </div>
+</header>
 
-  <ul class="chips" id="chips" aria-label="معلومات الحساب">
-    <li><b id="chipRate">1,520 د.ع</b><span>سعر الدولار</span></li>
-    <li><b id="chipDeposit">10%</b><span>العربون</span></li>
-    <li><b>ستور الكويت</b><span>المتجر</span></li>
+<main class="wrap">
+  <ul class="strip" aria-label="معلومات الحساب">
+    <li><span>سعر الدولار</span><b id="chipRate">1,520</b></li>
+    <li><span>العربون</span><b id="chipDeposit">10%</b></li>
+    <li><span>المتجر</span><b>الكويت</b></li>
   </ul>
 
   <div class="notice" id="notice" hidden></div>
@@ -33,46 +40,55 @@
   <section class="card ask" id="askCard">
     <label for="cartUrl">رابط سلتك من شي ان</label>
     <div class="field">
-      <input id="cartUrl" type="url" inputmode="url" autocomplete="off" placeholder="https://onelink.shein.com/…" dir="ltr">
-      <button type="button" class="ghost" id="pasteBtn">لصق</button>
+      <svg class="field-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>
+      <input id="cartUrl" type="url" inputmode="url" autocomplete="off" placeholder="الصق الرابط هنا" dir="auto">
+      <button type="button" class="paste" id="pasteBtn">لصق</button>
     </div>
-    <p class="hint">من تطبيق شي ان: افتح السلة ← زر المشاركة ← نسخ الرابط. يمكنك لصق الرسالة كاملة.</p>
-    <button type="button" class="primary" id="calcBtn">احسب السعر</button>
+    <button type="button" class="primary big" id="calcBtn">احسب السعر</button>
     <p class="error" id="askError" role="alert" hidden></p>
+    <ol class="steps" aria-label="طريقة الحصول على الرابط">
+      <li><i>1</i><span>افتح سلتك في تطبيق شي ان</span></li>
+      <li><i>2</i><span>اضغط مشاركة ثم نسخ الرابط</span></li>
+      <li><i>3</i><span>الصقه هنا واضغط احسب</span></li>
+    </ol>
   </section>
 
   <section class="card waiting" id="waitCard" hidden aria-live="polite">
-    <div class="spinner" aria-hidden="true"></div>
+    <div class="bloom" aria-hidden="true"><img src="/logo.png" alt="" width="84" height="84"></div>
     <h2>نقرأ سلتك من شي ان…</h2>
-    <p>يستغرق هذا عادة من 15 إلى 30 ثانية. لا تغلق الصفحة.</p>
+    <p>عادة من 15 إلى 30 ثانية، لا تغلق الصفحة</p>
     <div class="bar"><i id="waitBar"></i></div>
   </section>
 
-  <section id="resultCard" hidden>
-    <div class="card summary">
-      <div class="total">
-        <span>المجموع بالدينار العراقي</span>
-        <b id="totalIqd">0</b>
-        <small id="totalUsd"></small>
-      </div>
-      <dl class="facts">
+  <section id="resultCard" class="result" hidden>
+    <div class="total-card">
+      <span class="lbl">المجموع</span>
+      <b id="totalIqd">0</b>
+      <small id="totalUsd"></small>
+      <div class="deposit-pill"><span id="depositLabel">العربون 10%</span><b id="deposit">0</b></div>
+      <dl class="mini">
         <div><dt>عدد القطع</dt><dd id="count">0</dd></div>
-        <div><dt id="depositLabel">العربون 10%</dt><dd id="deposit">0</dd></div>
-        <div><dt>سعر الصرف</dt><dd id="rateUsed">1,520</dd></div>
+        <div><dt>سعر الدولار</dt><dd id="rateUsed">1,520</dd></div>
       </dl>
-      <div class="actions">
-        <button type="button" class="primary insta" id="igBtn">اطلب عبر انستغرام</button>
-        <button type="button" class="ghost" id="copyBtn">نسخ عرض السعر</button>
-        <button type="button" class="ghost" id="againBtn">سلة جديدة</button>
-      </div>
-      <p class="toast" id="toast" role="status"></p>
     </div>
+    <div class="actions">
+      <button type="button" class="primary insta" id="igBtn">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor"/></svg>
+        اطلب عبر انستغرام
+      </button>
+      <button type="button" class="soft" id="copyBtn">نسخ عرض السعر</button>
+      <button type="button" class="soft" id="againBtn">سلة جديدة</button>
+    </div>
+    <p class="toast" id="toast" role="status"></p>
     <h2 class="list-title">تفاصيل القطع</h2>
     <ol class="items" id="items"></ol>
   </section>
 
   <footer class="foot">
-    <a href="https://www.instagram.com/zahra_._shein/" target="_blank" rel="noopener">@zahra_._shein</a>
+    <a href="https://www.instagram.com/zahra_._shein/" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor"/></svg>
+      zahra_._shein
+    </a>
     <span>حجز فقط بعربون · التوصيل من 15 إلى 20 يوماً</span>
   </footer>
 </main>
@@ -87,7 +103,7 @@
   function show(el, on) { el.hidden = !on; }
 
   fetch('/api/public-settings').then(function (r) { return r.json(); }).then(function (s) {
-    $('chipRate').textContent = fmt(s.rate) + ' د.ع';
+    $('chipRate').textContent = fmt(s.rate);
     $('chipDeposit').textContent = s.depositPct + '%';
     if (!s.serviceOn || s.notice) {
       $('notice').textContent = s.notice || 'الخدمة متوقفة مؤقتاً.';
@@ -152,11 +168,11 @@
     lastQuote = q;
     show($('waitCard'), false); show($('resultCard'), true);
     $('totalIqd').textContent = fmt(q.totalIqd) + ' د.ع';
-    $('totalUsd').textContent = '$' + q.totalUsd.toFixed(2) + ' بالدولار';
+    $('totalUsd').textContent = 'يعادل $' + q.totalUsd.toFixed(2);
     $('count').textContent = fmt(q.count);
     $('depositLabel').textContent = 'العربون ' + q.depositPct + '%';
     $('deposit').textContent = fmt(q.depositIqd) + ' د.ع';
-    $('rateUsed').textContent = '$1 = ' + fmt(q.rate);
+    $('rateUsed').textContent = fmt(q.rate);
     var ol = $('items');
     ol.innerHTML = '';
     q.items.forEach(function (it) {
@@ -169,14 +185,17 @@
       body.className = 'item-body';
       var name = document.createElement('p'); name.className = 'name'; name.textContent = it.name;
       var meta = document.createElement('p'); meta.className = 'meta';
-      meta.textContent = [it.attr, 'الكمية ' + it.qty].filter(Boolean).join(' · ');
+      meta.textContent = it.attr || '';
+      var qty = document.createElement('span'); qty.className = 'qty'; qty.textContent = '× ' + it.qty;
       var price = document.createElement('div'); price.className = 'price';
       var usd = document.createElement('span'); usd.className = 'usd';
-      usd.textContent = '$' + it.usd.toFixed(2) + (it.qty > 1 ? ' × ' + it.qty : '');
+      usd.textContent = '$' + it.usd.toFixed(2);
       if (it.usdBefore) { var s = document.createElement('s'); s.textContent = '$' + it.usdBefore.toFixed(2); usd.prepend(s, ' '); }
       var iqd = document.createElement('b'); iqd.textContent = fmt(it.lineIqd) + ' د.ع';
       price.append(usd, iqd);
       body.append(name, meta, price);
+      li.dataset.qty = it.qty;
+      body.querySelector('.price').prepend(qty);
       if (it.soldOut) { var tag = document.createElement('span'); tag.className = 'tag'; tag.textContent = 'نفدت · محسوبة'; body.prepend(tag); }
       li.append(img, body);
       ol.append(li);
