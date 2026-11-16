@@ -45,6 +45,7 @@ public class ReaderService extends Service {
     static final String EXTRA_PING = "ping";
     static final String EXTRA_PENDING = "pending";
     private static final String CHANNEL = "reader";
+    private static final String ALERT_CHANNEL = "customers";
     private static final int NOTE_ID = 7;
     private static final long CART_TIMEOUT_MS = 35000;
     private static final long QUIET_MS = 3000;
@@ -81,6 +82,7 @@ public class ReaderService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null && intent.getBooleanExtra(EXTRA_PING, false)) {
             log(null, false, 0, 0, 0, "تجربة إيقاظ من صفحة التحكم · وصلت");
+            alert("تجربة الإيقاظ وصلت", "هاتف القارئ يعمل ويستقبل طلبات الزبائن.");
         }
         String job = intent == null ? null : intent.getStringExtra(EXTRA_JOB);
         if (job != null && seenJobs.add(job)) queue.add(job);
@@ -218,6 +220,8 @@ public class ReaderService extends Service {
             } catch (Exception ignored) { }
             String err = list != null ? null : ("timeout".equals(error) ? "لم تُقرأ السلة خلال المهلة" : "رابط غير صالح");
             log(id, ok, count, totalUsd, totalIqd, err == null ? secs + " ثانية" : err);
+            if (ok) alert("زبون حسب سلته", count + " قطعة · " + String.format(java.util.Locale.US, "%,d", totalIqd) + " د.ع");
+            else alert("تعذر حساب سلة زبون", err == null ? "لم يقبل الموقع النتيجة" : err);
             ui.post(() -> done(-1));
         });
     }
@@ -317,6 +321,31 @@ public class ReaderService extends Service {
                 .setContentText(text)
                 .setOngoing(true)
                 .build();
+    }
+
+    // Customer alerts: sound and a pop-up, as the owner asked. Tapping opens the app.
+    private void alert(String title, String text) {
+        NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        Notification.Builder b;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (nm.getNotificationChannel(ALERT_CHANNEL) == null) {
+                NotificationChannel ch = new NotificationChannel(ALERT_CHANNEL, "زبائن الموقع", NotificationManager.IMPORTANCE_HIGH);
+                ch.enableVibration(true);
+                nm.createNotificationChannel(ch);
+            }
+            b = new Notification.Builder(this, ALERT_CHANNEL);
+        } else {
+            b = new Notification.Builder(this).setPriority(Notification.PRIORITY_HIGH).setDefaults(Notification.DEFAULT_ALL);
+        }
+        android.app.PendingIntent open = android.app.PendingIntent.getActivity(this, 0,
+                new Intent(this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP),
+                android.app.PendingIntent.FLAG_IMMUTABLE | android.app.PendingIntent.FLAG_UPDATE_CURRENT);
+        nm.notify((int) (System.currentTimeMillis() % 100000) + 100, b.setSmallIcon(android.R.drawable.stat_notify_more)
+                .setContentTitle(title)
+                .setContentText(text)
+                .setAutoCancel(true)
+                .setContentIntent(open)
+                .build());
     }
 
     private static String host(String url) {
