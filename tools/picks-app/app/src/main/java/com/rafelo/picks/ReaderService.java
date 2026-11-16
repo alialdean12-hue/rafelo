@@ -315,6 +315,10 @@ public class ReaderService extends Service {
         @JavascriptInterface public void cartTotal(String n) {
             try { int v = Integer.parseInt(n); ui.post(() -> expected = v); } catch (Exception ignored) { }
         }
+        // Kuwait store, priced in US dollars, for every SHEIN API request this reader makes.
+        @JavascriptInterface public String forceStore() {
+            return "{\"localcountry\":\"KW\",\"currency\":\"USD\",\"appcurrency\":\"USD\"}";
+        }
         @JavascriptInterface public boolean isScanning() { return false; }
         @JavascriptInterface public void scanIds(String s) { }
         @JavascriptInterface public void productSeen(String s) { }

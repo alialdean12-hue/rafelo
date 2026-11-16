@@ -20,6 +20,15 @@
   // Headers the page's own security script may add to every request by itself.
   var SDK_HEADERS = /^(armortoken|smdeviceid|x-cs-random|anti-in|x-gw-auth)$/i;
 
+  // The website reader asks for one fixed store (Kuwait, priced in US dollars) on every SHEIN request.
+  var force = null;
+  try { force = JSON.parse(B.forceStore() || 'null'); } catch (e) {}
+  function forcedValue(k) {
+    if (!force) return undefined;
+    var low = String(k).toLowerCase();
+    return Object.prototype.hasOwnProperty.call(force, low) ? force[low] : undefined;
+  }
+
   var affHeaders = null; // kept in this page only
   var bffHeaders = null; // kept in this page only
   var seenIds = {};
@@ -161,11 +170,18 @@
       // Fast path: most requests are not ours to look at.
       if (!interesting(u)) return origFetch.apply(this, arguments);
       init = init || {};
+      if (force && BFF.test(u)) {
+        try {
+          var fh = new Headers(init.headers || (input && input.headers) || {});
+          for (var fk2 in force) fh.set(fk2, force[fk2]);
+          init = Object.assign({}, init, { headers: fh });
+        } catch (e) {}
+      }
       var h = {};
       try { new Headers(init.headers || (input && input.headers) || {}).forEach(function (v, k) { h[k] = v; }); } catch (e) {}
       remember(u, h);
       watchDetail(u);
-      var args = arguments;
+      var args = force && BFF.test(u) ? [input, init] : arguments;
       var nb = rewritePick(u, init.body);
       if (nb !== null) args = [input, Object.assign({}, init, { body: nb })];
       return origFetch.apply(this, args).then(function (res) {
@@ -189,12 +205,17 @@
     return xOpen.apply(this, arguments);
   };
   XP.setRequestHeader = function (k, v) {
+    var f = this.__picks && BFF.test(this.__picks.u) ? forcedValue(k) : undefined;
+    if (f !== undefined) { v = f; (this.__picksForced = this.__picksForced || {})[String(k).toLowerCase()] = 1; }
     if (this.__picks) this.__picks.h[k] = v;
-    return xHeader.apply(this, arguments);
+    return xHeader.call(this, k, v);
   };
   XP.send = function (body) {
     var x = this, p = x.__picks;
     if (!p || x.__picksOwn) return xSend.apply(this, arguments);
+    if (force && BFF.test(p.u)) {
+      for (var fk in force) if (!(x.__picksForced && x.__picksForced[fk])) { try { xHeader.call(x, fk, force[fk]); } catch (e) {} }
+    }
     remember(p.u, p.h);
     watchDetail(p.u);
     var args = arguments;
