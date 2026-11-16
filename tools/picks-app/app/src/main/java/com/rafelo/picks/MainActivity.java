@@ -49,7 +49,7 @@ import java.util.regex.Pattern;
 
 public class MainActivity extends Activity {
 
-    private static final String VERSION = "0.7.2";
+    private static final String VERSION = "0.7.3";
     private static final String AFFILIATE_URL = "https://m.shein.com/ar/affiliate";
     private static final String HOME_URL = "https://m.shein.com/ar/user/index";
     private static final String CART_URL = "https://m.shein.com/ar/cart";
@@ -296,6 +296,7 @@ public class MainActivity extends Activity {
         r2.addView(button("إعدادات البطارية", v -> openAppSettings(), false), weighted());
         r2.addView(button("فحص الطلبات الآن", v -> checkNow(), false), weighted());
         sitePanel.addView(r2);
+        sitePanel.addView(button("ضبط متجر القراءة (الكويت · دولار)", v -> startActivity(new Intent(this, GuestSetupActivity.class)), true));
         sitePanel.setVisibility(View.GONE);
         return sitePanel;
     }
