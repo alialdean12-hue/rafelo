@@ -68,6 +68,7 @@
         img: String(o.goods_img || o.goodsImg || ''),
         usd: usdOf(dig(o, ['priceData', 'unitPrice', 'price']) || dig(o, ['showUnitPriceInfo', 'price']) || o.salePrice),
         usdBefore: usdOf(o.retailPrice || dig(o, ['priceData', 'originalPrice', 'price'])),
+        local: String((o.salePrice && o.salePrice.amountWithSymbol) || ''),
         soldOut: o.soldOutStatus === true || o.is_on_sale === 0 || o.is_on_sale === '0' || o.stock === '0'
       });
     }

@@ -410,7 +410,8 @@ async function readerResult(request, env, id) {
   }
   const items = b.items.slice(0, 200).map(it => ({
     name: String(it.name || '').slice(0, 300), img: String(it.img || '').slice(0, 400), attr: String(it.attr || '').slice(0, 120),
-    qty: num(it.qty) || 1, usd: num(it.usd), usdBefore: num(it.usdBefore), soldOut: !!it.soldOut
+    qty: num(it.qty) || 1, usd: num(it.usd), usdBefore: num(it.usdBefore), soldOut: !!it.soldOut,
+    local: String(it.local || '').slice(0, 40) // store price as SHEIN showed it, kept for checking only
   }));
   await env.DB.prepare("UPDATE jobs SET status = 'done', result = ?, updated = ? WHERE id = ?").bind(JSON.stringify(items), Date.now(), id).run();
   const c = await getConfig(env);

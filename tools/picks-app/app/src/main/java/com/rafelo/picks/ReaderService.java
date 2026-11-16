@@ -220,6 +220,11 @@ public class ReaderService extends Service {
             } catch (Exception ignored) { }
             String err = list != null ? null : ("timeout".equals(error) ? "لم تُقرأ السلة خلال المهلة" : "رابط غير صالح");
             String mode = guestMode ? " · كزائر" : " · بحسابك (الهاتف لا يدعم وضع الزائر)";
+            if (list != null && list.length() > 0) {
+                JSONObject first = list.optJSONObject(0);
+                if (first != null && !first.optString("local").isEmpty())
+                    mode += " · أول قطعة: " + first.optString("local") + " = $" + first.optString("usd");
+            }
             log(id, ok, count, totalUsd, totalIqd, (err == null ? secs + " ثانية" : err) + mode);
             if (ok) alert("زبون حسب سلته", count + " قطعة · " + String.format(java.util.Locale.US, "%,d", totalIqd) + " د.ع");
             else alert("تعذر حساب سلة زبون", err == null ? "لم يقبل الموقع النتيجة" : err);
