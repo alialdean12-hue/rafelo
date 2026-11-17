@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <title>هل تعلم: الأخطبوط</title>
+    <style>
+      @font-face {
+        font-family: "Cairo";
+        src: url("fonts/cairo-ar.woff2") format("woff2");
+        font-weight: 200 1000;
+        font-display: block;
+        unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC;
+      }
+      @font-face {
+        font-family: "Cairo";
+        src: url("fonts/cairo-latin.woff2") format("woff2");
+        font-weight: 200 1000;
+        font-display: block;
+      }
+      :root {
+        --deep: #021120;
+        --sea: #06345a;
+        --octo: #ff7a4d;
+        --octo-dark: #d9512c;
+        --heart: #ff3355;
+        --blue: #2fa8ff;
+        --gold: #ffd23f;
+        --ink: #f4f8ff;
+      }
+      html, body { margin: 0; background: var(--deep); }
+      #root {
+        position: relative; width: 1080px; height: 1920px; overflow: hidden;
+        background: var(--deep); font-family: "Cairo", sans-serif; direction: rtl;
+      }
+      .clip { position: absolute; inset: 0; overflow: hidden; }
+      svg.full { position: absolute; inset: 0; width: 1080px; height: 1920px; }
+      .badge {
+        position: absolute; top: 170px; left: 50%; transform: translateX(-50%);
+        background: var(--gold); color: var(--deep); font-weight: 900; font-size: 64px;
+        padding: 6px 54px 14px; border-radius: 999px; box-shadow: 0 12px 40px rgba(255, 210, 63, 0.35);
+        white-space: nowrap;
+      }
+      .cap {
+        position: absolute; top: 1470px; left: 70px; width: 940px; text-align: center;
+        color: var(--ink); font-weight: 900; font-size: 74px; line-height: 1.35;
+        -webkit-text-stroke: 3px var(--deep); paint-order: stroke fill;
+        text-shadow: 0 6px 0 rgba(2, 17, 32, 0.9), 0 0 40px rgba(2, 17, 32, 0.8);
+      }
+      .hl { color: var(--gold); }
+      .bl { color: var(--blue); }
+      .rd { color: var(--heart); }
+      .svgtxt { font-family: "Cairo", sans-serif; font-weight: 900; }
+      .big {
+        position: absolute; left: 0; width: 1080px; text-align: center; color: var(--ink);
+        font-weight: 900; -webkit-text-stroke: 4px var(--deep); paint-order: stroke fill;
+      }
+      .follow {
+        position: absolute; top: 1180px; left: 50%; transform: translateX(-50%);
+        background: var(--heart); color: #fff; font-weight: 900; font-size: 70px;
+        padding: 10px 70px 22px; border-radius: 28px; white-space: nowrap;
+        box-shadow: 0 16px 50px rgba(255, 51, 85, 0.45);
+      }
+      #flash { background: #e9f6ff; opacity: 0; z-index: 9; }
+    </style>
+    <script src="gsap.min.js"></script>
+  </head>
+  <body>
+    <div id="root" data-composition-id="octopus" data-start="0" data-duration="20" data-width="1080" data-height="1920">
+
+      <!-- Background: ocean gradient, light rays, bubbles (whole film) -->
+      <div id="bg" class="clip" data-start="0" data-duration="20" data-track-index="0">
+        <svg class="full" viewBox="0 0 1080 1920">
+          <defs>
+            <linearGradient id="seaGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#0b4f80" />
+              <stop offset="0.45" stop-color="#06345a" />
+              <stop offset="1" stop-color="#021120" />
+            </linearGradient>
+            <linearGradient id="ray" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#bfe6ff" stop-opacity="0.22" />
+              <stop offset="1" stop-color="#bfe6ff" stop-opacity="0" />
+            </linearGradient>
+          </defs>
+          <rect width="1080" height="1920" fill="url(#seaGrad)" />
+          <g id="rays">
+            <polygon points="140,0 300,0 560,1300 300,1300" fill="url(#ray)" />
+            <polygon points="520,0 620,0 820,1100 640,1100" fill="url(#ray)" />
+            <polygon points="820,0 960,0 1080,900 960,900" fill="url(#ray)" />
+          </g>
+          <g id="bubbles" fill="none" stroke="#cfeaff" stroke-opacity="0.55" stroke-width="3"></g>
+        </svg>
+      </div>
+
+      <!-- Scene 1: hook — octopus rises, three hearts pop -->
+      <div id="sc1" class="clip" data-start="0" data-duration="4.1" data-track-index="1">
+        <svg class="full" viewBox="0 0 1080 1920">
+          <g id="o1wrap" transform="translate(540 1010)"><g id="o1" class="octo"></g></g>
+          <g id="h1a" transform="translate(300 560)"><path class="heart" d="M0,-20 C0,-58 -52,-70 -64,-30 C-76,6 -40,40 0,72 C40,40 76,6 64,-30 C52,-70 0,-58 0,-20 Z" fill="#ff3355" /></g>
+          <g id="h1b" transform="translate(540 470)"><path class="heart" d="M0,-20 C0,-58 -52,-70 -64,-30 C-76,6 -40,40 0,72 C40,40 76,6 64,-30 C52,-70 0,-58 0,-20 Z" fill="#ff3355" /></g>
+          <g id="h1c" transform="translate(780 560)"><path class="heart" d="M0,-20 C0,-58 -52,-70 -64,-30 C-76,6 -40,40 0,72 C40,40 76,6 64,-30 C52,-70 0,-58 0,-20 Z" fill="#ff3355" /></g>
+        </svg>
+      </div>
+
+      <!-- Scene 2: anatomy — two gill hearts + one body heart -->
+      <div id="sc2" class="clip" data-start="4.1" data-duration="3.6" data-track-index="1">
+        <svg class="full" viewBox="0 0 1080 1920">
+          <g id="o2wrap" transform="translate(540 880) scale(1.55)"><g id="o2" class="octo ghost"></g></g>
+          <g transform="translate(540 880) scale(1.55)">
+            <g id="g2l" transform="translate(-78 -168) scale(0.5)"><path d="M0,-20 C0,-58 -52,-70 -64,-30 C-76,6 -40,40 0,72 C40,40 76,6 64,-30 C52,-70 0,-58 0,-20 Z" fill="#ff3355" stroke="#fff" stroke-width="6" /></g>
+            <g id="g2r" transform="translate(78 -168) scale(0.5)"><path d="M0,-20 C0,-58 -52,-70 -64,-30 C-76,6 -40,40 0,72 C40,40 76,6 64,-30 C52,-70 0,-58 0,-20 Z" fill="#ff3355" stroke="#fff" stroke-width="6" /></g>
+            <g id="g2m" transform="translate(0 -92) scale(0.8)"><path d="M0,-20 C0,-58 -52,-70 -64,-30 C-76,6 -40,40 0,72 C40,40 76,6 64,-30 C52,-70 0,-58 0,-20 Z" fill="#ff3355" stroke="#fff" stroke-width="5" /></g>
+          </g>
+          <g id="lab2a">
+            <path d="M400,605 L200,540" stroke="#ffd23f" stroke-width="5" stroke-linecap="round" />
+            <path d="M680,605 L880,540" stroke="#ffd23f" stroke-width="5" stroke-linecap="round" />
+            <text class="svgtxt" x="180" y="515" font-size="56" fill="#ffd23f" text-anchor="middle" direction="rtl">خياشيم</text>
+            <text class="svgtxt" x="900" y="515" font-size="56" fill="#ffd23f" text-anchor="middle" direction="rtl">خياشيم</text>
+          </g>
+          <g id="lab2b">
+            <rect x="380" y="320" width="320" height="96" rx="48" fill="#ff3355" />
+            <text class="svgtxt" x="540" y="388" font-size="56" fill="#ffffff" text-anchor="middle" direction="rtl">الجسم كله</text>
+            <path d="M540,416 L540,690" stroke="#ff3355" stroke-width="5" stroke-dasharray="10 12" />
+          </g>
+        </svg>
+      </div>
+
+      <!-- Scene 3: blue blood, copper not iron -->
+      <div id="sc3" class="clip" data-start="7.7" data-duration="4.75" data-track-index="1">
+        <div id="wow" class="big" style="top: 330px; font-size: 130px; color: #ffd23f">والأغرب؟</div>
+        <svg class="full" viewBox="0 0 1080 1920">
+          <defs>
+            <radialGradient id="glow"><stop offset="0" stop-color="#2fa8ff" stop-opacity="0.6" /><stop offset="1" stop-color="#2fa8ff" stop-opacity="0" /></radialGradient>
+          </defs>
+          <circle id="glow3" cx="540" cy="780" r="330" fill="url(#glow)" opacity="0" />
+          <g id="drop" transform="translate(540 790)">
+            <path d="M0,-200 C70,-80 140,0 140,80 C140,170 76,220 0,220 C-76,220 -140,170 -140,80 C-140,0 -70,-80 0,-200 Z" fill="#d81f3c" />
+            <path id="dropBlue" d="M0,-200 C70,-80 140,0 140,80 C140,170 76,220 0,220 C-76,220 -140,170 -140,80 C-140,0 -70,-80 0,-200 Z" fill="#2fa8ff" opacity="0" />
+            <ellipse cx="-58" cy="40" rx="22" ry="48" fill="#ffffff" opacity="0.45" transform="rotate(20 -58 40)" />
+          </g>
+          <g id="cu" transform="translate(720 1220)">
+            <rect x="-140" y="-140" width="280" height="280" rx="34" fill="#b8693a" stroke="#ffd23f" stroke-width="8" />
+            <text class="svgtxt" x="0" y="30" font-size="140" fill="#fff4e0" text-anchor="middle">Cu</text>
+            <text class="svgtxt" x="0" y="112" font-size="48" fill="#fff4e0" text-anchor="middle" direction="rtl">نحاس</text>
+          </g>
+          <g id="fe" transform="translate(360 1220)">
+            <rect x="-140" y="-140" width="280" height="280" rx="34" fill="#5d6873" stroke="#9aa6b2" stroke-width="6" />
+            <text class="svgtxt" x="0" y="30" font-size="140" fill="#e3e9ef" text-anchor="middle">Fe</text>
+            <text class="svgtxt" x="0" y="112" font-size="48" fill="#e3e9ef" text-anchor="middle" direction="rtl">حديد</text>
+            <path id="feX" d="M-120,-120 L120,120 M120,-120 L-120,120" stroke="#ff3355" stroke-width="22" stroke-linecap="round" />
+          </g>
+        </svg>
+      </div>
+
+      <!-- Scene 4: swims, heart stops, ECG flatlines -->
+      <div id="sc4" class="clip" data-start="12.45" data-duration="4.85" data-track-index="1">
+        <svg class="full" viewBox="0 0 1080 1920">
+          <rect x="60" y="330" width="960" height="300" rx="30" fill="#021120" opacity="0.7" />
+          <path id="ecgBeat" d="M90,480 L170,480 L195,430 L220,540 L245,360 L270,560 L295,480 L360,480 L385,430 L410,540 L435,360 L460,560 L485,480 L540,480" fill="none" stroke="#3dff9a" stroke-width="8" stroke-linejoin="round" stroke-linecap="round" />
+          <path id="ecgFlat" d="M540,480 L990,480" fill="none" stroke="#ff3355" stroke-width="8" stroke-linecap="round" />
+          <g id="ecgHeart" transform="translate(930 400) scale(0.45)"><path d="M0,-20 C0,-58 -52,-70 -64,-30 C-76,6 -40,40 0,72 C40,40 76,6 64,-30 C52,-70 0,-58 0,-20 Z" fill="#ff3355" /></g>
+          <g id="o4wrap" transform="translate(540 990) scale(0.75)"><g id="o4move"><g id="o4" class="octo"></g></g></g>
+        </svg>
+        <div id="stop" class="big" style="top: 660px; font-size: 120px; color: #ff3355">يتوقف قلبه!</div>
+      </div>
+
+      <!-- Scene 5: CTA -->
+      <div id="sc5" class="clip" data-start="17.3" data-duration="2.7" data-track-index="1">
+        <div id="cta1" class="big" style="top: 520px; font-size: 150px">تابعنا</div>
+        <div id="cta2" class="big" style="top: 740px; font-size: 96px; color: #ffd23f">لمعلومات أغرب</div>
+        <div id="followBtn" class="follow">+ متابعة</div>
+        <svg class="full" viewBox="0 0 1080 1920">
+          <g transform="translate(540 1640) scale(0.7)"><g id="o5" class="octo"></g></g>
+        </svg>
+      </div>
+
+      <!-- Persistent badge -->
+      <div id="badgeClip" class="clip" data-start="0" data-duration="17.3" data-track-index="2">
+        <div id="badge" class="badge">هل تعلم؟</div>
+      </div>
+
+      <!-- Captions synced to narration -->
+      <div id="c1" class="clip" data-start="0.3" data-duration="3.75" data-track-index="3"><div class="cap">هل تعلم أن هذا المخلوق يملك <span class="hl">ثلاثة قلوب</span>؟</div></div>
+      <div id="c2" class="clip" data-start="4.25" data-duration="3.4" data-track-index="3"><div class="cap">قلبان <span class="hl">للخياشيم</span>، وقلب <span class="hl">لبقية الجسم</span></div></div>
+      <div id="c3" class="clip" data-start="7.85" data-duration="4.55" data-track-index="3"><div class="cap">والأغرب؟ دمه <span class="bl">أزرق</span>، بسبب <span class="hl">النحاس</span> بدل الحديد</div></div>
+      <div id="c4" class="clip" data-start="12.65" data-duration="4.6" data-track-index="3"><div class="cap">وعندما يسبح، <span class="rd">يتوقف</span> قلبه الرئيسي عن النبض!</div></div>
+
+      <div id="flash" class="clip" data-start="0" data-duration="20" data-track-index="4"></div>
+    </div>
+
+    <script>
+      // ---- build octopus markup (deterministic) ----
+      const TENTS = [
+        "M0,0 C-40,70 -110,120 -95,210 C-85,270 -30,280 -45,235",
+        "M0,0 C-20,80 -70,150 -45,240 C-30,290 15,280 0,245",
+        "M0,0 C-5,90 -30,170 -5,250 C10,300 55,280 35,250",
+        "M0,0 C10,90 0,170 30,240 C50,285 90,265 70,235"
+      ];
+      const ROOTS = [-120, -78, -38, -8];
+      function octo(el) {
+        let t = "";
+        for (let side of [1, -1]) {
+          TENTS.forEach((d, i) => {
+            const x = ROOTS[i] * side;
+            t += `<g transform="translate(${x} 60) scale(${side} 1)"><g class="tent">` +
+              `<path d="${d}" fill="none" stroke="#d9512c" stroke-width="40" stroke-linecap="round"/>` +
+              `<path d="${d}" fill="none" stroke="#ff7a4d" stroke-width="30" stroke-linecap="round"/></g></g>`;
+          });
+        }
+        el.innerHTML = t +
+          `<g class="mantle"><path d="M-150,10 C-165,-170 -80,-260 0,-260 C80,-260 165,-170 150,10 C140,70 80,100 0,100 C-80,100 -140,70 -150,10 Z" fill="#ff7a4d"/>` +
+          `<circle cx="-70" cy="-170" r="16" fill="#d9512c"/><circle cx="40" cy="-205" r="12" fill="#d9512c"/><circle cx="90" cy="-120" r="18" fill="#d9512c"/>` +
+          `<ellipse cx="-45" cy="-200" rx="34" ry="20" fill="#ffffff" opacity="0.25" transform="rotate(-25 -45 -200)"/></g>` +
+          `<g class="eyes"><ellipse cx="-60" cy="20" rx="36" ry="40" fill="#fff"/><ellipse cx="60" cy="20" rx="36" ry="40" fill="#fff"/>` +
+          `<circle cx="-54" cy="28" r="18" fill="#021120"/><circle cx="66" cy="28" r="18" fill="#021120"/>` +
+          `<circle cx="-48" cy="20" r="6" fill="#fff"/><circle cx="72" cy="20" r="6" fill="#fff"/></g>` +
+          `<path d="M-22,72 Q0,88 22,72" fill="none" stroke="#a83a1c" stroke-width="7" stroke-linecap="round"/>`;
+      }
+      document.querySelectorAll(".octo").forEach(octo);
+      document.querySelectorAll(".ghost .mantle path").forEach(p => p.setAttribute("opacity", "0.55"));
+
+      // ---- bubbles ----
+      const bub = document.getElementById("bubbles");
+      for (let i = 0; i < 32; i++) {
+        const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        c.setAttribute("cx", (i * 337) % 1040 + 20);
+        c.setAttribute("cy", 300 + ((i * 1931) % 6400));
+        c.setAttribute("r", 7 + ((i * 7) % 18));
+        c.setAttribute("class", "bub");
+        c.dataset.speed = 220 + ((i * 53) % 160);
+        bub.appendChild(c);
+      }
+
+      const tl = gsap.timeline({ paused: true });
+
+      // background life
+      document.querySelectorAll(".bub").forEach((c) => {
+        tl.fromTo(c, { y: 0 }, { y: -c.dataset.speed * 20, duration: 20, ease: "none" }, 0);
+      });
+      tl.fromTo("#rays", { opacity: 0.6 }, { opacity: 1, duration: 2.5, ease: "sine.inOut", yoyo: true, repeat: 7 }, 0);
+
+      // tentacle wiggle on every octopus
+      document.querySelectorAll(".tent").forEach((g, i) => {
+        tl.fromTo(g, { rotation: -6 }, { rotation: 6, duration: 0.6 + (i % 4) * 0.08, ease: "sine.inOut", yoyo: true, repeat: 33, svgOrigin: "0 0" }, (i % 4) * 0.1);
+      });
+
+      // ---- Scene 1 ----
+      tl.from("#badge", { scale: 0, duration: 0.45, ease: "back.out(2.2)" }, 0.1);
+      tl.from("#o1", { y: 900, duration: 0.9, ease: "back.out(1.3)" }, 0.1);
+      tl.to("#o1", { y: -30, duration: 0.8, ease: "sine.inOut", yoyo: true, repeat: 3 }, 1.0);
+      [["#h1a", 2.3], ["#h1b", 2.9], ["#h1c", 3.5]].forEach(([h, t]) => {
+        tl.from(h + " .heart", { scale: 0, duration: 0.35, ease: "back.out(3)", svgOrigin: "0 0" }, t);
+        tl.to(h + " .heart", { scale: 1.18, duration: 0.12, ease: "power2.out", yoyo: true, repeat: 1, svgOrigin: "0 0" }, t + 0.36);
+      });
+      tl.to("#sc1 svg", { scale: 1.06, duration: 4, ease: "power1.inOut", transformOrigin: "50% 50%" }, 0);
+
+      // ---- Scene 2 ----
+      tl.from("#o2wrap", { opacity: 0, duration: 0.3 }, 4.1);
+      tl.from(["#g2l path", "#g2r path"], { scale: 0, duration: 0.4, ease: "back.out(3)", svgOrigin: "0 0" }, 4.4);
+      tl.from("#lab2a", { opacity: 0, duration: 0.35 }, 4.7);
+      tl.from("#g2m path", { scale: 0, duration: 0.45, ease: "back.out(3)", svgOrigin: "0 0" }, 5.9);
+      tl.from("#lab2b", { opacity: 0, y: -30, duration: 0.4, ease: "power2.out" }, 6.1);
+      tl.to(["#g2l path", "#g2r path", "#g2m path"], { scale: 1.15, duration: 0.18, ease: "power2.out", yoyo: true, repeat: 5, svgOrigin: "0 0" }, 6.4);
+
+      // ---- Scene 3 ----
+      tl.from("#wow", { scale: 2.2, opacity: 0, duration: 0.4, ease: "power3.out" }, 7.75);
+      tl.from("#drop", { y: -700, duration: 0.6, ease: "bounce.out" }, 7.9);
+      tl.to("#dropBlue", { opacity: 1, duration: 0.5, ease: "power2.inOut" }, 9.05);
+      tl.to("#drop", { scale: 1.12, duration: 0.2, yoyo: true, repeat: 1, ease: "power2.out", svgOrigin: "540 790" }, 9.05);
+      tl.to("#glow3", { opacity: 1, duration: 0.5 }, 9.1);
+      tl.from("#cu", { scale: 0, duration: 0.4, ease: "back.out(2.5)", svgOrigin: "720 1220" }, 10.0);
+      tl.from("#fe", { scale: 0, duration: 0.4, ease: "back.out(2.5)", svgOrigin: "360 1220" }, 10.9);
+      tl.from("#feX", { opacity: 0, scale: 0.2, duration: 0.25, ease: "power3.out", svgOrigin: "0 0" }, 11.35);
+      tl.to("#fe", { opacity: 0.5, duration: 0.3 }, 11.5);
+      tl.to("#cu", { scale: 1.1, duration: 0.25, ease: "power2.out", yoyo: true, repeat: 1, svgOrigin: "720 1220" }, 11.6);
+
+      // ---- Scene 4 ----
+      const beatLen = 760, flatLen = 450;
+      tl.fromTo("#ecgBeat", { strokeDasharray: beatLen, strokeDashoffset: beatLen }, { strokeDashoffset: 0, duration: 1.9, ease: "none" }, 12.5);
+      tl.fromTo("#ecgFlat", { strokeDasharray: flatLen, strokeDashoffset: flatLen }, { strokeDashoffset: 0, duration: 1.7, ease: "none" }, 14.4);
+      tl.to("#ecgHeart path", { scale: 1.25, duration: 0.15, yoyo: true, repeat: 5, ease: "power2.out", svgOrigin: "0 0" }, 12.6);
+      tl.to("#ecgHeart path", { fill: "#5d6873", duration: 0.3 }, 14.4);
+      tl.fromTo("#o4move", { x: -600, y: 300, rotation: 25 }, { x: 0, y: 0, rotation: 0, duration: 1.1, ease: "power2.out", svgOrigin: "0 0" }, 12.45);
+      tl.to("#o4move", { y: -60, duration: 0.55, ease: "sine.inOut", yoyo: true, repeat: 3 }, 13.55);
+      tl.to("#o4move", { scale: 0.92, duration: 0.6, ease: "power2.inOut", svgOrigin: "0 0" }, 14.4);
+      tl.from("#stop", { scale: 0, opacity: 0, duration: 0.4, ease: "back.out(2.5)" }, 14.35);
+      tl.to("#stop", { x: 10, duration: 0.05, yoyo: true, repeat: 7, ease: "none" }, 14.75);
+
+      // ---- Scene 5 ----
+      tl.from("#cta1", { y: 120, opacity: 0, duration: 0.4, ease: "power3.out" }, 17.4);
+      tl.from("#cta2", { y: 120, opacity: 0, duration: 0.4, ease: "power3.out" }, 17.65);
+      tl.from("#followBtn", { scale: 0, duration: 0.45, ease: "back.out(2.5)" }, 18.0);
+      tl.to("#followBtn", { scale: 1.08, duration: 0.3, ease: "sine.inOut", yoyo: true, repeat: 3 }, 18.5);
+      tl.from("#o5", { y: 500, duration: 0.6, ease: "back.out(1.5)" }, 17.5);
+
+      // ---- captions pop ----
+      ["#c1", "#c2", "#c3", "#c4"].forEach((c, i) => {
+        const t = [0.3, 4.25, 7.85, 12.65][i];
+        tl.from(c + " .cap", { y: 40, opacity: 0, duration: 0.25, ease: "power3.out" }, t);
+      });
+
+      // ---- flash cuts ----
+      [4.1, 7.7, 12.45, 17.3].forEach(t => {
+        tl.fromTo("#flash", { opacity: 0 }, { opacity: 0.85, duration: 0.08, ease: "power2.in", immediateRender: false }, t - 0.08);
+        tl.to("#flash", { opacity: 0, duration: 0.22, ease: "power2.out" }, t);
+      });
+      tl.to({}, { duration: 0.001 }, 19.999);
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines["octopus"] = tl;
+    </script>
+  </body>
+</html>

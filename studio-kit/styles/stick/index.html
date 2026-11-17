@@ -1,0 +1,19 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"/><title>Stick</title><style>
+@font-face{font-family:"Cairo";src:url("fonts/cairo-ar.woff2") format("woff2");font-weight:200 1000;font-display:block;unicode-range:U+0600-06FF,U+0750-077F,U+FB50-FDFF,U+FE70-FEFC,U+200C-200E;}
+@font-face{font-family:"Cairo";src:url("fonts/cairo-latin.woff2") format("woff2");font-weight:200 1000;font-display:block;}
+html,body{margin:0;background:#fbfaf6}#root{position:relative;width:1080px;height:1920px;overflow:hidden;background:#fbfaf6;font-family:"Cairo",sans-serif;direction:rtl}
+.clip{position:absolute;inset:0;overflow:hidden}.tg{position:absolute;top:170px;left:0;right:0;text-align:center;font-size:120px;font-weight:900;color:#111}
+.b{position:absolute;top:520px;left:300px;width:480px;height:260px;border:10px solid #111;border-radius:50px;background:#fff;text-align:center;font-size:150px;font-weight:900;line-height:240px;color:#111;opacity:0}</style><script src="gsap.min.js"></script></head><body>
+<div id="root" data-composition-id="stick" data-start="0" data-duration="5" data-width="1080" data-height="1920"><div id="main" class="clip" data-start="0" data-duration="5" data-track-index="1"><div class="tg">هل تعلم؟</div><div class="b" id="b">ذهب!</div>
+<svg viewBox="0 0 1080 1920" width="1080" height="1920" style="position:absolute;inset:0" fill="none" stroke="#111" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
+<path d="M80,1500 Q500,1480 1000,1510"/><path d="M640,1500 L660,1380 Q720,1330 800,1360 L830,1500" fill="#fff"/>
+<g id="nug" opacity="0"><path d="M700,1440 l30,-40 l50,10 l20,40 l-40,30 z" fill="#ffc933"/></g>
+<g id="man"><circle cx="330" cy="1030" r="56" fill="#fff"/><path d="M330,1086 L330,1290 L270,1500 M330,1290 L400,1500"/>
+<path d="M330,1150 L250,1250"/><g id="arm"><path d="M330,1150 L420,1180"/><g id="pick"><path d="M420,1180 L560,1100" stroke-width="14"/><path d="M520,1040 Q580,1060 600,1150" stroke-width="16"/></g></g></g>
+<g id="sp" stroke="#ffc933" stroke-width="10" opacity="0"><path d="M740,1300 l0,-60 M800,1330 l50,-40 M690,1330 l-50,-40"/></g></svg></div></div>
+<script>const tl=gsap.timeline({paused:true});tl.from("#man",{x:-500,duration:.7,ease:"power2.out"},0);
+for(let i=0;i<3;i++){tl.fromTo("#arm",{rotation:-55,svgOrigin:"330 1150"},{rotation:35,duration:.3,ease:"power2.in",svgOrigin:"330 1150"},.9+i*.55);tl.to("#arm",{rotation:-55,duration:.25,svgOrigin:"330 1150"},1.2+i*.55);}
+tl.to("#nug",{opacity:1,y:-20,duration:.2},2.6);tl.to("#sp",{opacity:1,duration:.1},2.6);tl.to("#sp",{opacity:0,duration:.3},3.1);
+tl.to("#man",{y:-60,duration:.25,yoyo:true,repeat:3,ease:"power1.out"},3.0);
+tl.fromTo("#arm",{rotation:35,svgOrigin:"330 1150"},{rotation:-120,duration:.3,svgOrigin:"330 1150"},3.0);
+tl.fromTo("#b",{scale:0,opacity:0},{scale:1,opacity:1,duration:.4,ease:"back.out(2.5)"},3.2);tl.to({},{duration:.01},4.99);window.__timelines=window.__timelines||{};window.__timelines["stick"]=tl;</script></body></html>

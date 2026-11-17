@@ -1,0 +1,14 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"/><title>Paper</title><style>
+@font-face{font-family:"Cairo";src:url("fonts/cairo-ar.woff2") format("woff2");font-weight:200 1000;font-display:block;unicode-range:U+0600-06FF,U+0750-077F,U+FB50-FDFF,U+FE70-FEFC,U+200C-200E;}
+@font-face{font-family:"Cairo";src:url("fonts/cairo-latin.woff2") format("woff2");font-weight:200 1000;font-display:block;}
+html,body{margin:0;background:#f2c98a}#root{position:relative;width:1080px;height:1920px;overflow:hidden;background:#f2c98a;font-family:"Cairo",sans-serif;direction:rtl}
+.clip{position:absolute;inset:0;overflow:hidden}.l{position:absolute;left:-200px;right:-200px;filter:drop-shadow(0 14px 0 rgba(60,20,20,.35))}.l div{width:100%;height:100%}
+.sun{position:absolute;left:340px;top:420px;width:400px;height:400px;filter:drop-shadow(0 12px 0 rgba(120,70,0,.35))}
+.sun div{width:100%;height:100%;border-radius:50%;background:#ffe08a;display:flex;align-items:center;justify-content:center;font-size:170px;font-weight:900;color:#c98f10;border:14px solid #f5c542;box-sizing:border-box}
+.tg{position:absolute;top:150px;left:0;right:0;text-align:center;font-size:130px;font-weight:900;color:#7a2f35;text-shadow:0 8px 0 rgba(255,255,255,.5)}</style><script src="gsap.min.js"></script></head><body>
+<div id="root" data-composition-id="paper" data-start="0" data-duration="5" data-width="1080" data-height="1920"><div id="main" class="clip" data-start="0" data-duration="5" data-track-index="1"><div class="tg" id="tg">ورق مقصوص</div><div class="sun" id="sun"><div>$</div></div><div class="l" id="h1" style="top:1000px;height:520px"><div style="background:#e08b4f;clip-path:polygon(0 30%,12% 14%,26% 28%,40% 8%,56% 26%,72% 10%,88% 26%,100% 12%,100% 100%,0 100%)"></div></div><div class="l" id="h2" style="top:1180px;height:480px"><div style="background:#b5543a;clip-path:polygon(0 18%,16% 34%,30% 12%,48% 30%,64% 8%,80% 28%,100% 14%,100% 100%,0 100%)"></div></div><div class="l" id="h3" style="top:1400px;height:520px"><div style="background:#7a2f35;clip-path:polygon(0 24%,14% 8%,30% 26%,46% 6%,62% 24%,78% 8%,100% 22%,100% 100%,0 100%)"></div></div></div></div>
+<script>const tl=gsap.timeline({paused:true});tl.from("#sun",{y:500,scale:.6,duration:1,ease:"back.out(1.4)"},.2);
+tl.from("#h1",{x:-1200,duration:.7,ease:"power3.out"},.1);tl.from("#h2",{x:1200,duration:.7,ease:"power3.out"},.3);tl.from("#h3",{x:-1200,duration:.7,ease:"power3.out"},.5);
+tl.from("#tg",{y:-200,rotation:-6,opacity:0,duration:.6,ease:"back.out(2)"},.9);
+tl.to("#h1",{x:-40,duration:4,ease:"none"},.8);tl.to("#h2",{x:60,duration:4,ease:"none"},.8);tl.to("#h3",{x:-90,duration:4,ease:"none"},.8);
+tl.to("#sun",{y:-90,rotation:12,duration:4,ease:"none"},.9);tl.to({},{duration:.01},4.99);window.__timelines=window.__timelines||{};window.__timelines["paper"]=tl;</script></body></html>

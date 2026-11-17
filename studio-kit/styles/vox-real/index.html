@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"/>
+<title>Vox style</title>
+<style>
+@font-face{font-family:"Cairo";src:url("fonts/cairo-ar.woff2") format("woff2");font-weight:200 1000;font-display:block;unicode-range:U+0600-06FF,U+0750-077F,U+FB50-FDFF,U+FE70-FEFC,U+200C-200E;}
+@font-face{font-family:"Cairo";src:url("fonts/cairo-latin.woff2") format("woff2");font-weight:200 1000;font-display:block;}
+html,body{margin:0;background:#111}
+#root{position:relative;width:1080px;height:1920px;overflow:hidden;background:#111;font-family:"Cairo",sans-serif;direction:rtl}
+.clip{position:absolute;inset:0;overflow:hidden}
+#v{position:absolute;left:0;top:0;width:1080px;height:1920px;object-fit:cover}
+#shade{background:linear-gradient(to top,rgba(0,0,0,.85) 0,rgba(0,0,0,.0) 45%,rgba(0,0,0,.35) 100%)}
+.tag{position:absolute;top:120px;right:70px;background:#e5322d;color:#fff;font-weight:900;font-size:44px;padding:0 30px 8px}
+#capA{position:absolute;right:70px;left:70px;bottom:210px;font-size:128px;font-weight:900;line-height:1.2;color:#fff}
+.hl{background:linear-gradient(#ffd400,#ffd400) no-repeat 100% 90%/0% 55%;padding:0 10px;color:#111}
+#paper{background:#f1e9d6;opacity:0}
+#paper::before{content:"";position:absolute;inset:0;background:radial-gradient(rgba(0,0,0,.06) 1px,transparent 1.5px) 0 0/9px 9px}
+.photo{position:absolute;left:90px;top:420px;width:900px;background:#fff;padding:22px;box-shadow:0 26px 0 rgba(0,0,0,.22);transform:rotate(-3deg)}
+.photo img{display:block;width:100%;height:640px;object-fit:cover}
+.chip{position:absolute;font-weight:900;font-size:78px;color:#111;background:#ffd400;padding:0 28px 10px;box-shadow:8px 8px 0 #111;white-space:nowrap}
+.h2{position:absolute;top:150px;right:70px;left:70px;font-size:112px;font-weight:900;line-height:1.2;color:#111}
+.src{position:absolute;bottom:90px;right:70px;font-size:34px;font-weight:700;color:#111;opacity:.55}
+#wipe{background:#ffd400;z-index:9}
+.eq{position:absolute;right:0;left:0;text-align:center;font-weight:900;font-size:150px;line-height:1.1;color:#111}
+</style>
+<script src="gsap.min.js"></script>
+</head>
+<body>
+<div id="root" data-composition-id="vox2" data-start="0" data-duration="8" data-width="1080" data-height="1920">
+  <video id="v" src="assets/v1c.mp4" data-start="0" data-duration="3.4" data-track-index="1" muted playsinline></video>
+  <div id="shade" class="clip" data-start="0" data-duration="3.4" data-track-index="2"></div>
+  <div id="capWrap" class="clip" data-start="0" data-duration="3.4" data-track-index="3">
+    <div class="tag" id="tag">شرح</div>
+    <div id="capA">لماذا الذهب <span class="hl" id="hl">غالٍ؟</span></div>
+  </div>
+  <div id="paper" class="clip" data-start="3" data-duration="5" data-track-index="4">
+    <div id="sB">
+      <div class="h2" id="hB">لأنه <span class="hl" id="hl2" style="background-size:100% 55%">نادر</span> جدًا</div>
+      <div class="photo" id="ph"><img src="img/p1.jpg"/></div>
+      <svg viewBox="0 0 1080 1920" width="1080" height="1920" style="position:absolute;inset:0" fill="none">
+        <ellipse id="circ" cx="520" cy="800" rx="330" ry="270" stroke="#e5322d" stroke-width="14" stroke-linecap="round" transform="rotate(-6 520 800)" stroke-dasharray="1900" stroke-dashoffset="1900"/>
+        <path id="arr" d="M300,1480 Q330,1330 430,1180" stroke="#111" stroke-width="12" stroke-linecap="round" stroke-dasharray="400" stroke-dashoffset="400"/>
+        <path id="arrh" d="M395,1215 L432,1172 L462,1228" stroke="#111" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" opacity="0"/>
+      </svg>
+      <div class="chip" id="c1" style="top:1500px;right:90px">لا يصدأ</div>
+      <div class="chip" id="c2" style="top:1660px;right:260px;background:#fff">لا يتغيّر</div>
+    </div>
+    <div id="sC" style="opacity:0">
+      <div class="h2" style="top:200px">والسعر؟</div>
+      <div class="eq" id="e1" style="top:560px">نادر</div>
+      <div class="eq" id="e2" style="top:760px;font-size:120px;color:#e5322d">+ مطلوب</div>
+      <div class="eq" id="e3" style="top:960px"><span class="hl" id="hl3" style="background-size:100% 55%">= غالٍ</span></div>
+      <svg viewBox="0 0 1080 400" width="1080" height="400" style="position:absolute;left:0;top:1320px" fill="none">
+        <path id="ln" d="M80,330 L260,290 L400,310 L560,200 L700,230 L860,90 L990,40" stroke="#e5322d" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1300" stroke-dashoffset="1300"/>
+      </svg>
+      <div class="src">لقطات: Pixabay</div>
+    </div>
+  </div>
+  <div id="wipe" class="clip" data-start="0" data-duration="8" data-track-index="5"></div>
+</div>
+<script>
+const tl=gsap.timeline({paused:true});
+tl.set("#wipe",{x:1100},0);
+tl.fromTo("#v",{scale:1},{scale:1.12,duration:3.4,ease:"none"},0);
+tl.from("#tag",{x:100,opacity:0,duration:.3,ease:"power3.out"},.15);
+tl.from("#capA",{y:50,opacity:0,duration:.45,ease:"power3.out"},.3);
+tl.to("#hl",{backgroundSize:"100% 55%",duration:.45,ease:"power2.inOut"},1.1);
+// wipe 1
+tl.fromTo("#wipe",{x:1100},{x:-60,duration:.28,ease:"power2.in"},2.9);
+tl.set("#paper",{opacity:1},3.18);
+tl.to("#wipe",{x:-1200,duration:.3,ease:"power2.out"},3.18);
+// scene B
+tl.from("#hB",{y:40,opacity:0,duration:.4,ease:"power3.out"},3.5);
+tl.from("#ph",{y:300,rotation:6,opacity:0,duration:.55,ease:"back.out(1.4)"},3.55);
+tl.to("#circ",{strokeDashoffset:0,duration:.6,ease:"power2.inOut"},4.3);
+tl.to("#arr",{strokeDashoffset:0,duration:.35},4.8);tl.to("#arrh",{opacity:1,duration:.05},5.1);
+tl.from("#c1",{scale:0,duration:.3,ease:"back.out(2.5)"},4.85);
+tl.from("#c2",{scale:0,duration:.3,ease:"back.out(2.5)"},5.1);
+// wipe 2
+tl.set("#wipe",{x:1100},5.4);
+tl.fromTo("#wipe",{x:1100},{x:-60,duration:.28,ease:"power2.in"},5.4);
+tl.set("#sB",{opacity:0},5.68);tl.set("#sC",{opacity:1},5.68);
+tl.to("#wipe",{x:-1200,duration:.3,ease:"power2.out"},5.68);
+// scene C
+tl.from(["#e1"],{scale:.3,opacity:0,duration:.3,ease:"back.out(2)"},6.0);
+tl.from("#e2",{scale:.3,opacity:0,duration:.3,ease:"back.out(2)"},6.4);
+tl.from("#e3",{scale:.3,opacity:0,duration:.3,ease:"back.out(2)"},6.85);
+tl.to("#ln",{strokeDashoffset:0,duration:1.3,ease:"power1.inOut"},6.4);
+tl.to({},{duration:.01},7.99);
+window.__timelines=window.__timelines||{};window.__timelines["vox2"]=tl;
+</script>
+</body></html>
