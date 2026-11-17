@@ -1,0 +1,1 @@
+Source: https://github.com/lemomo-ai/lemo-opuscar @ bebbbe1 (plugin/skills/lemo-opuscar)
